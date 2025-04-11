@@ -35,5 +35,7 @@ public class TicketController {
     public ResponseEntity<List<TicketDTO>> getTicketsByPurchaseDate(@PathVariable LocalDate date) {
         return ResponseEntity.ok(ticketService.getTicketsByPurchaseDate(date));
     }
+
+    // 로그인한 회원의 티켓조회, 논리적 삭제, 
 }
 
