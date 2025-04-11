@@ -55,7 +55,7 @@ public class TicketController {
         return ResponseEntity.ok("티켓이 성공적으로 저장되었습니다.");
     }
 
-    // 티켓 총 누적 판매량
+    // 티켓별 총 누적 판매량
     @GetMapping("/total")
     public ResponseEntity<List<TicketTotalDTO>> getTicketTotals() {
         return new ResponseEntity<>(ticketService.getAllTicketTotals(),HttpStatus.OK);
