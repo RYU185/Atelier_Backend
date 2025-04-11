@@ -8,11 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TicketRepository extends JpaRepository<Ticket,Long> {
-    List<Ticket> findByPurchaseDateAndIsDeletedFalse(LocalDate date);
-
-    List<Ticket> findAllByUser_UserIdAndIsDeletedFalse(String userId);
-
-    List<Ticket> findAllByIsDeletedFalse();
-
     Optional<Ticket> findByIdAndIsDeletedFalse(Long id);
+    List<Ticket> findByPurchaseDateAndIsDeletedFalse(LocalDate date);
+    List<Ticket> findAllByUser_UserIdAndIsDeletedFalse(String userId);
 }

@@ -12,12 +12,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @Setter
-public class TicketDTO {
-    private String artistGallery;
+public class TicketAddDTO {
+    private Long artistGalleryId;
     private int count;
     private LocalDate selectDate;
-    private Double total;
-    private LocalDate purchaseDate;
-    private String artistGalleryPoster;
-
 }

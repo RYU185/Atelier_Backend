@@ -1,5 +1,7 @@
 package com.dw.artgallery.model;
 
+
+import com.dw.artgallery.DTO.TicketDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,13 +21,14 @@ public class Ticket {
     private Long id;
 
     @Column(name="count")
-    private String count;
+    private int count;
 
     @Column(name = "select_date")
     private LocalDate selectDate;
 
     @Column(name = "is_delete")
     private Boolean isDeleted;
+
 
     @ManyToOne
     @JoinColumn(name = "artist_gallery_id")
@@ -38,5 +41,21 @@ public class Ticket {
 
     @Column(name="purchase_date",nullable = false)
     private LocalDate purchaseDate;
+
+
+
+
+    public TicketDTO toDto() {
+        TicketDTO ticketDTO = new TicketDTO();
+        ticketDTO.setArtistGallery(this.artistGallery.getTitle());
+        ticketDTO.setCount(this.count);
+        ticketDTO.setPurchaseDate(this.purchaseDate);
+        ticketDTO.setSelectDate(this.selectDate);
+        ticketDTO.setTotal(this.count*this.artistGallery.getPrice());
+        ticketDTO.setArtistGalleryPoster(this.artistGallery.getPosterUrl());
+        return ticketDTO;
+
+    }
+
 
 }
