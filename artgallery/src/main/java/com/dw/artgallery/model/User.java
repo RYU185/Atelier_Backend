@@ -67,8 +67,7 @@ public class User implements UserDetails {
     private Artist artistProfile;
 
 
-
-    public User(String userId, String encode, String nickName, String email, String realName, LocalDate birthday, String address, Gender gender, Authority authority) {
+    public User(String userId, String encodedPassword, String nickName, String realName, String email, LocalDate birthday, String address, LocalDate enrolmentDate, double point, Gender gender, Authority authority) {
     }
 
     public UserDTO toDTO() {
