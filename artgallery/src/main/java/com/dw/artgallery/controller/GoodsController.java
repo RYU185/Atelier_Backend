@@ -63,13 +63,12 @@ public class GoodsController {
     public ResponseEntity<String> deleteGoods(@PathVariable Long id) {
         return new ResponseEntity<>(goodsService.deleteGoods(id), HttpStatus.OK);
     }
-    // ✅ 관리자 전용 굿즈 조회
+
+    //  관리자 전용 굿즈 조회
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
     public ResponseEntity<List<GoodsTotalDTO>> getAllGoodsForAdmin() {
         return new ResponseEntity<>(goodsService.getAllGoodsForAdmin(), HttpStatus.OK);
     }
-
-
 }
 

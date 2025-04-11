@@ -13,5 +13,5 @@ public class GoodsTotalDTO {
     private String name;
     private List<String> imgUrlList;
     private int stock;
-    private int totalSales;  // 누적 판매량
+    private int totalSales;
 }
