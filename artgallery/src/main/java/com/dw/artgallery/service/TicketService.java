@@ -38,6 +38,13 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
+    public List<TicketDTO> getTicketsByUserId(String userId) {
+        List<Ticket> tickets = ticketRepository.findAllByUser_UserId(userId);
+        return tickets.stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
     //  `Ticket` 엔터티를 `TicketDTO`로 변환
     private TicketDTO convertToDTO(Ticket ticket) {
         return new TicketDTO(

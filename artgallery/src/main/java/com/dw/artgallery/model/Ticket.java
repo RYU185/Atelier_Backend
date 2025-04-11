@@ -28,6 +28,9 @@ public class Ticket {
     @JoinColumn(name = "artist_gallery_id")
     private ArtistGallery artistGallery;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 
     @Column(name="purchase_date",nullable = false)
