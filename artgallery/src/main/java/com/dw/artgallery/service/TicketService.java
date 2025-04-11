@@ -2,6 +2,8 @@ package com.dw.artgallery.service;
 
 import com.dw.artgallery.DTO.TicketAddDTO;
 import com.dw.artgallery.DTO.TicketDTO;
+import com.dw.artgallery.DTO.TicketTotalDTO;
+import com.dw.artgallery.model.Artist;
 import com.dw.artgallery.model.ArtistGallery;
 import com.dw.artgallery.model.Ticket;
 import com.dw.artgallery.model.User;
@@ -15,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,12 +75,33 @@ public class TicketService {
         ticketRepository.save(ticket);
     }
 
+    public List<TicketTotalDTO> getAllTicketTotals() {
+        List<Ticket> tickets = ticketRepository.findAllByIsDeletedFalse();
+        Map<ArtistGallery, List<Ticket>> grouped = tickets.stream()
+                .collect(Collectors.groupingBy(Ticket::getArtistGallery));
 
+        return grouped.entrySet().stream().map(entry -> {
+            ArtistGallery gallery = entry.getKey();
+            List<Ticket> ticketList = entry.getValue();
 
+            int totalVisitors = ticketList.stream()
+                    .mapToInt(Ticket::getCount)
+                    .sum();
+            List<String> artistNames = gallery.getArtistList().stream()
+                    .map(Artist::getName)
+                    .toList();
 
+            TicketTotalDTO dto = new TicketTotalDTO();
+            dto.setArtistGalleryPoster(gallery.getPosterUrl());
+            dto.setStartDate(gallery.getStartDate());
+            dto.setEndDate(gallery.getEndDate());
+            dto.setTitle(gallery.getTitle());
+            dto.setArtist(artistNames);
+            dto.setTotalVisitors(totalVisitors);
 
-
-
+            return dto;
+        }).toList();
+    }
 
 
 

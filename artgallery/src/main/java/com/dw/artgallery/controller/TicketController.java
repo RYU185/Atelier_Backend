@@ -2,6 +2,7 @@ package com.dw.artgallery.controller;
 
 import com.dw.artgallery.DTO.TicketAddDTO;
 import com.dw.artgallery.DTO.TicketDTO;
+import com.dw.artgallery.DTO.TicketTotalDTO;
 import com.dw.artgallery.model.User;
 import com.dw.artgallery.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +55,11 @@ public class TicketController {
         return ResponseEntity.ok("티켓이 성공적으로 저장되었습니다.");
     }
 
-
-
-
-
+    // 티켓 총 누적 판매량
+    @GetMapping("/total")
+    public ResponseEntity<List<TicketTotalDTO>> getTicketTotals() {
+        return new ResponseEntity<>(ticketService.getAllTicketTotals(),HttpStatus.OK);
+    }
 
 }
 

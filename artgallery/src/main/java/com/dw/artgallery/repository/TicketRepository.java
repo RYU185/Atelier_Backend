@@ -11,4 +11,5 @@ public interface TicketRepository extends JpaRepository<Ticket,Long> {
     Optional<Ticket> findByIdAndIsDeletedFalse(Long id);
     List<Ticket> findByPurchaseDateAndIsDeletedFalse(LocalDate date);
     List<Ticket> findAllByUser_UserIdAndIsDeletedFalse(String userId);
+    List<Ticket> findAllByIsDeletedFalse();
 }

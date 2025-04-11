@@ -2,10 +2,13 @@ package com.dw.artgallery.model;
 
 
 import com.dw.artgallery.DTO.TicketDTO;
+import com.dw.artgallery.DTO.TicketTotalDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
