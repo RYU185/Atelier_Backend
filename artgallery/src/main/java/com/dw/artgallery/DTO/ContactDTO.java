@@ -15,10 +15,12 @@ public class ContactDTO {
     private String title;
     private String email;
     private String message;
-    private LocalDateTime createdDate;  // 생성일자 추가
-    private String status;              // 처리 상태 추가
-    private String response;            // 답변 추가
-    private String userId;              // null 가능
+    private LocalDateTime createdDate;
+    private String status;
+    private String response;
+    private String userId;
+
+    private Boolean isMember;
 
     public static ContactDTO toDTO(Contact contact) {
         ContactDTO dto = new ContactDTO();
@@ -30,6 +32,7 @@ public class ContactDTO {
         dto.setCreatedDate(contact.getCreatedDate());
         dto.setStatus(contact.getStatus());
         dto.setResponse(contact.getResponse());
+        dto.setIsMember(contact.getIsMember());
         if (contact.getUser() != null) {
             dto.setUserId(contact.getUser().getUserId());
         }
@@ -42,6 +45,7 @@ public class ContactDTO {
         contact.setTitle(this.title);
         contact.setEmail(this.email);
         contact.setMessage(this.message);
+        contact.setIsMember(this.isMember);
         return contact;
     }
 }

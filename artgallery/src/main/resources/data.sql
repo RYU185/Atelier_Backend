@@ -195,16 +195,17 @@ VALUES
 
 
 
-INSERT INTO contact ( name, title, email, message)
+INSERT INTO contact (name, title, email, message, created_date, status, response, is_member, user_id)
 VALUES
-('김하은', '작품 구매 관련 문의', 'haeun.kim@example.com', '안녕하세요, 특정 작가님의 작품을 구매하고 싶은데 절차가 어떻게 되나요?'),
-('이재훈', '전시 일정 문의드립니다', 'jaehoon.lee@example.com', '예정된 작가전시회에 대해 좀 더 자세한 일정 알 수 있을까요?'),
-('박민서', '사이트 오류 제보', 'minseo.park@example.com', '갤러리 이미지가 몇 개 보이지 않아요. 확인 부탁드립니다.'),
-('홍지민', '회원탈퇴 관련', 'jimin.hong@example.com', '회원탈퇴 방법을 찾을 수 없습니다. 도와주세요.'),
-('최예린', '작가와 콜라보 문의', 'yerin.choi@example.com', '안녕하세요, 아트워크 콜라보 제안을 드리고 싶습니다. 연락 가능할까요?'),
-('윤서진', '드로잉 등록 방법', 'seojin.yoon@example.com', '제가 그린 드로잉을 등록하고 싶은데 절차를 모르겠어요.'),
-('정우성', '답글 삭제 요청', 'woosung.jung@example.com', '제가 남긴 댓글을 실수로 올렸는데 삭제가 가능한가요?'),
-('배지훈', '커뮤니티 기능 개선 요청', 'jihun.bae@example.com', '커뮤니티에서 작성자 닉네임이 보이면 좋겠어요. 기능 추가 가능할까요?');
+('김하은', '작품 구매 관련 문의', 'haeun.kim@example.com', '안녕하세요, 특정 작가님의 작품을 구매하고 싶은데 절차가 어떻게 되나요?', NOW(), '대기중', NULL, false, NULL),
+('이재훈', '전시 일정 문의드립니다', 'jaehoon.lee@example.com', '예정된 작가전시회에 대해 좀 더 자세한 일정 알 수 있을까요?', NOW(), '대기중', NULL, false, NULL),
+('박민서', '사이트 오류 제보', 'minseo.park@example.com', '갤러리 이미지가 몇 개 보이지 않아요. 확인 부탁드립니다.', NOW(), '대기중', NULL, false, NULL),
+('홍지민', '회원탈퇴 관련', 'jimin.hong@example.com', '회원탈퇴 방법을 찾을 수 없습니다. 도와주세요.', NOW(), '대기중', NULL, false, NULL),
+('최예린', '작가와 콜라보 문의', 'yerin.choi@example.com', '안녕하세요, 아트워크 콜라보 제안을 드리고 싶습니다. 연락 가능할까요?', NOW(), '대기중', NULL, false, NULL),
+('윤서진', '드로잉 등록 방법', 'seojin.yoon@example.com', '제가 그린 드로잉을 등록하고 싶은데 절차를 모르겠어요.', NOW(), '대기중', NULL, false, NULL),
+('정우성', '답글 삭제 요청', 'woosung.jung@example.com', '제가 남긴 댓글을 실수로 올렸는데 삭제가 가능한가요?', NOW(), '대기중', NULL, false, NULL),
+('배지훈', '커뮤니티 기능 개선 요청', 'jihun.bae@example.com', '커뮤니티에서 작성자 닉네임이 보이면 좋겠어요. 기능 추가 가능할까요?', NOW(), '대기중', NULL, false, NULL);
+
 
 INSERT INTO user_gallery ( title, poster_url, price, description,start_date,end_date)
 VALUES
