@@ -1,6 +1,7 @@
 package com.dw.artgallery.controller;
 
 import com.dw.artgallery.DTO.GoodsDTO;
+import com.dw.artgallery.DTO.GoodsTotalDTO;
 import com.dw.artgallery.enums.SortOrder;
 import com.dw.artgallery.repository.GoodsRepository;
 import com.dw.artgallery.service.GoodsService;
@@ -62,5 +63,13 @@ public class GoodsController {
     public ResponseEntity<String> deleteGoods(@PathVariable Long id) {
         return new ResponseEntity<>(goodsService.deleteGoods(id), HttpStatus.OK);
     }
+    // ✅ 관리자 전용 굿즈 조회
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin")
+    public ResponseEntity<List<GoodsTotalDTO>> getAllGoodsForAdmin() {
+        return new ResponseEntity<>(goodsService.getAllGoodsForAdmin(), HttpStatus.OK);
+    }
+
+
 }
 

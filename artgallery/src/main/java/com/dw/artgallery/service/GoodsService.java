@@ -1,14 +1,17 @@
 package com.dw.artgallery.service;
 
 import com.dw.artgallery.DTO.GoodsDTO;
+import com.dw.artgallery.DTO.GoodsTotalDTO;
 import com.dw.artgallery.enums.SortOrder;
 import com.dw.artgallery.model.Goods;
+import com.dw.artgallery.repository.GoodsCartRepository;
 import com.dw.artgallery.repository.GoodsRepository;
 import com.dw.artgallery.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GoodsService {
@@ -16,6 +19,8 @@ public class GoodsService {
     GoodsRepository goodsRepository;
     @Autowired
     UserService userService;
+    @Autowired
+    GoodsCartRepository goodsCartRepository;
 
     public List<GoodsDTO> getAllGoods() {
         List<Goods> goodsList = goodsRepository.findAll();
@@ -86,4 +91,19 @@ public class GoodsService {
         goodsRepository.delete(goods);
         return "해당 상품을 삭제하였습니다.";
     }
+    // ✅ 관리자 전용 굿즈 전체 조회 (누적 판매량 포함)
+    public List<GoodsTotalDTO> getAllGoodsForAdmin() {
+        return goodsRepository.findAll().stream()
+                .map(goods -> new GoodsTotalDTO(
+                        goods.getId(),
+                        goods.getName(),
+                        goods.getImgUrlList(),
+                        goods.getStock(),
+                        goodsCartRepository.getTotalSalesByGoodsId(goods.getId()) // 관리자만 조회 가능
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+
 }

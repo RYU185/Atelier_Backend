@@ -25,6 +25,7 @@ public class GoodsDTO {
 
     private int stock;
 
+
     public static GoodsDTO fromEntity(Goods goods){
         return new GoodsDTO(
                 goods.getId(),
