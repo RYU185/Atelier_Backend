@@ -17,4 +17,7 @@ public interface PurchaseGoodsRepository extends JpaRepository<PurchaseGoods, Lo
 """)
     boolean hasUserPurchasedGoods(@Param("goodsId") Long goodsId,
                                   @Param("userId") String userId);
+
+    @Query("SELECT COALESCE(SUM(pg.quantity), 0) FROM PurchaseGoods pg WHERE pg.goods.id = :goodsId")
+    Integer getTotalSalesByGoodsId(Long goodsId);
 }

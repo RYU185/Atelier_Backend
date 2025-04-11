@@ -64,7 +64,7 @@ public class GoodsController {
         return new ResponseEntity<>(goodsService.deleteGoods(id), HttpStatus.OK);
     }
 
-    //  관리자 전용 굿즈 조회
+    //  관리자 전용 굿즈 조회 (누적 판매량 포함)
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
     public ResponseEntity<List<GoodsTotalDTO>> getAllGoodsForAdmin() {

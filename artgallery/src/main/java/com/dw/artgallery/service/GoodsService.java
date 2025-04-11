@@ -7,6 +7,7 @@ import com.dw.artgallery.model.Goods;
 import com.dw.artgallery.repository.GoodsCartRepository;
 import com.dw.artgallery.repository.GoodsRepository;
 import com.dw.artgallery.exception.ResourceNotFoundException;
+import com.dw.artgallery.repository.PurchaseGoodsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class GoodsService {
     @Autowired
     UserService userService;
     @Autowired
-    GoodsCartRepository goodsCartRepository;
+    PurchaseGoodsRepository purchaseGoodsRepository;
 
     public List<GoodsDTO> getAllGoods() {
         List<Goods> goodsList = goodsRepository.findAll();
@@ -99,7 +100,7 @@ public class GoodsService {
                         goods.getName(),
                         goods.getImgUrlList(),
                         goods.getStock(),
-                        goodsCartRepository.getTotalSalesByGoodsId(goods.getId()) // 관리자만 조회 가능
+                        purchaseGoodsRepository.getTotalSalesByGoodsId(goods.getId()) // 관리자만 조회 가능
                 ))
                 .collect(Collectors.toList());
     }
