@@ -19,31 +19,46 @@ public class TicketService {
 
     //  모든 티켓 조회
     public List<TicketDTO> getAllTickets() {
-        return ticketRepository.findAll().stream()
+        return ticketRepository.findAllByIsDeletedFalse().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
     //  ID로 특정 티켓 조회
     public TicketDTO getTicketById(Long id) {
-        Ticket ticket = ticketRepository.findById(id)
+        Ticket ticket = ticketRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 티켓을 찾을 수 없습니다: " + id));
         return convertToDTO(ticket);
     }
 
     //  구매 날짜별 티켓 조회
     public List<TicketDTO> getTicketsByPurchaseDate(LocalDate date) {
-        return ticketRepository.findByPurchaseDate(date).stream()
+        return ticketRepository.findByPurchaseDateAndIsDeletedFalse(date).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
     public List<TicketDTO> getTicketsByUserId(String userId) {
-        List<Ticket> tickets = ticketRepository.findAllByUser_UserId(userId);
+        List<Ticket> tickets = ticketRepository.findAllByUser_UserIdAndIsDeletedFalse(userId);
         return tickets.stream()
                 .map(this::convertToDTO)
                 .toList();
     }
+
+
+    public void softDeleteTicket(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 티켓을 찾을 수 없습니다: " + ticketId));
+        ticket.setIsDeleted(false);
+        ticketRepository.save(ticket);
+    }
+
+
+
+
+
+
+
 
     //  `Ticket` 엔터티를 `TicketDTO`로 변환
     private TicketDTO convertToDTO(Ticket ticket) {
@@ -55,4 +70,6 @@ public class TicketService {
                 ticket.getPurchaseDate()
         );
     }
+
+
 }

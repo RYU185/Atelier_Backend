@@ -1,7 +1,6 @@
 package com.dw.artgallery.service;
 
 import com.dw.artgallery.DTO.ChatMessageDTO;
-import com.dw.artgallery.exception.ResourceNotFoundException;
 import com.dw.artgallery.model.ChatMessage;
 import com.dw.artgallery.model.ChatRoom;
 import com.dw.artgallery.model.User;
@@ -9,11 +8,9 @@ import com.dw.artgallery.repository.ChatMessageRepository;
 import com.dw.artgallery.repository.ChatRoomRepository;
 import com.dw.artgallery.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

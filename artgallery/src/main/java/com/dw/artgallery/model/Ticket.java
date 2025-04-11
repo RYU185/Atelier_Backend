@@ -24,6 +24,9 @@ public class Ticket {
     @Column(name = "select_date")
     private LocalDate selectDate;
 
+    @Column(name = "is_delete")
+    private Boolean isDeleted;
+
     @ManyToOne
     @JoinColumn(name = "artist_gallery_id")
     private ArtistGallery artistGallery;

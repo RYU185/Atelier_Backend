@@ -6,10 +6,7 @@ import com.dw.artgallery.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,8 +35,17 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.getTicketsByUserId(user.getUserId()));
     }
 
+    // 티켓 논리적 삭제
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<String> softDeleteTicket(@PathVariable Long id) {
+        ticketService.softDeleteTicket(id);
+        return ResponseEntity.ok("티켓이 논리적으로 삭제되었습니다.");
+    }
 
 
-    // 로그인한 회원의 티켓조회, 논리적 삭제,
+
+
+
+
 }
 
