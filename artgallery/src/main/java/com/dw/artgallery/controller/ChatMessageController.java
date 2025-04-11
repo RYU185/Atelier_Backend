@@ -20,19 +20,19 @@ public class ChatMessageController {
     private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/chat.send") // 클라이언트 → /app/chat.send 로 전송
-    public void sendMessage(@Payload ChatMessageDTO messageDTO) {
+    public void sendMessage(@Payload ChatMessageDTO chatMessageDTO) {
 
         // 1. 채팅방 조회 or 생성
-        ChatRoom chatRoom = chatRoomService.getOrCreateRoom(messageDTO.getSender(), messageDTO.getReceiver());
+        ChatRoom chatRoom = chatRoomService.getOrCreateRoom(chatMessageDTO.getSender(), chatMessageDTO.getReceiver());
 
         // 2. 메시지 저장
-        ChatMessage saved = chatMessageService.saveMessage(messageDTO, chatRoom);
+        ChatMessage saved = chatMessageService.saveMessage(chatMessageDTO, chatRoom);
 
         // 3. 상대 유저에게 메시지 전송 (WebSocket 전용 queue)
         messagingTemplate.convertAndSendToUser(
-                messageDTO.getReceiver(), // 대상 ID
+                chatMessageDTO.getReceiver(), // 대상 ID
                 "/queue/messages",        // 목적지
-                messageDTO                // payload 그대로
+                chatMessageDTO                // payload 그대로
         );
     }
 }

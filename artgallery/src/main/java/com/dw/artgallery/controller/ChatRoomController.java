@@ -1,17 +1,18 @@
 package com.dw.artgallery.controller;
 
+import com.dw.artgallery.DTO.ChatMessageDTO;
 import com.dw.artgallery.model.ChatRoom;
 import com.dw.artgallery.service.ChatMessageService;
 import com.dw.artgallery.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,11 +22,9 @@ public class ChatRoomController {
     private final ChatMessageService chatMessageService;
 
     @PreAuthorize("hasRole('USER')")
-    @PostMapping("/{artistId}")
-    public ResponseEntity<Long> createOrGetRoom(
-            @PathVariable String artistId,
-            Authentication authentication
-    ) {
-        String userId = authentication.get
+    @GetMapping("/{roomId}/messages")
+    public ResponseEntity<List<ChatMessageDTO>> getMessagesByRoomId(@PathVariable Long roomId, Authentication authentication){
+        String userId = authentication.getName();
+        return new ResponseEntity<>(chatRoomService.getMessagesByRoomId(roomId), HttpStatus.OK);
     }
 }

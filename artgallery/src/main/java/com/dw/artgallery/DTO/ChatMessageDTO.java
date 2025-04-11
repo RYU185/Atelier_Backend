@@ -1,6 +1,7 @@
 package com.dw.artgallery.DTO;
 
 import com.dw.artgallery.chat.MessageType;
+import com.dw.artgallery.model.ChatMessage;
 import lombok.*;
 
 @Getter
@@ -13,4 +14,17 @@ public class ChatMessageDTO {
     private String content;
     private String sender;
     private String receiver;
+
+    public static ChatMessageDTO fromEntity(ChatMessage message) {
+        return ChatMessageDTO.builder()
+                .sender(message.getSender().getUserId())
+                .receiver(
+                        message.getChatRoom().getUser().getUserId().equals(message.getSender().getUserId())
+                                ? message.getChatRoom().getArtist().getUserId()
+                                : message.getChatRoom().getUser().getUserId()
+                )
+                .content(message.getText())
+                .type(MessageType.CHAT)
+                .build();
+    }
 }
