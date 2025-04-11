@@ -60,8 +60,8 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    public static final Dotenv dotenv = Dotenv.configure()
-            .filename(".env")
-            .ignoreIfMissing()
-            .load();
+//    public static final Dotenv dotenv = Dotenv.configure()
+//            .filename(".env")
+//            .ignoreIfMissing()
+//            .load();
 }
