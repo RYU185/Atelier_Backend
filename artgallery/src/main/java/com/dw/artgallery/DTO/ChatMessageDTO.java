@@ -1,6 +1,6 @@
 package com.dw.artgallery.DTO;
 
-import com.dw.artgallery.chat.MessageType;
+import com.dw.artgallery.enums.MessageType;
 import com.dw.artgallery.model.ChatMessage;
 import lombok.*;
 

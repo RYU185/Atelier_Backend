@@ -1,4 +1,4 @@
-package com.dw.artgallery.chat;
+package com.dw.artgallery.enums;
 
 public enum MessageType {
 

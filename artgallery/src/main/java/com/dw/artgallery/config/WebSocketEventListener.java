@@ -1,7 +1,7 @@
 package com.dw.artgallery.config;
 
 import com.dw.artgallery.DTO.ChatMessageDTO;
-import com.dw.artgallery.chat.MessageType;
+import com.dw.artgallery.enums.MessageType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
