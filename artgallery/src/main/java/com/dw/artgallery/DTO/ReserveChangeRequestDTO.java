@@ -7,12 +7,11 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public class ReservationRequestDTO {
-    // 예약 화면
-    private Long galleryId;
-    private LocalDate date;
+@NoArgsConstructor
+@AllArgsConstructor
+public class ReserveChangeRequestDTO {
+    private LocalDate newDate;
+
 }
