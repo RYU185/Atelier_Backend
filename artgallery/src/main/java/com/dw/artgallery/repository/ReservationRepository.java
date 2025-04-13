@@ -13,7 +13,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     boolean existsByUserAndReserveDate(User user, ReserveDate reserveDate);
 
-    boolean existByUserAndReserveDate_DateAndReservationStatus(User user, LocalDate date, ReservationStatus status);
+    boolean existsByUserAndReserveDate_DateAndReservationStatus(User user, LocalDate date, ReservationStatus status);
 
     List<Reservation> findByUser(User user);
 
