@@ -366,6 +366,13 @@ VALUES
 (4, 12), (4, 13), (4, 14), (4, 15),
 (5, 3), (5, 7), (5, 8);
 
+INSERT INTO reserve_date (id, artist_gallery_id, date, capacity, reserved_count)
+VALUES
+(1, 1, '2025-04-25', 10, 0);
+
+INSERT INTO reservation (id, user_id, reserve_date_id, reservation_status, created_at)
+VALUES
+(1, 'steve12', 1, 'RESERVED', CURRENT_TIMESTAMP);
 
 
 
