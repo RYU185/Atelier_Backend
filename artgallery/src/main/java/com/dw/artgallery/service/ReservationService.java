@@ -37,6 +37,12 @@ public class ReservationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new ResourceNotFoundException("해당 유저를 찾을 수 없습니다"));
 
+        if (reservationRepository.existByUserAndReserveDate_DateAndReservationStatus(
+                user, reservationRequestDTO.getDate(), ReservationStatus.RESERVED
+        )){
+            throw new InvalidRequestException("해당 날짜에 이미 예약이 완료되어 있습니다.");
+        }
+
         ArtistGallery artistGallery = artistGalleryRepository.findById(reservationRequestDTO.getGalleryId())
                 .orElseThrow(()-> new ResourceNotFoundException("전시를 찾을 수 없습니다."));
 
