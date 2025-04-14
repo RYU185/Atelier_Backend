@@ -15,14 +15,13 @@ import java.util.List;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
     @Query("""
-    SELECT COUNT(r) > 0
-    FROM Reservation r
-    WHERE r.user = :user
-    AND r.reserveTime.reserveDate.date = :date
-    AND r.reservationStatus = :status
-    """)
-    boolean existsDuplicateReservation(User user, LocalDate date, ReservationStatus status);
-
+        SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
+        FROM Reservation r
+        WHERE r.user = :user
+        AND r.reserveTime.reserveDate.date = :date
+        AND r.reservationStatus = :status
+        """)
+    boolean existsDuplicateReservation(@Param("user") User user, @Param("date") LocalDate date, @Param("status") ReservationStatus status);
 
     List<Reservation> findByUser(User user);
 
