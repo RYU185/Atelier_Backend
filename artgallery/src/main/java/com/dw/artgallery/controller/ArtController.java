@@ -23,7 +23,7 @@
 
         // 모든 작품 조회
         @GetMapping
-        public ResponseEntity<List<Art>> getAllArt() {
+        public ResponseEntity<List<ArtDTO>> getAllArt() {
             return ResponseEntity.ok(artService.getAllArt());
         }
 
