@@ -3,6 +3,7 @@ package com.dw.artgallery.service;
 import com.dw.artgallery.DTO.ArtistGalleryAddDTO;
 import com.dw.artgallery.DTO.ArtistGalleryDTO;
 import com.dw.artgallery.DTO.ArtistGalleryDetailDTO;
+import com.dw.artgallery.DTO.DeadlineDTO;
 import com.dw.artgallery.model.Art;
 import com.dw.artgallery.model.Artist;
 import com.dw.artgallery.model.ArtistGallery;
@@ -10,6 +11,7 @@ import com.dw.artgallery.repository.ArtRepository;
 import com.dw.artgallery.repository.ArtistGalleryRepository;
 import com.dw.artgallery.exception.ResourceNotFoundException;
 import com.dw.artgallery.repository.ArtistRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,6 +88,17 @@ public class ArtistGalleryService {
 
 
         return artistGalleryRepository.save(gallery);
+    }
+
+
+    public String updateDeadline(Long id, DeadlineDTO dto) {
+        ArtistGallery gallery = artistGalleryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 갤러리를 찾을 수 없습니다."));
+
+        gallery.setDeadline(dto.getDeadline());
+        artistGalleryRepository.save(gallery);
+
+        return "마감일이 " + dto.getDeadline() + "로 성공적으로 수정되었습니다.";
     }
 
 }

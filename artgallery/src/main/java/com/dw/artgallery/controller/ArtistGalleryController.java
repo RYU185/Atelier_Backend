@@ -3,6 +3,7 @@ package com.dw.artgallery.controller;
 import com.dw.artgallery.DTO.ArtistGalleryAddDTO;
 import com.dw.artgallery.DTO.ArtistGalleryDTO;
 import com.dw.artgallery.DTO.ArtistGalleryDetailDTO;
+import com.dw.artgallery.DTO.DeadlineDTO;
 import com.dw.artgallery.model.ArtistGallery;
 import com.dw.artgallery.model.User;
 import com.dw.artgallery.service.ArtistGalleryService;
@@ -58,6 +59,7 @@ public class ArtistGalleryController {
         return new ResponseEntity<>(artistGalleryService.getExpectedArtistGallery(), HttpStatus.OK);
     }
 
+    // ArtistGallery 추가
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArtistGalleryDetailDTO> createGallery(
@@ -68,9 +70,20 @@ public class ArtistGalleryController {
 
         ArtistGallery saved = artistGalleryService.createGallery(dto);
 
-        // ✅ Entity → DTO 변환해서 응답
         return ResponseEntity.ok(saved.TODTO());
     }
+
+    // 마감일 수정
+    @PutMapping("/deadline/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> updateDeadline(
+            @PathVariable Long id,
+            @RequestBody DeadlineDTO dto
+    ) {
+        String result = artistGalleryService.updateDeadline(id, dto);
+        return ResponseEntity.ok(result);
+    }
+
 }
 
 
