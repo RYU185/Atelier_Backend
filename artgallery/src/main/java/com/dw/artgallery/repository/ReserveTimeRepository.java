@@ -10,13 +10,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface ReserveTimeRepository extends JpaRepository<ReserveTime, Long> {
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
-    SELECT rt FROM ReserveTime rt
-    JOIN FETCH rt.reserveDate rd
-    JOIN FETCH rd.artistGallery
-    WHERE rt.id = :id
-""")
+        SELECT rt FROM ReserveTime rt
+        JOIN FETCH rt.reserveDate rd
+        JOIN FETCH rd.artistGallery
+        WHERE rt.id = :id
+    """)
     Optional<ReserveTime> findByIdWithFullJoin(@Param("id") Long id);
 }
 

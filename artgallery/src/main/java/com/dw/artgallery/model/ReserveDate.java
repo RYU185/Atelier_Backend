@@ -35,6 +35,9 @@ public class ReserveDate {
     @Column(nullable = false)
     private int reservedCount = 0;
 
+    @Version
+    private Integer version;
+
     @OneToMany(mappedBy = "reserveDate", cascade = CascadeType.ALL)
     private List<ReserveTime> timeSlots;
 
@@ -47,6 +50,7 @@ public class ReserveDate {
     }
 
     public void reserve() {
+        if (isFull()) throw new IllegalStateException("정원이 초과되었습니다.");
         this.reservedCount++;
     }
 

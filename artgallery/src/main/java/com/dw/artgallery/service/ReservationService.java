@@ -11,6 +11,7 @@ import com.dw.artgallery.exception.ResourceNotFoundException;
 import com.dw.artgallery.model.*;
 import com.dw.artgallery.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,10 +42,6 @@ public class ReservationService {
             throw new InvalidRequestException("전시 기간 외의 날짜는 예약할 수 없습니다.");
         }
 
-        if (reserveDate.isFull()) {
-            throw new InvalidRequestException("정원이 초과되었습니다.");
-        }
-
         if (reservationRepository.existsByUserAndReserveTime(user, time)) {
             throw new InvalidRequestException("이미 해당 시간에 예약이 완료되었습니다.");
         }
@@ -53,16 +50,20 @@ public class ReservationService {
             throw new InvalidRequestException("해당 날짜에 이미 예약이 완료되어 있습니다.");
         }
 
-        reserveDate.reserve();
+        try{
+            reserveDate.reserve();
+            reserveDateRepository.save(reserveDate);
 
-        Reservation reservation = new Reservation();
-        reservation.setUser(user);
-        reservation.setReserveTime(time);
-        reservation.setReservationStatus(ReservationStatus.RESERVED);
-        reservation.setCreatedAt(LocalDateTime.now());
+            Reservation reservation = new Reservation();
+            reservation.setUser(user);
+            reservation.setReserveTime(time);
+            reservation.setReservationStatus(ReservationStatus.RESERVED);
+            reservation.setCreatedAt(LocalDateTime.now());
 
-        Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationResponseDTO.fromEntity(savedReservation);
+            return ReservationResponseDTO.fromEntity(reservationRepository.save(reservation));
+        }catch (ObjectOptimisticLockingFailureException e){
+            throw new InvalidRequestException("정원이 초과되었습니다. 다시 시도해주세요.");
+        }
     }
 
     // 예약 변경
@@ -94,24 +95,30 @@ public class ReservationService {
                 || newDate.getDate().isAfter(gallery.getEndDate())) {
             throw new InvalidRequestException("전시 기간 외의 날짜는 예약할 수 없습니다.");
         }
-        if (newDate.isFull()) {
-            throw new InvalidRequestException("해당 날짜는 정원이 초과되었습니다.");
-        }
 
         if (reservationRepository.existsByUserAndReserveTime(user, newReserveTime)) {
             throw new InvalidRequestException("이미 해당 시간에 예약이 되어있습니다.");
         }
 
-        if (reservationRepository.existsDuplicateReservation(user, newDate.getDate(), ReservationStatus.RESERVED)) {
+        if (reservationRepository.existsDuplicateReservationExceptSelf(
+                user, newDate.getDate(), ReservationStatus.RESERVED, reservationId)) {
             throw new InvalidRequestException("해당 날짜에 이미 예약이 완료되어 있습니다.");
         }
 
-        reservation.getReserveTime().getReserveDate().cancel();
-        newDate.reserve();
+        try {
+            ReserveDate oldDate = reservation.getReserveTime().getReserveDate();
 
-        reservation.setReserveTime(newReserveTime);
+            oldDate.cancel();
+            newDate.reserve();
 
-        return ReservationResponseDTO.fromEntity(reservation);
+            reserveDateRepository.saveAll(List.of(oldDate, newDate));
+
+            reservation.setReserveTime(newReserveTime);
+
+            return ReservationResponseDTO.fromEntity(reservation);
+        } catch (ObjectOptimisticLockingFailureException e) {
+            throw new InvalidRequestException("정원이 초과되었습니다. 다시 시도해주세요.");
+        }
     }
 
     // 예약 취소
@@ -131,11 +138,18 @@ public class ReservationService {
             throw new InvalidRequestException("예약일이 지나 취소할 수 없습니다.");
         }
 
-        reservation.cancel();
-        reservation.getReserveTime().getReserveDate().cancel();
+        try {
+            ReserveDate reserveDate = reservation.getReserveTime().getReserveDate();
+            reserveDate.cancel();
+            reserveDateRepository.save(reserveDate);
 
-        return ReservationResponseDTO.fromEntity(reservation);
+            return ReservationResponseDTO.fromEntity(reservation);
+
+        } catch (ObjectOptimisticLockingFailureException e) {
+            throw new InvalidRequestException("정원 정보 갱신에 실패했습니다. 다시 시도해주세요.");
+        }
     }
+
 
     @Transactional
     public List<ReservationSummaryDTO> getMyReservations(String userId){

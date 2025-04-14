@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-
+    // 새로운 예약 생성 시에만 사용
     @Query("""
         SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
         FROM Reservation r
@@ -22,6 +22,20 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         AND r.reservationStatus = :status
         """)
     boolean existsDuplicateReservation(@Param("user") User user, @Param("date") LocalDate date, @Param("status") ReservationStatus status);
+
+    // 예약 변경시에만 사용
+    @Query("""
+    SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
+    FROM Reservation r
+    WHERE r.user = :user
+    AND r.reserveTime.reserveDate.date = :date
+    AND r.reservationStatus = :status
+    AND r.id != :excludeId
+""")
+    boolean existsDuplicateReservationExceptSelf(@Param("user") User user,
+                                                 @Param("date") LocalDate date,
+                                                 @Param("status") ReservationStatus status,
+                                                 @Param("excludeId") Long excludeId);
 
     List<Reservation> findByUser(User user);
 

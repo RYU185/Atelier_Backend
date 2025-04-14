@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public interface ReserveDateRepository extends JpaRepository<ReserveDate, Long> {
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
     SELECT r FROM ReserveDate r
     JOIN FETCH r.artistGallery
