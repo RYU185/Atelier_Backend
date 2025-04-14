@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -23,6 +24,8 @@ public class ReservationResponseDTO {
 
     private LocalDate date;
 
+    private LocalTime time;
+
     private ReservationStatus status;
 
     private LocalDateTime createdAt;
@@ -30,8 +33,9 @@ public class ReservationResponseDTO {
     public static ReservationResponseDTO fromEntity(Reservation reservation) {
         return new ReservationResponseDTO(
                 reservation.getId(),
-                reservation.getReserveDate().getArtistGallery().getTitle(),
-                reservation.getReserveDate().getDate(),
+                reservation.getReserveTime().getReserveDate().getArtistGallery().getTitle(),
+                reservation.getReserveTime().getReserveDate().getDate(),
+                reservation.getReserveTime().getTime(),
                 reservation.getReservationStatus(),
                 reservation.getCreatedAt()
         );

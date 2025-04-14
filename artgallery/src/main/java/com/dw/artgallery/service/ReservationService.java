@@ -8,14 +8,8 @@ import com.dw.artgallery.enums.ReservationStatus;
 import com.dw.artgallery.exception.InvalidRequestException;
 import com.dw.artgallery.exception.PermissionDeniedException;
 import com.dw.artgallery.exception.ResourceNotFoundException;
-import com.dw.artgallery.model.ArtistGallery;
-import com.dw.artgallery.model.Reservation;
-import com.dw.artgallery.model.ReserveDate;
-import com.dw.artgallery.model.User;
-import com.dw.artgallery.repository.ArtistGalleryRepository;
-import com.dw.artgallery.repository.ReservationRepository;
-import com.dw.artgallery.repository.ReserveDateRepository;
-import com.dw.artgallery.repository.UserRepository;
+import com.dw.artgallery.model.*;
+import com.dw.artgallery.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +21,8 @@ import java.util.List;
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
+    private final ReserveTimeRepository reserveTimeRepository;
     private final ReserveDateRepository reserveDateRepository;
-    private final ArtistGalleryRepository artistGalleryRepository;
     private final UserRepository userRepository;
 
     // 예약
@@ -37,36 +31,40 @@ public class ReservationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new ResourceNotFoundException("해당 유저를 찾을 수 없습니다"));
 
-        if (reservationRepository.existsByUserAndReserveDate_DateAndReservationStatus(
-                user, reservationRequestDTO.getDate(), ReservationStatus.RESERVED
-        )){
+        ReserveTime time = reserveTimeRepository.findByIdWithLock(reservationRequestDTO.getReserveTimeId())
+                .orElseThrow(() -> new InvalidRequestException("유효하지 않은 예약 시간입니다."));
+
+        ReserveDate reserveDate = reserveDateRepository.findByIdWithLock(time.getReserveDate().getId())
+                .orElseThrow(() -> new InvalidRequestException("예약 날짜를 찾을 수 없습니다."));
+
+        ArtistGallery gallery = reserveDate.getArtistGallery();
+
+        if (reserveDate.getDate().isBefore(gallery.getStartDate()) || reserveDate.getDate().isAfter(gallery.getEndDate())) {
+            throw new InvalidRequestException("전시 기간 외의 날짜는 예약할 수 없습니다.");
+        }
+
+        if (reserveDate.isFull()) {
+            throw new InvalidRequestException("정원이 초과되었습니다.");
+        }
+
+        if (reservationRepository.existsByUserAndReserveTime(user, time)) {
+            throw new InvalidRequestException("이미 해당 시간에 예약이 완료되었습니다.");
+        }
+
+        if (reservationRepository.existsDuplicateReservation(user, reserveDate.getDate(), ReservationStatus.RESERVED)) {
             throw new InvalidRequestException("해당 날짜에 이미 예약이 완료되어 있습니다.");
         }
 
-        ArtistGallery artistGallery = artistGalleryRepository.findById(reservationRequestDTO.getGalleryId())
-                .orElseThrow(()-> new ResourceNotFoundException("전시를 찾을 수 없습니다."));
-
-        ReserveDate reserveDate = reserveDateRepository
-                .findByArtistGalleryAndDateWithLock(artistGallery.getId(), reservationRequestDTO.getDate())
-                .orElseThrow(()-> new PermissionDeniedException("해당 날짜를 예약하실 수 없습니다."));
-
-        if (!reserveDate.canReserve()){
-            throw new InvalidRequestException("정원이 모두 찼습니다.");
-        }
-        if (reservationRepository.existsByUserAndReserveDate(user, reserveDate)){
-            throw new InvalidRequestException("이미 해당 날짜에 예약이 완료되었습니다.");
-        }
         reserveDate.reserve();
 
         Reservation reservation = new Reservation();
         reservation.setUser(user);
-        reservation.setReserveDate(reserveDate);
+        reservation.setReserveTime(time);
         reservation.setReservationStatus(ReservationStatus.RESERVED);
         reservation.setCreatedAt(LocalDateTime.now());
+
         Reservation savedReservation = reservationRepository.save(reservation);
-
         return ReservationResponseDTO.fromEntity(savedReservation);
-
     }
 
     // 예약 변경
@@ -76,6 +74,7 @@ public class ReservationService {
                                                     String userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new ResourceNotFoundException("유저를 찾을 수 없습니다"));
+
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(()-> new ResourceNotFoundException("해당 예약을 찾을 수 없습니다"));
 
@@ -87,19 +86,31 @@ public class ReservationService {
             throw new InvalidRequestException("예약일이 지나 변경이 불가능합니다.");
         }
 
-        ReserveDate newDate = reserveDateRepository
-                .findByArtistGalleryAndDateWithLock(
-                        reservation.getReserveDate().getArtistGallery().getId(),
-                        reserveChangeRequestDTO.getNewDate()
-                ).orElseThrow(()-> new ResourceNotFoundException("선택한 날짜에 예약할 수 없습니다."));
+        ReserveTime newReserveTime = reserveTimeRepository.findById(reserveChangeRequestDTO.getNewReserveTimeId())
+                .orElseThrow(()-> new InvalidRequestException("선택한 시간은 예약할 수 없습니다"));
 
-        if (!newDate.canReserve()){
-            throw new InvalidRequestException("해당일은 정원초과로 예약할 수 없습니다.");
+        ReserveDate newDate = newReserveTime.getReserveDate();
+        ArtistGallery gallery = newDate.getArtistGallery();
+
+        if (newDate.getDate().isBefore(gallery.getStartDate()) || newDate.getDate().isAfter(gallery.getEndDate())) {
+            throw new InvalidRequestException("전시 기간 외의 날짜는 예약할 수 없습니다.");
+        }
+        if (newDate.isFull()) {
+            throw new InvalidRequestException("해당 날짜는 정원이 초과되었습니다.");
         }
 
-        reservation.getReserveDate().cancel();
+        if (reservationRepository.existsByUserAndReserveTime(user, newReserveTime)) {
+            throw new InvalidRequestException("이미 해당 시간에 예약이 되어있습니다.");
+        }
+
+        if (reservationRepository.existsDuplicateReservation(user, newDate.getDate(), ReservationStatus.RESERVED)) {
+            throw new InvalidRequestException("해당 날짜에 이미 예약이 완료되어 있습니다.");
+        }
+
+        reservation.getReserveTime().getReserveDate().cancel();
         newDate.reserve();
-        reservation.setReserveDate(newDate);
+
+        reservation.setReserveTime(newReserveTime);
 
         return ReservationResponseDTO.fromEntity(reservation);
     }
@@ -122,7 +133,7 @@ public class ReservationService {
         }
 
         reservation.cancel();
-        reservation.getReserveDate().cancel();
+        reservation.getReserveTime().getReserveDate().cancel();
 
         return ReservationResponseDTO.fromEntity(reservation);
     }

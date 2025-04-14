@@ -11,8 +11,8 @@ import java.util.Optional;
 
 public interface ReserveDateRepository extends JpaRepository<ReserveDate, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT r FROM ReserveDate r WHERE r.artistGallery.id = :galleryId AND r.date = :date")
-    Optional<ReserveDate> findByArtistGalleryAndDateWithLock(Long galleryId, LocalDate date);
+    @Query("SELECT r FROM ReserveDate r WHERE r.id = :id")
+    Optional<ReserveDate> findByIdWithLock(Long id);
 
     // @Lock(LockModeType.PESSIMISTIC_WRITE)
     // 비관적 락

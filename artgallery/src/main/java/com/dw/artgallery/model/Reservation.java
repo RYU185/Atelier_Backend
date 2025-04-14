@@ -28,8 +28,8 @@ public class Reservation {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "reserve_date_id", nullable = false)
-    private ReserveDate reserveDate;
+    @JoinColumn(name = "reserve_time_id", nullable = false)
+    private ReserveTime reserveTime;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -46,11 +46,13 @@ public class Reservation {
         this.canceledAt = LocalDateTime.now();
     }
 
-    // 캡슐화 - 모델 객체가 자신의 상태를 직접 바꾸도록 함
+    public ReserveDate getReserveDate() {
+        return reserveTime.getReserveDate();
+    }
 
+    // 캡슐화 - 모델 객체가 자신의 상태를 직접 바꾸도록 함
     public boolean isCancelable() {
-        LocalDate reservationDate = reserveDate.getDate();
-        return LocalDate.now().isBefore(reservationDate);
+        return LocalDate.now().isBefore(reserveTime.getReserveDate().getDate());
         // 예약 날짜 이전까지만 취소 가능함
         // 당일 취소 불가능
     }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -19,13 +20,15 @@ public class ReservationSummaryDTO {
     private Long reservationId;
     private String galleryTitle;
     private LocalDate date;
+    private LocalTime time;
     private ReservationStatus status;
 
     public static ReservationSummaryDTO fromEntity(Reservation reservation){
         return new ReservationSummaryDTO(
                 reservation.getId(),
-                reservation.getReserveDate().getArtistGallery().getTitle(),
-                reservation.getReserveDate().getDate(),
+                reservation.getReserveTime().getReserveDate().getArtistGallery().getTitle(),
+                reservation.getReserveTime().getReserveDate().getDate(),
+                reservation.getReserveTime().getTime(),
                 reservation.getReservationStatus()
         );
     }

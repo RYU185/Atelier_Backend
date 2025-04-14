@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,6 +34,13 @@ public class ReserveDate {
 
     @Column(nullable = false)
     private int reservedCount = 0;
+
+    @OneToMany(mappedBy = "reserveDate", cascade = CascadeType.ALL)
+    private List<ReserveTime> timeSlots;
+
+    public boolean isFull() {
+        return reservedCount >= capacity;
+    }
 
     public boolean canReserve() {
         return reservedCount < capacity;
