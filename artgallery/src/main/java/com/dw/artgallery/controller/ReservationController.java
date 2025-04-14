@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -18,6 +19,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
+    // 예약 생성
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ReservationResponseDTO> reserve(
@@ -31,6 +33,7 @@ public class ReservationController {
                 HttpStatus.OK);
     }
 
+    // 예약 변경
     @PutMapping("/{reservationId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ReservationResponseDTO> changeReservation(
@@ -46,6 +49,7 @@ public class ReservationController {
 
     }
 
+    // 예약 취소
     @DeleteMapping("/{reservationId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ReservationResponseDTO> cancelReservation(
@@ -59,6 +63,7 @@ public class ReservationController {
         );
     }
 
+    // 마이페이지 예약 목록 확인
     @GetMapping("/my")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<ReservationSummaryDTO>> getMyReservations(
@@ -71,14 +76,18 @@ public class ReservationController {
         );
     }
 
+    // 예약 가능여부 확인
     @GetMapping("/availability/{reserveTimeId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ReserveAvailabilityDTO> getAvailability(@PathVariable Long reserveTimeId) {
         return ResponseEntity.ok(reservationService.getAvailability(reserveTimeId));
     }
 
-    @GetMapping
-
-
+    // 날짜 선택시 해당 예약 가능 시간 조회
+    @GetMapping("/available-times")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<List<ReserveTimeDTO>> getAvailableTimes(@RequestParam LocalDate date) {
+        return ResponseEntity.ok(reservationService.getAvailableTimesByDate(date));
+    }
 
 }

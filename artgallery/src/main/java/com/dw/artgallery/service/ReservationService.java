@@ -170,4 +170,11 @@ public class ReservationService {
         ReserveDate date = time.getReserveDate();
         return new ReserveAvailabilityDTO(date.getCapacity(), date.getReservedCount(), date.isFull());
     }
+
+    public List<ReserveTimeDTO> getAvailableTimesByDate(LocalDate date) {
+        List<ReserveTime> times = reserveTimeRepository.findByReserveDate_Date(date);
+        return times.stream()
+                .map(ReserveTimeDTO::fromEntity)
+                .toList();
+    }
 }
