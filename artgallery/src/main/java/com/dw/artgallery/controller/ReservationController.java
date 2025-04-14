@@ -1,9 +1,6 @@
 package com.dw.artgallery.controller;
 
-import com.dw.artgallery.DTO.ReservationRequestDTO;
-import com.dw.artgallery.DTO.ReservationResponseDTO;
-import com.dw.artgallery.DTO.ReservationSummaryDTO;
-import com.dw.artgallery.DTO.ReserveChangeRequestDTO;
+import com.dw.artgallery.DTO.*;
 import com.dw.artgallery.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -73,4 +70,13 @@ public class ReservationController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping("/availability/{reserveTimeId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ReserveAvailabilityDTO> getAvailability(@PathVariable Long reserveTimeId) {
+        return ResponseEntity.ok(reservationService.getAvailability(reserveTimeId));
+    }
+
+
+
 }

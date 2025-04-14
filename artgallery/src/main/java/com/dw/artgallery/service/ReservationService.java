@@ -1,9 +1,6 @@
 package com.dw.artgallery.service;
 
-import com.dw.artgallery.DTO.ReservationRequestDTO;
-import com.dw.artgallery.DTO.ReservationResponseDTO;
-import com.dw.artgallery.DTO.ReservationSummaryDTO;
-import com.dw.artgallery.DTO.ReserveChangeRequestDTO;
+import com.dw.artgallery.DTO.*;
 import com.dw.artgallery.enums.ReservationStatus;
 import com.dw.artgallery.exception.InvalidRequestException;
 import com.dw.artgallery.exception.PermissionDeniedException;
@@ -15,6 +12,7 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,6 +38,10 @@ public class ReservationService {
 
         if (reserveDate.getDate().isBefore(gallery.getStartDate()) || reserveDate.getDate().isAfter(gallery.getEndDate())) {
             throw new InvalidRequestException("전시 기간 외의 날짜는 예약할 수 없습니다.");
+        }
+
+        if (!reserveDate.getDate().isAfter(LocalDate.now())) {
+            throw new InvalidRequestException("관람일 하루 전까지 예약 가능합니다.");
         }
 
         if (reservationRepository.existsByUserAndReserveTime(user, time)) {
@@ -160,5 +162,12 @@ public class ReservationService {
 
         return reservations.stream().map(ReservationSummaryDTO::fromEntity)
                 .toList();
+    }
+
+    public ReserveAvailabilityDTO getAvailability(Long reserveTimeId){
+        ReserveTime time = reserveTimeRepository.findByIdWithFullJoin(reserveTimeId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간을 찾을 수 없습니다."));
+        ReserveDate date = time.getReserveDate();
+        return new ReserveAvailabilityDTO(date.getCapacity(), date.getReservedCount(), date.isFull());
     }
 }
