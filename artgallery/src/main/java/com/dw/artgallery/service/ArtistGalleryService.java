@@ -4,32 +4,29 @@ import com.dw.artgallery.DTO.ArtistGalleryAddDTO;
 import com.dw.artgallery.DTO.ArtistGalleryDTO;
 import com.dw.artgallery.DTO.ArtistGalleryDetailDTO;
 import com.dw.artgallery.DTO.DeadlineDTO;
-import com.dw.artgallery.model.Art;
-import com.dw.artgallery.model.Artist;
-import com.dw.artgallery.model.ArtistGallery;
-import com.dw.artgallery.repository.ArtRepository;
-import com.dw.artgallery.repository.ArtistGalleryRepository;
+import com.dw.artgallery.model.*;
+import com.dw.artgallery.repository.*;
 import com.dw.artgallery.exception.ResourceNotFoundException;
-import com.dw.artgallery.repository.ArtistRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class ArtistGalleryService {
-    @Autowired
-    ArtistGalleryRepository artistGalleryRepository;
 
-    @Autowired
-    ArtistRepository artistRepository;
-
-    @Autowired
-    ArtRepository artRepository;
+    private final ArtistGalleryRepository artistGalleryRepository;
+    private final ArtistRepository artistRepository;
+    private final ArtRepository artRepository;
+    private final ReserveDateRepository reserveDateRepository;
+    private final ReserveTimeRepository reserveTimeRepository;
 
     public List<ArtistGalleryDTO> getAllArtistGallery () {
         return artistGalleryRepository.findAll().stream().map(ArtistGallery::toDto).toList();
@@ -87,7 +84,36 @@ public class ArtistGalleryService {
         gallery.setDeadline(gallery.getEndDate().minusDays(1));
 
 
-        return artistGalleryRepository.save(gallery);
+        ArtistGallery savedGallery = artistGalleryRepository.save(gallery);
+
+        for (LocalDate date = gallery.getStartDate(); !date.isAfter(gallery.getEndDate()); date = date.plusDays(1)) {
+            ReserveDate reserveDate = new ReserveDate();
+            reserveDate.setArtistGallery(savedGallery);
+            reserveDate.setDate(date);
+            reserveDate.setCapacity(30); // 기본 정원
+            reserveDate.setReservedCount(0);
+            reserveDateRepository.save(reserveDate);
+
+            // 기본 시간 설정 (10~17시)
+            List<LocalTime> timeSlots = List.of(
+                    LocalTime.of(10, 0), LocalTime.of(11, 0), LocalTime.of(12, 0),
+                    LocalTime.of(13, 0), LocalTime.of(14, 0), LocalTime.of(15, 0),
+                    LocalTime.of(16, 0), LocalTime.of(17, 0)
+            );
+
+            List<ReserveTime> reserveTimes = timeSlots.stream()
+                    .map(time -> {
+                        ReserveTime rt = new ReserveTime();
+                        rt.setTime(time);
+                        rt.setReserveDate(reserveDate);
+                        return rt;
+                    })
+                    .toList();
+
+            reserveTimeRepository.saveAll(reserveTimes);
+        }
+
+        return savedGallery;
     }
 
 
