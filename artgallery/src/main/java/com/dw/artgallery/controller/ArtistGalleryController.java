@@ -1,15 +1,17 @@
 package com.dw.artgallery.controller;
 
+import com.dw.artgallery.DTO.ArtistGalleryAddDTO;
 import com.dw.artgallery.DTO.ArtistGalleryDTO;
 import com.dw.artgallery.DTO.ArtistGalleryDetailDTO;
+import com.dw.artgallery.model.ArtistGallery;
+import com.dw.artgallery.model.User;
 import com.dw.artgallery.service.ArtistGalleryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,7 +45,7 @@ public class ArtistGalleryController {
         return new ResponseEntity<>(artistGalleryService.getNowArtistGallery(), HttpStatus.OK);
     }
 
-    // ArtistGallery 과거 전지 조회
+    // ArtistGallery 과거 전시 조회
     @GetMapping("/past")
     public ResponseEntity<List<ArtistGalleryDTO>> getPastArtistGallery () {
         return new ResponseEntity<>(artistGalleryService.getPastArtistGallery(), HttpStatus.OK);
@@ -56,4 +58,19 @@ public class ArtistGalleryController {
         return new ResponseEntity<>(artistGalleryService.getExpectedArtistGallery(), HttpStatus.OK);
     }
 
+    @PostMapping("/add")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ArtistGalleryDetailDTO> createGallery(
+            @RequestBody ArtistGalleryAddDTO dto,
+            @AuthenticationPrincipal User user
+    ) {
+        System.out.println("🎨 등록 요청 관리자 ID: " + user.getUserId());
+
+        ArtistGallery saved = artistGalleryService.createGallery(dto);
+
+        // ✅ Entity → DTO 변환해서 응답
+        return ResponseEntity.ok(saved.TODTO());
+    }
 }
+
+

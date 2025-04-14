@@ -1,10 +1,16 @@
 package com.dw.artgallery.service;
 
+import com.dw.artgallery.DTO.ArtistGalleryAddDTO;
 import com.dw.artgallery.DTO.ArtistGalleryDTO;
 import com.dw.artgallery.DTO.ArtistGalleryDetailDTO;
+import com.dw.artgallery.model.Art;
+import com.dw.artgallery.model.Artist;
 import com.dw.artgallery.model.ArtistGallery;
+import com.dw.artgallery.repository.ArtRepository;
 import com.dw.artgallery.repository.ArtistGalleryRepository;
 import com.dw.artgallery.exception.ResourceNotFoundException;
+import com.dw.artgallery.repository.ArtistRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +22,12 @@ import java.util.stream.Collectors;
 public class ArtistGalleryService {
     @Autowired
     ArtistGalleryRepository artistGalleryRepository;
+
+    @Autowired
+    ArtistRepository artistRepository;
+
+    @Autowired
+    ArtRepository artRepository;
 
     public List<ArtistGalleryDTO> getAllArtistGallery () {
         return artistGalleryRepository.findAll().stream().map(ArtistGallery::toDto).toList();
@@ -48,6 +60,32 @@ public class ArtistGalleryService {
     public List<ArtistGalleryDTO> getExpectedArtistGallery() {
         LocalDate today = LocalDate.now();
         return artistGalleryRepository.findExpectedGallery(today).stream().map(ArtistGallery::toDto).toList();
+    }
+
+
+    @Transactional
+    public ArtistGallery createGallery(ArtistGalleryAddDTO dto) {
+
+        ArtistGallery gallery = ArtistGallery.fromAddDto(dto);
+
+        List<Artist> artists = artistRepository.findAllById(dto.getArtistIdList());
+        gallery.setArtistList(artists);
+
+        List<Long> validArtistIds = artists.stream()
+                .map(Artist::getId)
+                .toList();
+
+        List<Art> validArts = artRepository.findAllById(dto.getArtIdList()).stream()
+                .filter(art -> art.getArtist() != null &&
+                        validArtistIds.contains(art.getArtist().getId()))
+                .toList();
+
+        gallery.setArtList(validArts);
+
+        gallery.setDeadline(gallery.getEndDate().minusDays(1));
+
+
+        return artistGalleryRepository.save(gallery);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.dw.artgallery.model;
 
+import com.dw.artgallery.DTO.ArtistGalleryAddDTO;
 import com.dw.artgallery.DTO.ArtistGalleryDTO;
 import com.dw.artgallery.DTO.ArtistGalleryDetailDTO;
 import jakarta.persistence.*;
@@ -40,6 +41,9 @@ public class ArtistGallery {
 
     @Column(name = "price")
     private double price;
+
+    @Column(name = "deadline")
+    private LocalDate deadline;
 
     @ManyToMany
     @JoinTable(name = "artist_gallery_artist",
@@ -95,6 +99,17 @@ public class ArtistGallery {
     }
 
 
+    public static ArtistGallery fromAddDto(ArtistGalleryAddDTO dto) {
+        ArtistGallery gallery = new ArtistGallery();
+        gallery.setTitle(dto.getTitle());
+        gallery.setPosterUrl(dto.getPoster());
+        gallery.setDescription(dto.getDescription());
+        gallery.setStartDate(dto.getStartDate());
+        gallery.setEndDate(dto.getEndDate());
+        gallery.setDeadline(dto.getEndDate().minusDays(1));
+        gallery.setPrice(dto.getPrice());
+        return gallery;
+    }
 
 
 }
