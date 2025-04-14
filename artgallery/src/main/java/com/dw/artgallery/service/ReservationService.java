@@ -31,12 +31,10 @@ public class ReservationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new ResourceNotFoundException("해당 유저를 찾을 수 없습니다"));
 
-        ReserveTime time = reserveTimeRepository.findByIdWithLock(reservationRequestDTO.getReserveTimeId())
+        ReserveTime time = reserveTimeRepository.findByIdWithFullJoin(reservationRequestDTO.getReserveTimeId())
                 .orElseThrow(() -> new InvalidRequestException("유효하지 않은 예약 시간입니다."));
 
-        ReserveDate reserveDate = reserveDateRepository.findByIdWithLock(time.getReserveDate().getId())
-                .orElseThrow(() -> new InvalidRequestException("예약 날짜를 찾을 수 없습니다."));
-
+        ReserveDate reserveDate = time.getReserveDate();
         ArtistGallery gallery = reserveDate.getArtistGallery();
 
         if (reserveDate.getDate().isBefore(gallery.getStartDate()) || reserveDate.getDate().isAfter(gallery.getEndDate())) {
@@ -86,13 +84,14 @@ public class ReservationService {
             throw new InvalidRequestException("예약일이 지나 변경이 불가능합니다.");
         }
 
-        ReserveTime newReserveTime = reserveTimeRepository.findById(reserveChangeRequestDTO.getNewReserveTimeId())
-                .orElseThrow(()-> new InvalidRequestException("선택한 시간은 예약할 수 없습니다"));
+        ReserveTime newReserveTime = reserveTimeRepository.findByIdWithFullJoin(reserveChangeRequestDTO.getNewReserveTimeId())
+                .orElseThrow(() -> new InvalidRequestException("선택한 시간은 예약할 수 없습니다."));
 
         ReserveDate newDate = newReserveTime.getReserveDate();
         ArtistGallery gallery = newDate.getArtistGallery();
 
-        if (newDate.getDate().isBefore(gallery.getStartDate()) || newDate.getDate().isAfter(gallery.getEndDate())) {
+        if (newDate.getDate().isBefore(gallery.getStartDate())
+                || newDate.getDate().isAfter(gallery.getEndDate())) {
             throw new InvalidRequestException("전시 기간 외의 날짜는 예약할 수 없습니다.");
         }
         if (newDate.isFull()) {

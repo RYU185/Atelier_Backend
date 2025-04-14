@@ -5,14 +5,19 @@ import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 public interface ReserveDateRepository extends JpaRepository<ReserveDate, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT r FROM ReserveDate r WHERE r.id = :id")
-    Optional<ReserveDate> findByIdWithLock(Long id);
+    @Query("""
+    SELECT r FROM ReserveDate r
+    JOIN FETCH r.artistGallery
+    WHERE r.id = :id
+""")
+    Optional<ReserveDate> findByIdWithGalleryLock(@Param("id") Long id);
 
     // @Lock(LockModeType.PESSIMISTIC_WRITE)
     // 비관적 락
