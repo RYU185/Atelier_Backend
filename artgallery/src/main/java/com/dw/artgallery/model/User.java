@@ -67,6 +67,10 @@ public class User implements UserDetails {
     private Artist artistProfile;
 
 
+    public boolean isAdmin() {
+        return this.authority != null && "ROLE_ADMIN".equalsIgnoreCase(this.authority.getAuthorityName());
+    }
+
     public User(String userId, String encodedPassword, String nickName, String realName, String email, LocalDate birthday, String address, LocalDate enrolmentDate, double point, Gender gender, Authority authority) {
     }
 

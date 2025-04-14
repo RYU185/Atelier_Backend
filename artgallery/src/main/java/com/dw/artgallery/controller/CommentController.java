@@ -22,6 +22,7 @@ public class CommentController {
                                                     @AuthenticationPrincipal User user) {
         return new ResponseEntity<>(commentService.addComment(dto, user), HttpStatus.CREATED);
     }
+
     // Comment commentId 로 수정
     @PutMapping("/update/{commentId}")
     public ResponseEntity<CommentAddDTO> updateComment(@PathVariable Long commentId,
@@ -31,6 +32,7 @@ public class CommentController {
         return new ResponseEntity<>(updated, HttpStatus.OK);
 
     }
+
     // Comment commentId 로 물리적 삭제
     @DeleteMapping("/delete/{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable Long commentId,
@@ -41,8 +43,9 @@ public class CommentController {
 
     // Comment commentId 로 논리적 삭제
     @PostMapping("/deleted/{commentId}")
-    public ResponseEntity<String> deletedComment(@PathVariable Long commentId) {
-        return new ResponseEntity<>(commentService.deletedComment(commentId), HttpStatus.OK);
+    public ResponseEntity<String> deletedComment(@PathVariable Long commentId,
+                                                 @AuthenticationPrincipal User user) {
+        return new ResponseEntity<>(commentService.deletedComment(commentId, user), HttpStatus.OK);
     }
 
 

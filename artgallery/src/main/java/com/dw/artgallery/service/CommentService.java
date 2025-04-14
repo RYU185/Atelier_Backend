@@ -1,6 +1,7 @@
 package com.dw.artgallery.service;
 
 import com.dw.artgallery.DTO.CommentAddDTO;
+import com.dw.artgallery.exception.ResourceNotFoundException;
 import com.dw.artgallery.model.Comment;
 import com.dw.artgallery.model.Community;
 import com.dw.artgallery.model.User;
@@ -63,28 +64,31 @@ public class CommentService {
         return responseDTO;
     }
 
+
     public void deleteComment(Long commentId, User user) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다."));
 
-        if (!comment.getUser().getUserId().equals(user.getUserId())) {
-            throw new SecurityException("본인의 댓글만 삭제할 수 있습니다.");
+
+        if (!comment.getUser().getUserId().equals(user.getUserId()) && !user.isAdmin()) {
+            throw new SecurityException("본인 또는 관리자만 삭제할 수 있습니다.");
         }
 
         commentRepository.delete(comment);
     }
 
 
-    public String deletedComment(Long commentId) {
+    public String deletedComment(Long commentId, User user) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다."));
 
-        if (Boolean.TRUE.equals(comment.getIsDeleted())) {
-            return "이미 삭제된 댓글입니다.";
+
+        if (!comment.getUser().getUserId().equals(user.getUserId()) && !user.isAdmin()) {
+            throw new SecurityException("본인 또는 관리자만 삭제할 수 있습니다.");
         }
+
         comment.setIsDeleted(true);
         commentRepository.save(comment);
-
-        return "댓글이 성공적으로 삭제되었습니다.";
+        return "댓글이 논리적으로 삭제되었습니다.";
     }
 }

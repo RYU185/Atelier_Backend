@@ -35,7 +35,7 @@ public class CommunityService {
     CommunityRepository communityRepository;
     @Autowired
     UserRepository userRepository;
-    @Autowired  
+    @Autowired
     CommunityLikeRepository communityLikeRepository;
     @Autowired
     DrawingRepository drawingRepository;
