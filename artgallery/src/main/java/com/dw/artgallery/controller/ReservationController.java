@@ -77,6 +77,8 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getAvailability(reserveTimeId));
     }
 
+    @GetMapping
+
 
 
 }
