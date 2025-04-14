@@ -92,19 +92,22 @@ public class CommunityController {
 
 
 
-    // Community id로 좋아요 기능 다시 누르면 좋아요 취소
+    // Community 좋아요
     @PostMapping("/like/{id}")
     public ResponseEntity<String> toggleLike(@PathVariable Long id,
                                              @AuthenticationPrincipal User user) {
-        return new ResponseEntity<>(communityService.toggleLike(id, user), HttpStatus.OK);
+        boolean liked = communityService.toggleLike(id, user);
+        String message = liked ? "👍 좋아요를 눌렀습니다!" : "👎 좋아요를 취소했습니다!";
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
 
     // Community 추가 기능
     @PostMapping("/add")
     public ResponseEntity<CommunityDTO> addCommunity(@RequestBody CommunityAddDTO dto,
-                                                        @AuthenticationPrincipal User user) {
-        Community created = communityService.addCommunity(dto, user);
-        return new ResponseEntity<>(created.toDto(), HttpStatus.CREATED);
+                                                     @AuthenticationPrincipal User user) {
+        CommunityDTO created = communityService.addCommunity(dto, user);  // ✅ 수정
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
 

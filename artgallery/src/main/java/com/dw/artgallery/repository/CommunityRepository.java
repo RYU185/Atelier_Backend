@@ -25,6 +25,7 @@ public interface CommunityRepository extends JpaRepository<Community,Long> {
     @Query("SELECT c FROM Community c WHERE c.isDeleted = false ORDER BY c.uploadDate ASC")
     List<Community> findOldestCommunities();
 
-    @Query("SELECT c FROM Community c WHERE c.isDeleted = false ORDER BY c.likes DESC")
-    List<Community> findCommunitiesByLikesDesc();
+
+    @Query("SELECT c FROM Community c WHERE c.isDeleted = false")
+    List<Community> findAllWithLikes();
 }

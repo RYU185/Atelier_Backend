@@ -17,9 +17,11 @@ import com.dw.artgallery.repository.CommunityRepository;
 import com.dw.artgallery.repository.DrawingRepository;
 import com.dw.artgallery.repository.UserRepository;
 import com.dw.artgallery.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,101 +35,116 @@ public class CommunityService {
     CommunityRepository communityRepository;
     @Autowired
     UserRepository userRepository;
-    @Autowired
+    @Autowired  
     CommunityLikeRepository communityLikeRepository;
     @Autowired
     DrawingRepository drawingRepository;
 
+
     public List<CommunityDTO> getAllCommunity() {
         return communityRepository.findAllNotDeleted().stream()
-                .map(Community::toDto)
+                .map(c -> c.toDto(communityLikeRepository))
                 .toList();
     }
+
 
     public List<CommunityDTO> getDescCommunity() {
         return communityRepository.findRecentCommunities()
                 .stream()
-                .map(Community::toDto)
+                .map(c -> c.toDto(communityLikeRepository))
                 .collect(Collectors.toList());
     }
+
 
     public List<CommunityDTO> getAscCommunity() {
         return communityRepository.findOldestCommunities()
                 .stream()
-                .map(Community::toDto)
+                .map(c -> c.toDto(communityLikeRepository))
                 .collect(Collectors.toList());
     }
+
 
     public List<CommunityDTO> getPopularCommunities() {
-        return communityRepository.findCommunitiesByLikesDesc()
-                .stream()
-                .map(Community::toDto)
+        List<Community> communities = communityRepository.findAllWithLikes();
+
+        return communities.stream()
+                .sorted((a, b) -> Long.compare(
+                        communityLikeRepository.countByCommunity(b),
+                        communityLikeRepository.countByCommunity(a)
+                ))
+                .map(c -> c.toDto(communityLikeRepository))
                 .collect(Collectors.toList());
     }
-
 
     public CommunityDTO getIdCommunity(Long id) {
         return communityRepository.findByIdNotDeleted(id)
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않거나 삭제된 커뮤니티입니다."))
-                .toDto();
+                .toDto(communityLikeRepository);
     }
 
+
     public CommunityDetailDTO getIdCommunities(Long id) {
-        return communityRepository.findByIdNotDeleted(id)
-                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않거나 삭제된 커뮤니티입니다."))
-                .ToDto();
+        Community community = communityRepository.findByIdNotDeleted(id)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않거나 삭제된 커뮤니티입니다."));
+        return community.ToDto(communityLikeRepository);
     }
+
 
     public List<CommunityDTO> getUserIDCommunity(String userId) {
         List<Community> communities = communityRepository.findByUserIdNotDeleted(userId);
         if (communities.isEmpty()) {
             throw new ResourceNotFoundException("해당 유저의 커뮤니티가 없습니다.");
         }
-        return communities.stream().map(Community::toDto).toList();
+        return communities.stream()
+                .map(c -> c.toDto(communityLikeRepository))
+                .toList();
     }
 
 
-    public String toggleLike(Long id, User user) {
-        Community community = communityRepository.findById(id)
+    @Transactional
+    public boolean toggleLike(Long communityId, User user) {
+        Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티 글이 없습니다."));
 
         Optional<CommunityLike> likeOptional = communityLikeRepository.findByUserAndCommunity(user, community);
 
         if (likeOptional.isPresent()) {
             communityLikeRepository.delete(likeOptional.get());
-            community.setLikes(Math.max(0, community.getLikes() - 1));
+            return false; // 좋아요 취소
         } else {
-            CommunityLike newLike = CommunityLike.builder()
-                    .user(user)
-                    .community(community)
-                    .build();
-            communityLikeRepository.save(newLike);
-            community.setLikes(community.getLikes() + 1);
+            try {
+                CommunityLike like = CommunityLike.builder()
+                        .user(user)
+                        .community(community)
+                        .build();
+                communityLikeRepository.save(like);
+                return true; // 좋아요 추가
+            } catch (DataIntegrityViolationException e) {
+                throw new RuntimeException("이미 좋아요를 눌렀습니다.");
+            }
         }
-
-        communityRepository.save(community);
-        return "좋아요 토글 완료!";
     }
 
 
-
-        public Community addCommunity(CommunityAddDTO dto, User user) {
-            List<Drawing> userDrawings = drawingRepository.findAllById(dto.getDrawingIds());
-            for (Drawing d : userDrawings) {
-                if (!d.getUser().getUserId().equals(user.getUserId())) {
-                    throw new IllegalArgumentException("본인이 소유한 드로잉만 첨부할 수 있습니다.");
-                }
+    public CommunityDTO addCommunity(CommunityAddDTO dto, User user) {
+        List<Drawing> userDrawings = drawingRepository.findAllById(dto.getDrawingIds());
+        for (Drawing d : userDrawings) {
+            if (!d.getUser().getUserId().equals(user.getUserId())) {
+                throw new IllegalArgumentException("본인이 소유한 드로잉만 첨부할 수 있습니다.");
             }
-            Community community = new Community();
-            community.setText(dto.getText());
-            community.setDrawingList(userDrawings);
-            community.setUser(user);
-            community.setModifyDate(LocalDateTime.now());
-            community.setIsDeleted(false);
-            community.setLikes(0L);
-
-            return communityRepository.save(community);
         }
+
+        Community community = new Community();
+        community.setText(dto.getText());
+        community.setDrawingList(userDrawings);
+        community.setUser(user);
+        community.setModifyDate(LocalDateTime.now());
+        community.setIsDeleted(false);
+
+        Community saved = communityRepository.save(community);
+        return saved.toDto(communityLikeRepository);
+    }
+
 
     public String updateCommunity(Long id, User user, CommunityUpdateDTO dto) {
         Community community = communityRepository.findById(id)
@@ -147,6 +164,7 @@ public class CommunityService {
         communityRepository.save(community);
         return "커뮤니티 글이 수정되었습니다.";
     }
+
 
     public String deleteCommunity(Long id, User user) {
         Community community = communityRepository.findById(id)

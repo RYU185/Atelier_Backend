@@ -2,6 +2,7 @@ package com.dw.artgallery.model;
 
 import com.dw.artgallery.DTO.CommunityDTO;
 import com.dw.artgallery.DTO.CommunityDetailDTO;
+import com.dw.artgallery.repository.CommunityLikeRepository;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,8 +26,6 @@ public class Community {
     @Column(name = "text")
     private String text;
 
-    @Column(name = "likes")
-    private Long likes;
 
     @Column(name = "upload_date")
     private LocalDateTime uploadDate= LocalDateTime.now();
@@ -51,34 +50,42 @@ public class Community {
     private List<Drawing> drawingList = new ArrayList<>();
 
 
-    public CommunityDTO toDto(){
+    public CommunityDTO toDto(CommunityLikeRepository communityLikeRepository){
         CommunityDTO communityDTO =  new CommunityDTO();
         communityDTO.setText(this.text);
-        communityDTO.setLikes(this.likes);
         communityDTO.setUploadDate(this.uploadDate);
         communityDTO.setModifyDate(this.modifyDate);
         communityDTO.setUser(this.user.getNickName());
+
         List<String> drawingList1 = new ArrayList<>();
-        for(Drawing data :drawingList){
+        for(Drawing data : drawingList){
             drawingList1.add(data.getImgUrl());
         }
         communityDTO.setDrawingList(drawingList1);
+
+        long likesCount = communityLikeRepository.countByCommunity(this);
+        communityDTO.setLikes(likesCount);
+
         return communityDTO;
     }
 
 
-    public CommunityDetailDTO ToDto(){
+    public CommunityDetailDTO ToDto(CommunityLikeRepository communityLikeRepository) {
         CommunityDetailDTO communityDetailDTO = new CommunityDetailDTO();
         communityDetailDTO.setText(this.text);
-        communityDetailDTO.setLikes(this.likes);
         communityDetailDTO.setUploadDate(this.uploadDate);
         communityDetailDTO.setModifyDate(this.modifyDate);
         communityDetailDTO.setUser(this.user.getNickName());
+
+        long likesCount = communityLikeRepository.countByCommunity(this);
+        communityDetailDTO.setLikes(likesCount);
+
         List<String> drawingList1 = new ArrayList<>();
-        for(Drawing data :drawingList){
+        for (Drawing data : drawingList) {
             drawingList1.add(data.getImgUrl());
         }
         communityDetailDTO.setDrawingList(drawingList1);
+
         List<String> commentUser1 = new ArrayList<>();
         List<String> commentText1 = new ArrayList<>();
         List<LocalDateTime> creationDateList1 = new ArrayList<>();
@@ -88,13 +95,13 @@ public class Community {
             commentText1.add(data.getText());
             creationDateList1.add(data.getCreationDate());
         }
+
         communityDetailDTO.setCommentUser(commentUser1);
         communityDetailDTO.setCommentText(commentText1);
         communityDetailDTO.setCreationDateList(creationDateList1);
 
         return communityDetailDTO;
     }
-
 
 
 }
