@@ -66,7 +66,7 @@ public class ArtistGalleryController {
             @RequestBody ArtistGalleryAddDTO dto,
             @AuthenticationPrincipal User user
     ) {
-        System.out.println("🎨 등록 요청 관리자 ID: " + user.getUserId());
+        System.out.println(" 등록 요청 관리자 ID: " + user.getUserId());
 
         ArtistGallery saved = artistGalleryService.createGallery(dto);
 

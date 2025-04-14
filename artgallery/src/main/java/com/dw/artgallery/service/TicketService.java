@@ -3,6 +3,7 @@ package com.dw.artgallery.service;
 import com.dw.artgallery.DTO.TicketAddDTO;
 import com.dw.artgallery.DTO.TicketDTO;
 import com.dw.artgallery.DTO.TicketTotalDTO;
+import com.dw.artgallery.exception.InvalidRequestException;
 import com.dw.artgallery.model.Artist;
 import com.dw.artgallery.model.ArtistGallery;
 import com.dw.artgallery.model.Ticket;
@@ -63,6 +64,16 @@ public class TicketService {
     public void addTicket(Long artistGalleryId, TicketAddDTO dto, User user) {
         ArtistGallery gallery = artistGalleryRepository.findById(artistGalleryId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 전시를 찾을 수 없습니다: " + artistGalleryId));
+
+        LocalDate selectDate = dto.getSelectDate();
+
+        if (selectDate.isBefore(gallery.getStartDate()) || selectDate.isAfter(gallery.getEndDate())) {
+            throw new InvalidRequestException("전시 기간 외의 날짜는 선택할 수 없습니다.");
+        }
+
+        if (!selectDate.isAfter(LocalDate.now())) {
+            throw new InvalidRequestException("관람일 하루 전까지만 티켓을 구매할 수 있습니다.");
+        }
 
         Ticket ticket = new Ticket();
         ticket.setUser(user);

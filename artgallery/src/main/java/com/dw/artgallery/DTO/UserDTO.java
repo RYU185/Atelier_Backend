@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Setter
 @ToString
 public class UserDTO {
+    // 회원가입
     private String userId;
     private String password;
     private String nickName;
