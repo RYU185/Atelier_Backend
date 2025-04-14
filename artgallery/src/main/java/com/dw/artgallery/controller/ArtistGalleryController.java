@@ -59,7 +59,7 @@ public class ArtistGalleryController {
         return new ResponseEntity<>(artistGalleryService.getExpectedArtistGallery(), HttpStatus.OK);
     }
 
-    // ArtistGallery 추가
+    // ArtistGallery 추가 (관리자만)
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArtistGalleryDetailDTO> createGallery(
@@ -73,7 +73,7 @@ public class ArtistGalleryController {
         return ResponseEntity.ok(saved.TODTO());
     }
 
-    // 마감일 수정
+    // 마감일 수정 (관리자만)
     @PutMapping("/deadline/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateDeadline(
