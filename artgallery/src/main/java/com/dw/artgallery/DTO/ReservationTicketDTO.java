@@ -33,7 +33,7 @@ public class ReservationTicketDTO {
                 reservation.getReserveDate().getDate(),
                 reservation.getReserveTime().getTime().toString(),
                 artistNameList,
-                reservation.getHeadCount()
+                reservation.getHeadcount()
         );
     }
 }
