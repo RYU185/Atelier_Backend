@@ -46,8 +46,14 @@ public class TokenProvider implements InitializingBean {
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
+        String authorities = authentication.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority())
+                .reduce((a, b) -> a + "," + b)
+                .orElse("");
+
         return Jwts.builder()
                 .setSubject(authentication.getName()) // userId
+                .claim(AUTHORITIES_KEY, authorities) // ✅ 권한 추가!
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();

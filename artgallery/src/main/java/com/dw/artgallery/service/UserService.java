@@ -52,7 +52,7 @@ public class UserService {
         }
 
         // 2. 기본 권한 (USER) 가져오기
-        Authority authority = authorityRepository.findByAuthorityName("USER")
+        Authority authority = authorityRepository.findByAuthorityName("ROLE_USER")  // "USER" → "ROLE_USER"로 변경
                 .orElseThrow(() -> new ResourceNotFoundException("권한을 찾을 수 없습니다."));
 
         // 3. 비밀번호 암호화
@@ -70,9 +70,9 @@ public class UserService {
                 LocalDate.now(),
                 userDTO.getPoint(),
                 userDTO.getGender(),
-                authority
+                authority,
+                userDTO.getPhone() // 🔹 추가
         );
-
         // 5. 저장 후 DTO 변환
         return userRepository.save(user).toDTO();
     }
@@ -177,6 +177,7 @@ public class UserService {
                 user.getEmail(),
                 user.getBirthday(),
                 user.getAddress(),
+                user.getPhone(), // 🔹 추가
                 user.getEnrolmentDate(),
                 user.getPoint(),
                 user.getGender()

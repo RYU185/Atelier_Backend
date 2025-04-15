@@ -19,6 +19,7 @@ public class UserDTO {
     private String email;
     private LocalDate birthday;
     private String address;
+    private String phone;
     private LocalDate enrolmentDate;
     private double point;
     private Gender gender;

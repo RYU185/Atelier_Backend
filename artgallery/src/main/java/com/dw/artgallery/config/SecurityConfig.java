@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/ws/**").permitAll()
                         // 정적 및 Swagger 리소스
                         .requestMatchers("/*.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/user/login", "/api/user/register", "/api/user/logout").permitAll()
 
                         // 공개 API
                         .requestMatchers("/api/art/**").permitAll()
@@ -53,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/review/**").authenticated()
                         .requestMatchers("/api/ticket/**").authenticated()
                         .requestMatchers("/api/contacts/**").authenticated()
+                        .requestMatchers("/api/user/me").authenticated()
 
                         // 유저 전용
                         .requestMatchers("/api/chat-room/**").hasRole("USER")

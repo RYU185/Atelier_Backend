@@ -1,28 +1,27 @@
 INSERT INTO authority (authority_name) VALUES ('ROLE_ADMIN');
 INSERT INTO authority (authority_name) VALUES ('ROLE_USER');
 
-INSERT INTO user ( user_id, password, nickname, real_name, email, birthday, address, enrolment_date, point,gender,user_authority, is_artist)
+INSERT INTO user (user_id, password, nickname, real_name, email, birthday, address, enrolment_date, point, phone, gender, user_authority, is_artist)
 VALUES
-('admin', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '관리자', '관리자', 'admin@gallery.com', '1985-05-05', '서울특별시 강남구', '2023-09-20', 9999, 'MALE', 'ROLE_ADMIN', false),
-('steve12', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '스티브', '스티브', 'steve12.yoon@example.com', '1997-01-29', '울산광역시 남구', '2023-12-01', 300, 'FEMALE', 'ROLE_USER', false),
-('artlover01', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '몽환토끼', '김은지', 'eunji.kim@example.com', '1992-06-15', '서울특별시 마포구', '2023-11-02', 1200, 'FEMALE', 'ROLE_USER', false),
-('drawmaster', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '선과빛', '이재훈', 'jaehoon.lee@example.com', '1987-03-21', '부산광역시 해운대구', '2024-01-10', 980, 'MALE', 'ROLE_USER', false),
-('catncanvas', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '고양이화가', '정다혜', 'dahye.jung@example.com', '1995-09-12', '경기도 성남시', '2023-12-25', 1500, 'FEMALE', 'ROLE_USER', false),
-('dreamybrush', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '몽환붓터치', '최성민', 'seongmin.choi@example.com', '1990-11-03', '인천광역시 미추홀구', '2024-02-02', 430, 'MALE', 'ROLE_USER', false),
-('galleryqueen', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '갤러리여왕', '박지은', 'jieun.park@example.com', '1988-08-08', '대구광역시 수성구', '2023-10-15', 2450, 'FEMALE', 'ROLE_USER', false),
-('modernline', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '현대선', '송민호', 'minho.song@example.com', '1993-02-17', '광주광역시 북구', '2024-03-05', 720, 'MALE', 'ROLE_USER', false),
-('yoonverse', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '윤의세계', '윤슬기', 'seulgi.yoon@example.com', '1997-01-29', '울산광역시 남구', '2023-12-01', 300, 'FEMALE', 'ROLE_USER', false),
-('artist01', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '자연화가', '김하늘', 'kim.haneul@example.com', '1989-04-11', '강원도 춘천시', '2023-07-15', 2100, 'FEMALE', 'ROLE_USER', true),
-('artist02', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '디아트', '이준서', 'junseo.lee@example.com', '1990-06-25', '서울특별시 종로구', '2023-08-20', 1800, 'MALE', 'ROLE_USER', true),
-('artist03', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '감정화가', '박서연', 'seoyeon.park@example.com', '1992-03-13', '경기도 고양시', '2023-09-01', 1570, 'FEMALE', 'ROLE_USER', true),
-('artist04', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '컬러마스터', '최민준', 'minjun.choi@example.com', '1988-12-30', '부산광역시 사하구', '2023-09-05', 1940, 'MALE', 'ROLE_USER', true),
-('artist05', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '동양의눈', '정예린', 'yerin.jung@example.com', '1994-10-10', '전라남도 순천시', '2023-09-15', 2030, 'FEMALE', 'ROLE_USER', true),
-('artist06', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '내면화가', '한도윤', 'doyoon.han@example.com', '1991-01-08', '경기도 평택시', '2023-10-01', 1750, 'MALE', 'ROLE_USER', true),
-('artist07', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '몽환풍경', '윤지후', 'jihuu.yoon@example.com', '1993-07-27', '강원도 원주시', '2023-10-10', 1650, 'MALE', 'ROLE_USER', true),
-('artist08', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '현대비판', '서하람', 'haram.seo@example.com', '1996-05-02', '대전광역시 중구', '2023-10-20', 1850, 'FEMALE', 'ROLE_USER', true),
-('artist09', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '빛의조율자', '장하늘', 'haneul.jang@example.com', '1986-09-18', '세종특별자치시', '2023-11-01', 2230, 'FEMALE', 'ROLE_USER', true),
-('artist10', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '사운드마스터', '배유진', 'yujin.bae@example.com', '1995-02-19', '제주특별자치도 제주시', '2023-11-10', 2370, 'FEMALE', 'ROLE_USER', true);
-
+('admin', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '관리자', '관리자', 'admin@gallery.com', '1985-05-05', '서울특별시 강남구', '2023-09-20', 9999, '010-1234-5678', 'MALE', 'ROLE_ADMIN', false),
+('steve12', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '스티브', '스티브', 'steve12.yoon@example.com', '1997-01-29', '울산광역시 남구', '2023-12-01', 300, '010-5151-1244', 'FEMALE', 'ROLE_USER', false),
+('artlover01', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '몽환토끼', '김은지', 'eunji.kim@example.com', '1992-06-15', '서울특별시 마포구', '2023-11-02', 1200, '010-1524-1412', 'FEMALE', 'ROLE_USER', false),
+('drawmaster', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '선과빛', '이재훈', 'jaehoon.lee@example.com', '1987-03-21', '부산광역시 해운대구', '2024-01-10', 980, '010-5515-1514', 'MALE', 'ROLE_USER', false),
+('catncanvas', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '고양이화가', '정다혜', 'dahye.jung@example.com', '1995-09-12', '경기도 성남시', '2023-12-25', 1500, '010-6615-2511', 'FEMALE', 'ROLE_USER', false),
+('dreamybrush', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '몽환붓터치', '최성민', 'seongmin.choi@example.com', '1990-11-03', '인천광역시 미추홀구', '2024-02-02', 430, '010-7612-1242', 'MALE', 'ROLE_USER', false),
+('galleryqueen', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '갤러리여왕', '박지은', 'jieun.park@example.com', '1988-08-08', '대구광역시 수성구', '2023-10-15', 2450, '010-5151-1442', 'FEMALE', 'ROLE_USER', false),
+('modernline', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '현대선', '송민호', 'minho.song@example.com', '1993-02-17', '광주광역시 북구', '2024-03-05', 720, '010-1112-1223', 'MALE', 'ROLE_USER', false),
+('yoonverse', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '윤의세계', '윤슬기', 'seulgi.yoon@example.com', '1997-01-29', '울산광역시 남구', '2023-12-01', 300, '010-4123-6611', 'FEMALE', 'ROLE_USER', false),
+('artist01', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '자연화가', '김하늘', 'kim.haneul@example.com', '1989-04-11', '강원도 춘천시', '2023-07-15', 2100,  '010-1111-1111', 'FEMALE', 'ROLE_USER', true),
+('artist02', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '디아트', '이준서', 'junseo.lee@example.com', '1990-06-25', '서울특별시 종로구', '2023-08-20', 1800, '010-2222-3333', 'MALE', 'ROLE_USER', true),
+('artist03', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '감정화가', '박서연', 'seoyeon.park@example.com', '1992-03-13', '경기도 고양시', '2023-09-01', 1570, '010-3333-2222', 'FEMALE', 'ROLE_USER', true),
+('artist04', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '컬러마스터', '최민준', 'minjun.choi@example.com', '1988-12-30', '부산광역시 사하구', '2023-09-05', 1940, '010-1541-2222', 'MALE', 'ROLE_USER', true),
+('artist05', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '동양의눈', '정예린', 'yerin.jung@example.com', '1994-10-10', '전라남도 순천시', '2023-09-15', 2030, '010-5555-5555', 'FEMALE', 'ROLE_USER', true),
+('artist06', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '내면화가', '한도윤', 'doyoon.han@example.com', '1991-01-08', '경기도 평택시', '2023-10-01', 1750, '010-1423-1212', 'MALE', 'ROLE_USER', true),
+('artist07', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '몽환풍경', '윤지후', 'jihuu.yoon@example.com', '1993-07-27', '강원도 원주시', '2023-10-10', 1650, '010-3131-1313', 'MALE', 'ROLE_USER', true),
+('artist08', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '현대비판', '서하람', 'haram.seo@example.com', '1996-05-02', '대전광역시 중구', '2023-10-20', 1850, '010-4141-4141', 'FEMALE', 'ROLE_USER', true),
+('artist09', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '빛의조율자', '장하늘', 'haneul.jang@example.com', '1986-09-18', '세종특별자치시', '2023-11-01', 2230, '010-6161-5151', 'FEMALE', 'ROLE_USER', true),
+('artist10', '$2b$12$A0kgVpplgbH3ZZ1E89441eacUXljTTt7nP8I3RdLtW0P6/CXdEnCm', '사운드마스터', '배유진', 'yujin.bae@example.com', '1995-02-19', '제주특별자치도 제주시', '2023-11-10', 2370, '010-1313-4141', 'FEMALE', 'ROLE_USER', true);
 
 INSERT INTO artist (id, name, profile_img, description, is_deleted ,user_id )
 VALUES

@@ -13,7 +13,9 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:5173")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowCredentials(true);
+                .allowedHeaders("*")  // 모든 헤더 허용
+                .allowCredentials(true)
+                .maxAge(3600);  // preflight 요청 캐시 시간 설정
     }
 
     @Value("${file.upload-dir}")

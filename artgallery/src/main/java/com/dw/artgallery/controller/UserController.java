@@ -65,6 +65,13 @@ public class UserController {
         return ResponseEntity.ok("로그아웃 성공");
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<UserGetDTO> getMyInfo(Authentication authentication) {
+        String userId = authentication.getName();
+        return ResponseEntity.ok(userService.getUserById(userId));
+    }
+
     //  모든 회원 조회 (관리자만 가능)
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
