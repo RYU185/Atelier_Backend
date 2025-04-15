@@ -50,4 +50,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     """)
     List<Reservation> findAllByGalleryId(@Param("galleryId") Long galleryId);
 
+
+    @Query("""
+    SELECT r FROM Reservation r
+    WHERE r.reservationStatus = 'RESERVED'
+    """)
+    List<Reservation> findAllReserved();
 }
+
+
