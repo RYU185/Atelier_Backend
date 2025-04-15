@@ -19,6 +19,7 @@ public class ReservationUserSummaryDTO {
     private String email;
     private LocalDate reserveDate;
     private LocalTime reserveTime;
+    private int headcount;
     private String status;
 
     public static ReservationUserSummaryDTO fromEntity(Reservation reservation) {
@@ -28,6 +29,7 @@ public class ReservationUserSummaryDTO {
                 reservation.getUser().getEmail(),
                 reservation.getReserveTime().getReserveDate().getDate(),
                 reservation.getReserveTime().getTime(),
+                reservation.getHeadcount(),
                 reservation.getReservationStatus().name()
         );
     }

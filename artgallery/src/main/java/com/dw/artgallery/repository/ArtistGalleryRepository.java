@@ -21,4 +21,6 @@ public interface ArtistGalleryRepository extends JpaRepository <ArtistGallery,Lo
 
     @Query("SELECT a FROM ArtistGallery a WHERE a.startDate > :today")
     List<ArtistGallery> findExpectedGallery(@Param("today") LocalDate today);
+
+    List<ArtistGallery> findByTitleContainingIgnoreCase(String title);
 }

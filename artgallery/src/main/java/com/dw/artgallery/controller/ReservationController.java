@@ -1,6 +1,7 @@
 package com.dw.artgallery.controller;
 
 import com.dw.artgallery.DTO.*;
+import com.dw.artgallery.enums.SortOrder;
 import com.dw.artgallery.model.ReserveDate;
 import com.dw.artgallery.service.ReservationService;
 import lombok.RequiredArgsConstructor;
@@ -108,4 +109,28 @@ public class ReservationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 전시회별 예약자 명단 조회
+    @GetMapping("/admin/users/by-gallery/{galleryId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ReservationUserSummaryDTO>> getReservationsByGallery(@PathVariable Long galleryId) {
+        return new ResponseEntity<>(reservationService.getReservationsByGallery(galleryId), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/summary/gallery")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ExhibitionReservationSummaryDTO>> getGalleryReservationSummary() {
+        return new ResponseEntity<>(reservationService.getAllGalleryReservationSummaries(), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/summary/gallery")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ExhibitionReservationSummaryDTO>> searchAndSortGallerySummary(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) SortOrder sort // required = false : 파라미터를 필수로 넘기지 않아도 된다.
+    ) {
+        return new ResponseEntity<>(
+                reservationService.searchAndSortGallerySummary(title, sort),
+                HttpStatus.OK
+        );
+    }
 }

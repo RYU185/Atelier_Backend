@@ -2,6 +2,7 @@ package com.dw.artgallery.service;
 
 import com.dw.artgallery.DTO.*;
 import com.dw.artgallery.enums.ReservationStatus;
+import com.dw.artgallery.enums.SortOrder;
 import com.dw.artgallery.exception.InvalidRequestException;
 import com.dw.artgallery.exception.PermissionDeniedException;
 import com.dw.artgallery.exception.ResourceNotFoundException;
@@ -14,7 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -210,6 +215,70 @@ public class ReservationService {
 
         reserveDateRepository.delete(reserveDate);
     }
+
+    // 날짜별 통계
+    // TreeMap, Collectors -> groupingBy 사용
+    public List<ReservationStatDTO> getStatByDate(){
+        List<Reservation> reservations = reservationRepository.findAll();
+
+        return reservations.stream()
+                .collect(Collectors.groupingBy(
+                        r-> r.getReserveTime().getReserveDate().getDate(),
+                        TreeMap::new,
+                        Collectors.summingInt(Reservation::getHeadcount)
+                ))
+                .entrySet().stream()
+                .map(e-> new ReservationStatDTO(e.getKey().toString(),e.getValue()))
+                .toList();
+    }
+
+    // 전시회별 예약자 명단 조회
+    @Transactional
+    public List<ReservationUserSummaryDTO> getReservationsByGallery(Long galleryId) {
+        List<Reservation> reservations = reservationRepository.findAllByGalleryId(galleryId);
+        return reservations.stream()
+                .map(ReservationUserSummaryDTO::fromEntity)
+                .toList();
+    }
+
+    // 전시회별 현황(예약포함) 조회
+    public List<ExhibitionReservationSummaryDTO> getAllGalleryReservationSummaries() {
+        List<ArtistGallery> galleries = artistGalleryRepository.findAll();
+
+        return galleries.stream()
+                .map(ExhibitionReservationSummaryDTO::fromEntity)
+                .toList();
+    }
+
+    // 전시회별 제목 검색 + 누적 예약자수 오름차순/내림차순 정렬
+    public List<ExhibitionReservationSummaryDTO> searchAndSortGallerySummary(String title, SortOrder sort) {
+        List<ArtistGallery> galleries;
+
+        if (title != null && !title.isBlank()) {
+            galleries = artistGalleryRepository.findByTitleContainingIgnoreCase(title);
+        } else {
+            galleries = artistGalleryRepository.findAll();
+        }
+
+        List<ExhibitionReservationSummaryDTO> dtoList = galleries.stream()
+                .map(ExhibitionReservationSummaryDTO::fromEntity)
+                .toList();
+
+        if (sort == SortOrder.ASC) {
+            dtoList.sort(Comparator.comparingInt(ExhibitionReservationSummaryDTO::getTotalReserved));
+            // Comparator : 정렬 기준을 숫자로 줄 수 있는 자바 인터페이스
+            // Comparator.compare~ : 각 DTO 에서 getTotalReserved 값을 꺼내 정렬해라
+        } else if (sort == SortOrder.DESC) {
+            dtoList.sort(Comparator.comparingInt(ExhibitionReservationSummaryDTO::getTotalReserved).reversed()); // reversed : 원래 오름차순이면 내림차순으로 반전
+        }
+
+        return dtoList;
+    }
+
+
+
+
+
 
 
 }

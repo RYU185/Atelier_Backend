@@ -45,6 +45,9 @@ public class ArtistGallery {
     @Column(name = "deadline")
     private LocalDate deadline;
 
+    @OneToMany(mappedBy = "artistGallery", cascade = CascadeType.ALL)
+    private List<ReserveDate> reserveDates = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(name = "artist_gallery_artist",
             joinColumns = @JoinColumn(name = "artist_gallery_id"),
