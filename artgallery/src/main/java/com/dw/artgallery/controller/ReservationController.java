@@ -82,14 +82,14 @@ public class ReservationController {
     @GetMapping("/availability/{reserveTimeId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ReserveAvailabilityDTO> getAvailability(@PathVariable Long reserveTimeId) {
-        return ResponseEntity.ok(reservationService.getAvailability(reserveTimeId));
+        return new ResponseEntity<>(reservationService.getAvailability(reserveTimeId), HttpStatus.OK);
     }
 
     // 날짜 선택시 해당 예약 가능 시간 조회
     @GetMapping("/available-times")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<ReserveTimeDTO>> getAvailableTimes(@RequestParam LocalDate date) {
-        return ResponseEntity.ok(reservationService.getAvailableTimesByDate(date));
+        return new ResponseEntity<>(reservationService.getAvailableTimesByDate(date), HttpStatus.OK);
     }
 
     @PutMapping("/admin/reserve-date/{id}")
@@ -116,7 +116,14 @@ public class ReservationController {
         return new ResponseEntity<>(reservationService.getReservationsByGallery(galleryId), HttpStatus.OK);
     }
 
-    @GetMapping("/admin/summary/gallery")
+    //
+    @GetMapping("/admin/summary/gallery/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ExhibitionReservationSummaryDTO>> getGalleryReservationSummary() {
+        return new ResponseEntity<>(reservationService.getAllGalleryReservationSummaries(), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/summary/gallery/search")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ExhibitionReservationSummaryDTO>> searchAndSortGallerySummary(
             @RequestParam(required = false) String title,
@@ -128,11 +135,35 @@ public class ReservationController {
         );
     }
 
+    @GetMapping("/admin/statistics/count/by-date")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ReservationStatDTO>> getStatByDate() {
+        return new ResponseEntity<>(reservationService.getStatByDate(), HttpStatus.OK);
+    }
+
     @GetMapping("/admin/statistics/trend/by-date")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ReservationTrendDTO>> getReservationTrendByDate() {
         return new ResponseEntity<>(
                 reservationService.getReservationTrendByDate(),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/admin/statistics/trend/by-month")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ReservationTrendDTO>> getTrendByMonth() {
+        return new ResponseEntity<>(
+                reservationService.getReservationTrendByMonth(),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/admin/statistics/count/by-weekday")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ReservationStatDTO>> getStatByWeekday() {
+        return new ResponseEntity<>(
+                reservationService.getReservationStatsByWeekday(),
                 HttpStatus.OK
         );
     }

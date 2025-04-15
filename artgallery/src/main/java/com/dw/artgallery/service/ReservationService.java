@@ -13,10 +13,10 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -133,8 +133,6 @@ public class ReservationService {
     // 예약 취소
     @Transactional
     public ReservationResponseDTO cancelReservation(Long reservationId, String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("유저를 찾을 수 없습니다."));
 
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ResourceNotFoundException("예약 정보를 찾을 수 없습니다."));
@@ -204,6 +202,8 @@ public class ReservationService {
 
         ArtistGallery artistGallery = reserveDate.getArtistGallery();
         artistGallery.setDeadline(dto.getNewDeadline());
+
+        artistGalleryRepository.save(artistGallery);
     }
 
     @Transactional
@@ -217,7 +217,7 @@ public class ReservationService {
     // 날짜별 통계
     // TreeMap, Collectors -> groupingBy 사용
     public List<ReservationStatDTO> getStatByDate(){
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAllReserved();
 
         return reservations.stream()
                 .collect(Collectors.groupingBy(
@@ -308,9 +308,66 @@ public class ReservationService {
         return result;
     }
 
+    public List<ReservationTrendDTO> getReservationTrendByMonth() {
+        List<Reservation> reservations = reservationRepository.findAllReserved();
 
+        Map<String, Integer> monthlyMap = reservations.stream()
+                .collect(Collectors.groupingBy(
+                        r -> {
+                            LocalDate date = r.getReserveTime().getReserveDate().getDate();
+                            return date.getYear() + "." + String.format("%02d", date.getMonthValue());
+                        },
+                        TreeMap::new,
+                        Collectors.summingInt(Reservation::getHeadcount)
+                ));
 
+        List<ReservationTrendDTO> result = new ArrayList<>();
+        int cumulative = 0;
+        Integer prev = null;
 
+        for (Map.Entry<String, Integer> entry : monthlyMap.entrySet()) {
+            int thisMonth = entry.getValue();
+            cumulative += thisMonth;
+            int diff = (prev != null) ? thisMonth - prev : 0;
 
+            result.add(new ReservationTrendDTO(
+                    entry.getKey(),  // "2025.04"
+                    cumulative,
+                    diff
+            ));
+
+            prev = thisMonth;
+        }
+
+        return result;
+    }
+
+    public List<ReservationStatDTO> getReservationStatsByWeekday() {
+        List<Reservation> reservations = reservationRepository.findAllReserved();
+
+        Map<DayOfWeek, Integer> weekdayMap = reservations.stream()
+                .collect(Collectors.groupingBy(
+                        r -> r.getReserveTime().getReserveDate().getDate().getDayOfWeek(),
+                        () -> new EnumMap<>(DayOfWeek.class),
+                        // EnumMap: 요일 기준 정렬
+                        Collectors.summingInt(Reservation::getHeadcount)
+                ));
+
+        // 일요일부터 고정 정렬
+        List<DayOfWeek> weekdayOrder = List.of(
+                DayOfWeek.SUNDAY,
+                DayOfWeek.MONDAY,
+                DayOfWeek.TUESDAY,
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY,
+                DayOfWeek.FRIDAY,
+                DayOfWeek.SATURDAY
+        );
+
+        return weekdayOrder.stream()
+                .filter(weekdayMap::containsKey) // 실제 예약 존재하는 요일만
+                .map(d -> new ReservationStatDTO(d.name(), weekdayMap.get(d)))
+                .toList();
+    }
 
 }

@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @Setter
 public class ReservationRequestDTO {
     // 예약 화면
-    private Long reserveDateId;
     private Long reserveTimeId;
     private int headcount;
 }
