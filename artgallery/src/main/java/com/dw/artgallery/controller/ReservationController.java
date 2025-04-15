@@ -118,12 +118,6 @@ public class ReservationController {
 
     @GetMapping("/admin/summary/gallery")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ExhibitionReservationSummaryDTO>> getGalleryReservationSummary() {
-        return new ResponseEntity<>(reservationService.getAllGalleryReservationSummaries(), HttpStatus.OK);
-    }
-
-    @GetMapping("/admin/summary/gallery")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ExhibitionReservationSummaryDTO>> searchAndSortGallerySummary(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) SortOrder sort // required = false : 파라미터를 필수로 넘기지 않아도 된다.
@@ -133,4 +127,6 @@ public class ReservationController {
                 HttpStatus.OK
         );
     }
+
+
 }
