@@ -73,6 +73,7 @@ public class UserGallery {
 
     public UserGalleryDTO ToDTO(){
         UserGalleryDTO userGalleryDTO = new UserGalleryDTO();
+        userGalleryDTO.setId(this.id);
         userGalleryDTO.setTitle(this.title);
         userGalleryDTO.setDescription(this.description);
         userGalleryDTO.setPosterUrl(this.posterUrl);

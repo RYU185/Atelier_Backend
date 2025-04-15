@@ -62,6 +62,7 @@ public class ArtistGallery {
 
     public ArtistGalleryDTO toDto() {
         ArtistGalleryDTO artistGalleryDTO = new ArtistGalleryDTO();
+        artistGalleryDTO.setId(this.id);
         artistGalleryDTO.setTitle(this.title);
         artistGalleryDTO.setPosterUrl(this.posterUrl);
         artistGalleryDTO.setDescription(this.description);

@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class ArtistGalleryDTO {
+    private Long id;
     private String title;
     private String posterUrl;
     private String description;
