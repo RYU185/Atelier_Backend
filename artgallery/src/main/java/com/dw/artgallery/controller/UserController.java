@@ -72,6 +72,14 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<String> updateMyInfo(@RequestBody UserDTO userDTO, Authentication authentication) {
+        String userId = authentication.getName();
+        userService.updateUser(userId, userDTO);
+        return ResponseEntity.ok("회원 정보 수정 완료");
+    }
+
     //  모든 회원 조회 (관리자만 가능)
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")

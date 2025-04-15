@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,6 +96,23 @@ public class UserService {
     //  로그아웃
     public void logoutUser(HttpSession session) {
         session.invalidate(); // 세션 무효화
+    }
+
+    // 회원정보수정
+    public void updateUser(String userId, UserDTO dto) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다."));
+
+        if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+        user.setRealName(dto.getRealName());
+        user.setPhone(dto.getPhone());
+        user.setAddress(dto.getAddress());
+        user.setEmail(dto.getEmail());
+        user.setGender(dto.getGender());
+
+        userRepository.save(user);
     }
 
     // 모든 유저 조회
