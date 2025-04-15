@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/ws/**").permitAll()
                         // 정적 및 Swagger 리소스
                         .requestMatchers("/*.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
 

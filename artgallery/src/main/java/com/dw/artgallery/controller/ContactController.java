@@ -31,7 +31,7 @@ public class ContactController {
 
     // 모든 문의 조회 - 관리자만 접근 가능
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<ContactDTO>> getAllContacts() {
         return new ResponseEntity<>(contactService.getAllContacts(), HttpStatus.OK);
     }

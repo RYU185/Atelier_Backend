@@ -20,40 +20,38 @@ import java.util.stream.Collectors;
 public class ContactService {
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     // 문의 생성
     @Transactional
     public ContactDTO createContact(ContactDTO contactDTO) {
         try {
-            // 로그 기록
             log.info("문의 생성 시도 - 이름: {}, 이메일: {}", contactDTO.getName(), contactDTO.getEmail());
 
-            // DTO를 엔티티로 변환
             Contact contact = contactDTO.toEntity();
-            contact.setCreatedDate(LocalDateTime.now());  // 생성일 설정
-            contact.setStatus("대기중");                  // 상태 설정
+            contact.setCreatedDate(LocalDateTime.now());
+            contact.setStatus("대기중");
 
-            // 로그인한 사용자인 경우
             if (contactDTO.getUserId() != null) {
                 User user = userRepository.findById(contactDTO.getUserId())
-                        .orElseThrow(() -> {
-                            log.error("사용자를 찾을 수 없음 - userId: {}", contactDTO.getUserId());
-                            return new RuntimeException("User not found");
-                        });
-                contact.setUser(user);  // 사용자 정보 설정
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+                contact.setUser(user);
             }
 
-            // 문의 저장
             Contact savedContact = contactRepository.save(contact);
             log.info("문의 생성 완료 - ID: {}", savedContact.getId());
-            return ContactDTO.toDTO(savedContact);  // DTO로 변환하여 반환
+
+            // ⭐ 웹소켓 알림 전송
+            notificationService.sendContactNotification(contact.getName(), contact.getTitle());
+
+            return ContactDTO.toDTO(savedContact);
+
         } catch (Exception e) {
-            // 에러 로깅
-            log.error("문의 생성 실패 - 이름: {}, 이메일: {}, 에러: {}",
-                    contactDTO.getName(), contactDTO.getEmail(), e.getMessage());
+            log.error("문의 생성 실패 - 이름: {}, 이메일: {}, 에러: {}", contactDTO.getName(), contactDTO.getEmail(), e.getMessage());
             throw e;
         }
     }
+
     // 문의 조회
     public ContactDTO getContact(Long id) {
         try {
