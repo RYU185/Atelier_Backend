@@ -316,17 +316,6 @@ VALUES
 ('기대 이상으로 만족했어요. 다음에 다른 굿즈도 살게요!', 'yoonverse', 7, '2025-04-05', false),
 ('아기자기하고 감성적인 디자인이 너무 마음에 들어요.', 'catncanvas', 8, '2025-02-22', false);
 
-INSERT INTO ticket ( count, select_date, artist_gallery_id, purchase_date, user_id,is_delete)
-VALUES
-(2, '2024-05-01', 1, '2024-04-15','catncanvas', false),
-(1, '2024-08-01', 3, '2024-07-25', 'yoonverse', false),
-(4, '2024-06-15', 2, '2024-05-30','galleryqueen', false),
-(3, '2024-11-01', 5, '2024-10-20', 'yoonverse', false),
-(1, '2024-09-10', 4, '2024-08-30','catncanvas', false),
-(2, '2025-01-05', 6, '2024-12-20','artlover01', false),
-(5, '2025-03-10', 7, '2025-03-01','artlover01', false),
-(2, '2024-10-15', 8, '2024-10-01','galleryqueen', false);
-
 
 INSERT INTO artist_gallery_art (artist_gallery_id, art_id)
 VALUES

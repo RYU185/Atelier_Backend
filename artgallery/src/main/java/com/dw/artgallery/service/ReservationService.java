@@ -52,8 +52,10 @@ public class ReservationService {
             throw new InvalidRequestException("해당 날짜에 이미 예약이 완료되어 있습니다.");
         }
 
+        int headCount = reservationRequestDTO.getHeadcount();
+
         try{
-            reserveDate.reserve();
+            reserveDate.reserve(headCount);
             reserveDateRepository.save(reserveDate);
 
             Reservation reservation = new Reservation();
@@ -109,9 +111,10 @@ public class ReservationService {
 
         try {
             ReserveDate oldDate = reservation.getReserveTime().getReserveDate();
+            int headCount = reservation.getHeadcount();
 
-            oldDate.cancel();
-            newDate.reserve();
+            oldDate.cancel(headCount);
+            newDate.reserve(headCount);
 
             reserveDateRepository.saveAll(List.of(oldDate, newDate));
 
@@ -142,7 +145,9 @@ public class ReservationService {
 
         try {
             ReserveDate reserveDate = reservation.getReserveTime().getReserveDate();
-            reserveDate.cancel();
+            int headcount = reservation.getHeadcount();
+
+            reserveDate.cancel(headcount);
             reserveDateRepository.save(reserveDate);
 
             return ReservationResponseDTO.fromEntity(reservation);
@@ -164,12 +169,10 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReserveAvailabilityDTO getAvailability(Long reserveTimeId){
-        ReserveTime time = reserveTimeRepository.findByIdWithFullJoin(reserveTimeId)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간을 찾을 수 없습니다."));
-        ReserveDate date = time.getReserveDate();
-        return new ReserveAvailabilityDTO(date.getCapacity(), date.getReservedCount(), date.isFull());
+    public ReserveAvailabilityDTO getAvailability(Long reserveTimeId) {
+        return reserveTimeRepository.findAvailability(reserveTimeId);
     }
+
 
     public List<ReserveTimeDTO> getAvailableTimesByDate(LocalDate date) {
         List<ReserveTime> times = reserveTimeRepository.findByReserveDate_Date(date);

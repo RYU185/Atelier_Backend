@@ -1,5 +1,6 @@
 package com.dw.artgallery.DTO;
 
+import com.dw.artgallery.model.ReserveDate;
 import com.dw.artgallery.model.ReserveTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,10 +19,13 @@ public class ReserveTimeDTO {
     private boolean full;
 
     public static ReserveTimeDTO fromEntity(ReserveTime time) {
+        ReserveDate reserveDate = time.getReserveDate();
+        boolean isFull = reserveDate.getRemaining() <= 0;
+
         return new ReserveTimeDTO(
                 time.getId(),
                 time.getTime(),
-                time.getReserveDate().isFull()
+                isFull
         );
     }
 }

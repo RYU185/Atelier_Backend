@@ -1,5 +1,6 @@
 package com.dw.artgallery.model;
 
+import com.dw.artgallery.exception.InvalidRequestException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,21 +42,18 @@ public class ReserveDate {
     @OneToMany(mappedBy = "reserveDate", cascade = CascadeType.ALL)
     private List<ReserveTime> timeSlots;
 
-    public boolean isFull() {
-        return reservedCount >= capacity;
+    @Column(name = "remaining", nullable = false)
+    private int remaining;
+
+    public void reserve(int headcount) {
+        if (this.remaining < headcount) {
+            throw new InvalidRequestException("정원이 부족합니다.");
+        }
+        this.remaining -= headcount;
     }
 
-    public boolean canReserve() {
-        return reservedCount < capacity;
-    }
-
-    public void reserve() {
-        if (isFull()) throw new IllegalStateException("정원이 초과되었습니다.");
-        this.reservedCount++;
-    }
-
-    public void cancel() {
-        if (reservedCount > 0) this.reservedCount--;
+    public void cancel(int headcount) {
+        this.remaining += headcount;
     }
     // 동시성 : 여러개의 작업이 동시에 일어나는 것처럼 보이는 상태
     // 여러 스레드가 동시에 코드를 실행하면 공유된 메모리 상에서 충돌함

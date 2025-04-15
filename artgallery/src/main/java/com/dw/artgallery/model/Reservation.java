@@ -41,6 +41,9 @@ public class Reservation {
     @Column
     private LocalDateTime canceledAt;
 
+    @Column(name = "headcount", nullable = false)
+    private int headcount;
+
     public void cancel() {
         this.reservationStatus = ReservationStatus.CANCELED;
         this.canceledAt = LocalDateTime.now();

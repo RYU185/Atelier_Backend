@@ -1,5 +1,6 @@
 package com.dw.artgallery.repository;
 
+import com.dw.artgallery.DTO.ReserveAvailabilityDTO;
 import com.dw.artgallery.model.ReserveTime;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,5 +29,16 @@ public interface ReserveTimeRepository extends JpaRepository<ReserveTime, Long> 
     ORDER BY rt.time ASC
 """)
     List<ReserveTime> findByReserveDate_Date(@Param("date") LocalDate date);
+
+    @Query("""
+      SELECT new com.dw.artgallery.DTO.ReserveAvailabilityDTO(
+        d.capacity, d.remaining, (d.remaining <= 0)
+      )
+      FROM ReserveTime t
+      JOIN t.reserveDate d
+      WHERE t.id = :reserveTimeId
+    """)
+    ReserveAvailabilityDTO findAvailability(@Param("reserveTimeId") Long reserveTimeId);
+
 }
 
