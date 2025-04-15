@@ -4,6 +4,7 @@ import com.dw.artgallery.DTO.NoticeDTO;
 import com.dw.artgallery.service.NoticeService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,5 +42,18 @@ public class NoticeController {
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteNotice(@PathVariable Long id) {
         return noticeService.deleteNotice(id);
+    }
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public NoticeDTO updateNotice(@PathVariable Long id, @RequestBody NoticeDTO dto) {
+        return noticeService.updateNotice(id, dto);
+    }
+    @GetMapping("/paged")
+    public Page<NoticeDTO> getPagedNotices(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam(defaultValue = "createdDate,desc") String sort
+    ) {
+        return noticeService.getPagedNotices(page, size, sort);
     }
 }

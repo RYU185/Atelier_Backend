@@ -14,10 +14,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -40,7 +43,6 @@ public class UserController {
         return new ResponseEntity<>(userService.registerUser(userDTO), HttpStatus.CREATED);
     }
 
-    //  로그인 (JWT 반환)
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
@@ -49,10 +51,20 @@ public class UserController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 🔥 JWT 생성
         String jwt = tokenProvider.createToken(authentication);
 
-        return ResponseEntity.ok(jwt);
+        // 🔥 권한(ROLE_ADMIN / ROLE_USER 등) 가져오기
+        String role = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("ROLE_USER");
+
+        // 🔁 token + role 같이 보내기
+        Map<String, String> response = new HashMap<>();
+        response.put("token", jwt);
+        response.put("role", role);
+
+        return ResponseEntity.ok(response);
     }
 
     // 로그아웃 (세션 기반, JWT 사용 시 서버에서 처리 필요 없음)

@@ -36,6 +36,7 @@ public class SecurityConfig {
                         // 정적 및 Swagger 리소스
                         .requestMatchers("/*.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/user/login", "/api/user/register", "/api/user/logout").permitAll()
+                        .requestMatchers("/api/notices", "/api/notices/*", "/api/notices/search").permitAll()
 
                         // 공개 API
                         .requestMatchers("/api/art/**").permitAll()
@@ -44,7 +45,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/usergallery/**").permitAll()
                         .requestMatchers("/api/community/**").permitAll()
                         .requestMatchers("/api/goods/**").permitAll()
-                        .requestMatchers("/api/notices/**").permitAll()
                         .requestMatchers("/api/contacts").permitAll()
                         .requestMatchers("/api/user/login", "/api/user/register", "/api/user/logout").permitAll()
 

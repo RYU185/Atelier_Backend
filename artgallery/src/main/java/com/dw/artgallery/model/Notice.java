@@ -11,21 +11,19 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Entity
-@Table(name="notice")
+@Table(name = "notice")
 public class Notice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="title", length = 3000,nullable = false)
-    private String noticetitle;
+    @Column(name = "title", length = 3000, nullable = false)
+    private String title; // ✅ 수정 완료
 
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(name="created_date", nullable = false)
+    @Column(name = "created_date", nullable = false)
     private LocalDate createdDate = LocalDate.now();
-
-
 }
