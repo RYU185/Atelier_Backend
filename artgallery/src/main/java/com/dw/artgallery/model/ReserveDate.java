@@ -17,8 +17,8 @@ import java.util.List;
 @Table(name = "reserve_date", uniqueConstraints = {@UniqueConstraint(columnNames = {"artist_gallery_id","date"})})
 //@UniqueConstraint: 하나의 전시에 오로지 하나의 날짜만 들어가도록 막아주는 제약조건
 @Entity
-
 public class ReserveDate {
+    // 전시 일정
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -60,5 +60,6 @@ public class ReserveDate {
     // 예약시스템에서 "남은 자리 1개" 일때
     // A와 B가 동시에 예약
     // A도 성공 , B도 성공 -> 자리가 한개인데 2명 모두 예약됨
-    // -> 레포지토리 측에 락(@Lock) 필요: 한명만 예약처리, 다른사람은 그 작업이 끝날때까지 기다려야함
+    // -> 레포지토리 측에 락 필요: 한명만 예약처리, 다른사람은 그 작업이 끝날때까지 기다려야함
+    // 비관적 락 (@Lock) 필요
 }

@@ -1,6 +1,7 @@
 package com.dw.artgallery.controller;
 
 import com.dw.artgallery.DTO.*;
+import com.dw.artgallery.model.ReserveDate;
 import com.dw.artgallery.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -88,6 +89,23 @@ public class ReservationController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<ReserveTimeDTO>> getAvailableTimes(@RequestParam LocalDate date) {
         return ResponseEntity.ok(reservationService.getAvailableTimesByDate(date));
+    }
+
+    @PutMapping("/admin/reserve-date/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> updateReserveDate(
+            @PathVariable Long id,
+            @RequestBody ReserveDateUpdateDTO dto
+    ) {
+        reservationService.updateReserveDate(id, dto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/admin/reserve-date/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteReserveDate(@PathVariable Long id) {
+        reservationService.deleteReserveDate(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

@@ -21,6 +21,7 @@ public class ReservationSummaryDTO {
     private String galleryTitle;
     private LocalDate date;
     private LocalTime time;
+    private int headcount;
     private ReservationStatus status;
 
     public static ReservationSummaryDTO fromEntity(Reservation reservation){
@@ -29,6 +30,7 @@ public class ReservationSummaryDTO {
                 reservation.getReserveTime().getReserveDate().getArtistGallery().getTitle(),
                 reservation.getReserveTime().getReserveDate().getDate(),
                 reservation.getReserveTime().getTime(),
+                reservation.getHeadcount(),
                 reservation.getReservationStatus()
         );
     }

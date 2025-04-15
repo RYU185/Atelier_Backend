@@ -23,6 +23,7 @@ public class ReservationService {
     private final ReserveTimeRepository reserveTimeRepository;
     private final ReserveDateRepository reserveDateRepository;
     private final UserRepository userRepository;
+    private final ArtistGalleryRepository artistGalleryRepository;
 
     // 예약
     @Transactional
@@ -169,15 +170,46 @@ public class ReservationService {
                 .toList();
     }
 
+
+    // 특정시간 실시간 잔여 수량 확인
     public ReserveAvailabilityDTO getAvailability(Long reserveTimeId) {
         return reserveTimeRepository.findAvailability(reserveTimeId);
     }
 
 
+    // 하루전체 선택가능한 시간 목록조회
     public List<ReserveTimeDTO> getAvailableTimesByDate(LocalDate date) {
         List<ReserveTime> times = reserveTimeRepository.findByReserveDate_Date(date);
         return times.stream()
                 .map(ReserveTimeDTO::fromEntity)
                 .toList();
     }
+
+    @Transactional
+    public void updateReserveDate(Long reserveDateId, ReserveDateUpdateDTO dto){
+        ReserveDate reserveDate = reserveDateRepository.findById(reserveDateId)
+                .orElseThrow(()-> new ResourceNotFoundException("예약 날짜를 찾을 수 없습니다."));
+
+        int reserved = reserveDate.getCapacity() - reserveDate.getRemaining();
+        if (dto.getNewCapacity() < reserved ){
+            throw new InvalidRequestException("현재 예약된 인원("+reserved+"명)보다 적은 인원으로 설정할 수 없습니다.");
+
+        }
+
+        reserveDate.setCapacity(dto.getNewCapacity());
+        reserveDate.setRemaining(dto.getNewCapacity() - reserved);
+
+        ArtistGallery artistGallery = reserveDate.getArtistGallery();
+        artistGallery.setDeadline(dto.getNewDeadline());
+    }
+
+    @Transactional
+    public void deleteReserveDate(Long id) {
+        ReserveDate reserveDate = reserveDateRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("예약 날짜를 찾을 수 없습니다."));
+
+        reserveDateRepository.delete(reserveDate);
+    }
+
+
 }

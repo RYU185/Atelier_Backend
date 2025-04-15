@@ -90,8 +90,8 @@ public class ArtistGalleryService {
             ReserveDate reserveDate = new ReserveDate();
             reserveDate.setArtistGallery(savedGallery);
             reserveDate.setDate(date);
-            reserveDate.setCapacity(30); // 기본 정원
-            reserveDate.setReservedCount(0);
+            reserveDate.setCapacity(100); // 기본 정원
+            reserveDate.setRemaining(100);
             reserveDateRepository.save(reserveDate);
 
             // 기본 시간 설정 (10~17시)
