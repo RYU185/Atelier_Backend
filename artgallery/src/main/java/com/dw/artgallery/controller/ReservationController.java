@@ -128,5 +128,15 @@ public class ReservationController {
         );
     }
 
+    @GetMapping("/admin/statistics/trend/by-date")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ReservationTrendDTO>> getReservationTrendByDate() {
+        return new ResponseEntity<>(
+                reservationService.getReservationTrendByDate(),
+                HttpStatus.OK
+        );
+    }
+
+
 
 }

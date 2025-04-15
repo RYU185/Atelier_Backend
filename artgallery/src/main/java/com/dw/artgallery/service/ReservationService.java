@@ -15,9 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -275,6 +273,40 @@ public class ReservationService {
         return dtoList;
     }
 
+    // 날짜별 예약 증감 계산
+    @Transactional(readOnly = true)
+    public List<ReservationTrendDTO> getReservationTrendByDate() {
+        List<Reservation> reservations = reservationRepository.findAllReserved();
+
+        // 날짜별 headcount 합산 (오름차순 TreeMap)
+        Map<LocalDate, Integer> dailyMap = reservations.stream()
+                .collect(Collectors.groupingBy(
+                        r -> r.getReserveTime().getReserveDate().getDate(),
+                        TreeMap::new,
+                        Collectors.summingInt(Reservation::getHeadcount)
+                ));
+
+        List<ReservationTrendDTO> result = new ArrayList<>();
+        int cumulative = 0; // 누적 예약자 수 초기화
+        Integer prev = null; // 전날 예약 수
+
+        // Entry<Key, Value> entryName : dailyMap.entrySet() : 날짜를 한 줄 씩 순서대로 처리
+        for (Map.Entry<LocalDate, Integer> entry : dailyMap.entrySet()) {
+            int today = entry.getValue(); // 오늘 예약자수에
+            cumulative += today; // 누적을 더함
+            int diff = (prev != null) ? today - prev : 0; // 전날과 비교해서 증감 수치를 계산
+
+            result.add(new ReservationTrendDTO(
+                    entry.getKey().toString(),  // 날짜를 label
+                    cumulative,
+                    diff
+            ));
+
+            prev = today; // diff 계산후 업데이트
+        }
+
+        return result;
+    }
 
 
 
