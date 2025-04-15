@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -64,6 +65,9 @@ public class User implements UserDetails {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Artist artistProfile;
+
+    @OneToMany(mappedBy = "user")
+    private List<RealDrawing> drawings;
 
     @PrePersist
     protected void onCreate() {
