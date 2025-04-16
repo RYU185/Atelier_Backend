@@ -17,7 +17,7 @@ public class RealDrawingResponseDTO {
     private String imageData;
     private Boolean isTemporary;
     private String title;
-    private String description;
+
     private LocalDateTime updatedAt;
     private String userId;
 }
