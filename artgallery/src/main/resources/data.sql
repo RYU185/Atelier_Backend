@@ -252,16 +252,35 @@ INSERT INTO goods (id, name, description, price, stock) VALUES
 
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (1, 'goods1_1.png');
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (1, 'goods1_2.png');
+
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, 'goods2_1.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, 'goods2_2.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, 'goods2_3.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, 'goods2_4.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, 'goods2_5.png');
+
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, 'goods3_1.png');
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, 'goods3_2.png');
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, 'goods3_3.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, 'goods3_4.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, 'goods3_5.png');
+
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (4, 'goods4_1.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (4, 'goods4_2.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (4, 'goods4_3.png');
+
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (5, 'goods5_1.png');
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (5, 'goods5_2.png');
+
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (6, 'goods6_1.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (6, 'goods6_2.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (6, 'goods6_3.png');
+
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (7, 'goods7_1.png');
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (7, 'goods7_2.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (7, 'goods7_3.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (7, 'goods7_4.png');
+
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (8, 'goods8_1.png');
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (8, 'goods8_2.png');
 INSERT INTO goods_images (goods_id, img_url_list) VALUES (8, 'goods8_3.png');
