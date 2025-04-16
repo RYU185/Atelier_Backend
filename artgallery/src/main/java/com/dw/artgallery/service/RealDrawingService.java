@@ -21,9 +21,7 @@ public class RealDrawingService {
         drawing.setImageData(dto.getImageData());
         drawing.setIsTemporary(dto.getIsTemporary());
         drawing.setTitle(dto.getTitle());
-
         drawing.setUser(user);
-
         return realDrawingRepository.save(drawing);
     }
 

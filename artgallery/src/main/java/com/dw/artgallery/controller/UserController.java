@@ -43,6 +43,7 @@ public class UserController {
         return new ResponseEntity<>(userService.registerUser(userDTO), HttpStatus.CREATED);
     }
 
+    // 로그인
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
