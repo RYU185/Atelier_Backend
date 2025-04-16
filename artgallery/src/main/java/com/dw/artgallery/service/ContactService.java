@@ -28,22 +28,29 @@ public class ContactService {
         try {
             log.info("문의 생성 시도 - 이름: {}, 이메일: {}", contactDTO.getName(), contactDTO.getEmail());
 
+            // 1. DTO → Entity
             Contact contact = contactDTO.toEntity();
             contact.setCreatedDate(LocalDateTime.now());
             contact.setStatus("대기중");
 
-            if (contactDTO.getUserId() != null) {
-                User user = userRepository.findById(contactDTO.getUserId())
+            // 2. 유저 연결
+            if (contactDTO.getUserId() != null && !contactDTO.getUserId().isEmpty()) {
+                log.debug("🔗 userId 전달됨: {}", contactDTO.getUserId());
+                User user = userRepository.findByUserId(contactDTO.getUserId())
                         .orElseThrow(() -> new RuntimeException("User not found"));
-                contact.setUser(user);
+                contact.setUser(user); // ✅ 핵심 연결 지점
+            } else {
+                log.debug("⚠️ userId가 null 또는 빈 문자열임 (비회원 문의)");
             }
 
+            // 3. 저장
             Contact savedContact = contactRepository.save(contact);
             log.info("문의 생성 완료 - ID: {}", savedContact.getId());
 
-            // ⭐ 웹소켓 알림 전송
+            // 4. 웹소켓 알림 전송
             notificationService.sendContactNotification(contact.getName(), contact.getTitle());
 
+            // 5. 응답 DTO 반환
             return ContactDTO.toDTO(savedContact);
 
         } catch (Exception e) {

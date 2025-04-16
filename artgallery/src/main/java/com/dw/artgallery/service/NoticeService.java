@@ -56,7 +56,7 @@ public class NoticeService {
         }
 
         Notice notice = new Notice();
-        notice.setId(dto.getId());
+
         notice.setTitle(dto.getTitle());      // ✅ 필드명 수정
         notice.setContent(dto.getContent());
         notice.setCreatedDate(LocalDate.now());
