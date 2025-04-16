@@ -53,19 +53,20 @@ public class UserController {
 
         String jwt = tokenProvider.createToken(authentication);
 
-        // 🔥 권한(ROLE_ADMIN / ROLE_USER 등) 가져오기
+        // "ROLE_ADMIN" → "ADMIN"
         String role = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst()
-                .orElse("ROLE_USER");
+                .orElse("ROLE_USER")
+                .replace("ROLE_", "");
 
-        // 🔁 token + role 같이 보내기
         Map<String, String> response = new HashMap<>();
         response.put("token", jwt);
         response.put("role", role);
 
         return ResponseEntity.ok(response);
     }
+
 
     // 로그아웃 (세션 기반, JWT 사용 시 서버에서 처리 필요 없음)
     @PostMapping("/logout")
