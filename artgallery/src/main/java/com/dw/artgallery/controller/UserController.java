@@ -1,8 +1,6 @@
 package com.dw.artgallery.controller;
 
-import com.dw.artgallery.DTO.LoginDTO;
-import com.dw.artgallery.DTO.UserDTO;
-import com.dw.artgallery.DTO.UserGetDTO;
+import com.dw.artgallery.DTO.*;
 import com.dw.artgallery.jwt.TokenProvider;
 import com.dw.artgallery.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -77,6 +75,29 @@ public class UserController {
             session.invalidate(); // 세션 무효화
         }
         return ResponseEntity.ok("로그아웃 성공");
+    }
+
+    // 이메일로 아이디 찾기 API
+    @PostMapping("/findid")
+    public ResponseEntity<FindIdDTO.ResponseDTO> findIdByEmail(@RequestBody FindIdDTO.RequestDTO request) {
+        // 이메일로 아이디를 찾고 결과 반환
+        FindIdDTO.ResponseDTO response = userService.findIdByEmail(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/send-authcode")
+    public ResponseEntity<FindPwDTO.ResponseDTO> sendAuthCode(@RequestBody FindPwDTO.SendCodeRequest request) {
+        return ResponseEntity.ok(userService.sendDummyAuthCode(request));
+    }
+
+    @PostMapping("/verify-authcode")
+    public ResponseEntity<FindPwDTO.ResponseDTO> verifyAuthCode(@RequestBody FindPwDTO.VerifyCodeRequest request) {
+        return ResponseEntity.ok(userService.verifyDummyAuthCode(request));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<FindPwDTO.ResponseDTO> resetPassword(@RequestBody FindPwDTO.ResetPwRequest request) {
+        return ResponseEntity.ok(userService.resetPassword(request));
     }
 
     @GetMapping("/me")

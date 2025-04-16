@@ -29,14 +29,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors().and()
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // 세션을 상태 비유지로 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/ws/**").permitAll()
-                        // 정적 및 Swagger 리소스
+                        .requestMatchers("/ws/**").permitAll()  // WebSocket 경로는 인증 없이 허용
+                        // Swagger 및 정적 리소스 경로는 인증 없이 허용
                         .requestMatchers("/*.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/user/login", "/api/user/register", "/api/user/logout").permitAll()
-                        .requestMatchers("/api/notices", "/api/notices/*", "/api/notices/search").permitAll()
+                        .requestMatchers("/api/user/login", "/api/user/register", "/api/user/logout").permitAll()  // 로그인, 회원가입, 로그아웃은 인증 없이 허용
+                        .requestMatchers("/api/notices", "/api/notices/*", "/api/notices/search").permitAll()  // 공지사항 조회는 인증 없이 허용
+                        .requestMatchers("/api/user/send-authcode", "/api/user/verify-authcode", "/api/user/reset-password").permitAll()
+                        // 아이디 찾기 API는 누구나 접근 가능 (인증 없이 접근)
+                        .requestMatchers("/api/user/findid").permitAll()  // 수정된 경로: /api/users/find-id
 
                         // 공개 API
                         .requestMatchers("/api/art/**").permitAll()
@@ -46,7 +50,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/community/**").permitAll()
                         .requestMatchers("/api/goods/**").permitAll()
                         .requestMatchers("/api/contacts").permitAll()
-                        .requestMatchers("/api/user/login", "/api/user/register", "/api/user/logout").permitAll()
 
                         // 인증된 사용자 API
                         .requestMatchers("/api/comment/**").authenticated()
@@ -56,32 +59,34 @@ public class SecurityConfig {
                         .requestMatchers("/api/contacts/**").authenticated()
                         .requestMatchers("/api/user/me").authenticated()
 
-                        // 유저 전용
+                        // 유저 전용 API
                         .requestMatchers("/api/chat-room/**").hasRole("USER")
                         .requestMatchers("/api/cart/**").hasRole("USER")
                         .requestMatchers("/api/purchase/**").hasRole("USER")
 
-                        // 관리자 전용
+                        // 관리자 전용 API
                         .requestMatchers("/api/cart").hasRole("ADMIN")
                         .requestMatchers("/api/purchase/all", "/api/purchase/user/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasRole("ADMIN")
                         .requestMatchers("/api/goods/admin").hasRole("ADMIN")
 
-                        // 업로드 접근 금지
+                        // 업로드 경로는 접근 금지
                         .requestMatchers("/uploads/**").denyAll()
 
                         // 기타 요청은 인증 필수
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated()  // 인증이 필요한 요청
                 )
-                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)  // JWT 필터를 UsernamePasswordAuthenticationFilter 이전에 추가
                 .build();
     }
 
+    // BCryptPasswordEncoder 빈 등록
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // AuthenticationManager 빈 등록
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();

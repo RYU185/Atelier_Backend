@@ -1,8 +1,6 @@
 package com.dw.artgallery.service;
 
-import com.dw.artgallery.DTO.UserDTO;
-import com.dw.artgallery.DTO.LoginDTO;
-import com.dw.artgallery.DTO.UserGetDTO;
+import com.dw.artgallery.DTO.*;
 import com.dw.artgallery.jwt.TokenProvider;
 import com.dw.artgallery.model.Authority;
 import com.dw.artgallery.model.User;
@@ -24,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -113,6 +113,65 @@ public class UserService {
         user.setGender(dto.getGender());
 
         userRepository.save(user);
+    }
+
+    public FindIdDTO.ResponseDTO findIdByEmail(FindIdDTO.RequestDTO request) {
+        // 이메일로 사용자 조회
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("해당 이메일로 등록된 사용자가 없습니다: " + request.getEmail()));
+
+        // 아이디를 반환하는 ResponseDTO 생성
+        FindIdDTO.ResponseDTO response = new FindIdDTO.ResponseDTO();
+        response.setStatus("success");
+        response.setMessage("아이디를 찾았습니다.");
+        response.setData(new FindIdDTO.ResponseDTO.FindIdDataDTO(user.getUserId()));  // userId 반환
+
+        return response;
+    }
+
+    private Map<String, String> dummyAuthCodes = new ConcurrentHashMap<>();
+
+    public FindPwDTO.ResponseDTO sendDummyAuthCode(FindPwDTO.SendCodeRequest req) {
+        User user = userRepository.findById(req.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 사용자입니다."));
+
+        if (!user.getEmail().equals(req.getEmail())) {
+            return new FindPwDTO.ResponseDTO("fail", "이메일이 일치하지 않습니다.");
+        }
+
+        // 🔹 더미 인증코드 생성 및 저장
+        String dummyCode = "123456";
+        dummyAuthCodes.put(req.getUserId(), dummyCode);
+
+        // 🔹 실제 전송은 하지 않고 응답에 포함 (FE 테스트용)
+        return new FindPwDTO.ResponseDTO("success", "인증코드: " + dummyCode);
+    }
+
+    public FindPwDTO.ResponseDTO verifyDummyAuthCode(FindPwDTO.VerifyCodeRequest req) {
+        String storedCode = dummyAuthCodes.get(req.getUserId());
+
+        if (storedCode == null) {
+            return new FindPwDTO.ResponseDTO("fail", "인증코드가 존재하지 않습니다. 먼저 요청을 보내세요.");
+        }
+
+        if (!storedCode.equals(req.getCode())) {
+            return new FindPwDTO.ResponseDTO("fail", "인증코드가 일치하지 않습니다.");
+        }
+
+        // 인증 성공 후 더미코드 제거
+        dummyAuthCodes.remove(req.getUserId());
+
+        return new FindPwDTO.ResponseDTO("success", "인증이 완료되었습니다.");
+    }
+
+    public FindPwDTO.ResponseDTO resetPassword(FindPwDTO.ResetPwRequest req) {
+        User user = userRepository.findById(req.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+
+        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        userRepository.save(user);
+
+        return new FindPwDTO.ResponseDTO("success", "비밀번호가 성공적으로 변경되었습니다.");
     }
 
     // 모든 유저 조회
