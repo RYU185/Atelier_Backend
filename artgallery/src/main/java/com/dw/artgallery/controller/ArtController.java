@@ -12,7 +12,11 @@
     import org.springframework.http.ResponseEntity;
     import org.springframework.security.access.prepost.PreAuthorize;
     import org.springframework.web.bind.annotation.*;
+    import org.springframework.web.multipart.MultipartFile;
+    import java.io.File;
 
+
+    import java.io.IOException;
     import java.util.List;
 
     @RestController
@@ -49,10 +53,32 @@
             return ResponseEntity.ok("작품이 성공적으로 삭제되었습니다.");
         }
 
-        // 작품 추가 (관리자)
         @PostMapping("/add")
         @PreAuthorize("hasRole('ADMIN')")
-        public ResponseEntity<ArtDTO> createArt(@Valid @RequestBody ArtCreateDTO artCreateDTO) {
+        public ResponseEntity<ArtDTO> createArt(@RequestParam("file") MultipartFile file,
+                                                @Valid @RequestBody ArtCreateDTO artCreateDTO) {
+            String uploadDir = "/path/to/upload/directory";  // 실제 업로드 디렉토리 경로
+
+            // 파일 저장 처리 (예시)
+            String imgUrl = saveFile(file, uploadDir);
+
+            // artCreateDTO에 imgUrl 설정
+            artCreateDTO.setImgUrl(imgUrl);
+
+            // 작품 등록
             return new ResponseEntity<>(artService.createArt(artCreateDTO), HttpStatus.CREATED);
+        }
+
+        private String saveFile(MultipartFile file, String uploadDir) {
+            String fileName = file.getOriginalFilename();
+            String filePath = uploadDir + "/" + fileName;
+
+            try {
+                file.transferTo(new File(filePath));  // 파일 저장
+            } catch (IOException e) {
+                throw new RuntimeException("파일 저장 실패", e);
+            }
+
+            return filePath;  // 파일 경로 반환
         }
     }

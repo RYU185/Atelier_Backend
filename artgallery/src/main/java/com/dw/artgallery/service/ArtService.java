@@ -71,12 +71,11 @@ public class ArtService {
         art.setDeleted(true);
     }
 
-    // 작품 추가 (관리자)
     @Transactional
     public ArtDTO createArt(ArtCreateDTO artCreateDTO) {
         Art art = new Art();
         art.setTitle(artCreateDTO.getTitle());
-        art.setImgUrl(artCreateDTO.getImgUrl());
+        art.setImgUrl(artCreateDTO.getImgUrl());  // 파일 경로를 직접 받음
         art.setDescription(artCreateDTO.getDescription());
         art.setDeleted(false);
 
