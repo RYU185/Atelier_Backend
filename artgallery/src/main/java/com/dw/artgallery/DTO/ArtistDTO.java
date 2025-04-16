@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ArtistDTO {
-
+    private String userId;
     private Long id;
     private String name;
     private String profile_img;
@@ -24,6 +24,7 @@ public class ArtistDTO {
 
     public static ArtistDTO fromEntity(Artist artist) {
         return new ArtistDTO(
+                artist.getUser().getUserId(),
                 artist.getId(),
                 artist.getName(),
                 artist.getProfile_img(),

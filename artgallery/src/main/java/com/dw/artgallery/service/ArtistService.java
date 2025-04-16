@@ -3,9 +3,11 @@ package com.dw.artgallery.service;
 import com.dw.artgallery.DTO.ArtistDTO;
 import com.dw.artgallery.model.Artist;
 import com.dw.artgallery.model.Biography;
+import com.dw.artgallery.model.User;
 import com.dw.artgallery.repository.ArtRepository;
 import com.dw.artgallery.repository.ArtistRepository;
 import com.dw.artgallery.exception.ResourceNotFoundException;
+import com.dw.artgallery.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.util.List;
 public class ArtistService {
     private final ArtistRepository artistRepository;
     private final ArtRepository artRepository;
+    private final UserRepository userRepository;
 
     public List<ArtistDTO> getAllArtist(){
         return artistRepository.findAll().stream().map(ArtistDTO::fromEntity).toList();
@@ -57,12 +60,19 @@ public class ArtistService {
             }
 
         } else {
+
+            User user = userRepository.findById(artistDTO.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("해당 유저를 찾을 수 없습니다."));
+
             // 새로운 작가라면 수정
             artist = new Artist();
             artist.setName(artistDTO.getName());
             artist.setProfile_img(artistDTO.getProfile_img());
             artist.setDescription(artistDTO.getDescription());
             artist.setDeleted(false);
+            artist.setUser(user);
+            user.setArtist(true);
+            userRepository.save(user);
 
             if (artistDTO.getBiographyList() != null) {
                 List<Biography> bioList = artistDTO.getBiographyList().stream()
