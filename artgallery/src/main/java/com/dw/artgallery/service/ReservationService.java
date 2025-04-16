@@ -152,6 +152,9 @@ public class ReservationService {
             reserveDate.cancel(headcount);
             reserveDateRepository.save(reserveDate);
 
+            reservation.setReservationStatus(ReservationStatus.CANCELED);
+            reservationRepository.save(reservation);
+
             return ReservationResponseDTO.fromEntity(reservation);
 
         } catch (ObjectOptimisticLockingFailureException e) {
