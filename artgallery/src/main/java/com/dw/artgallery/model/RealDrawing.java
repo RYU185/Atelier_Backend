@@ -18,7 +18,8 @@ public class RealDrawing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="image_data")
+    @Column(name = "image_data", columnDefinition = "LONGTEXT")
+    @Lob
     private String imageData;
 
     @Column(name="is_temporary")
@@ -34,6 +35,7 @@ public class RealDrawing {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
 
     @PrePersist
     @PreUpdate

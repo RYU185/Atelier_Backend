@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
+
 public class RealDrawingResponseDTO {
     private Long id;
     private String imageData;
     private Boolean isTemporary;
     private String title;
-
     private LocalDateTime updatedAt;
     private String userId;
 }

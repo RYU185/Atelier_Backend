@@ -9,10 +9,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+
 public class RealDrawingRequestDTO {
     private String imageData;
     private Boolean isTemporary;
     private String title;
-
-
 }
