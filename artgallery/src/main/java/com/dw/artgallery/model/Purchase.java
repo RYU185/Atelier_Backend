@@ -29,6 +29,9 @@ public class Purchase {
     @Column(name="purchase_date",nullable = false)
     private LocalDate purchaseDate;
 
+    @Column(name="is_delete")
+    private Boolean isDelete;
+
     @OneToMany(mappedBy = "purchase" , cascade = CascadeType.ALL)
     private List<PurchaseGoods> purchaseGoodsList = new ArrayList<>();
 }

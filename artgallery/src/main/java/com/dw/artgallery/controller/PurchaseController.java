@@ -22,10 +22,13 @@ public class PurchaseController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping
-    public ResponseEntity<PurchaseResponseDTO> createPurchase(@RequestBody List<GoodsCartDTO> cartItems, Authentication authentication){
+    public ResponseEntity<PurchaseResponseDTO> purchaseSelectedCarts(
+            @RequestBody List<Long> cartIdList,
+            Authentication authentication
+    ) {
         String userId = authentication.getName();
-        PurchaseResponseDTO purchaseResponseDTO = purchaseService.createPurchase(userId, cartItems);
-        return new ResponseEntity<>(purchaseResponseDTO, HttpStatus.CREATED);
+        PurchaseResponseDTO response = purchaseService.purchaseSelectedCarts(userId, cartIdList);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -35,15 +38,17 @@ public class PurchaseController {
         return new ResponseEntity<>(purchaseService.getMyPurchaseHistory(userId), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/all")
-    public ResponseEntity<List<PurchaseSummaryDTO>> getAllPurchaseHistory(){
-        return new ResponseEntity<>(purchaseService.getAllPurchaseHistory(), HttpStatus.OK);
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/delete/{purchaseId}")
+    public ResponseEntity<Void> logicallyDeletePurchase(@PathVariable Long purchaseId, Authentication authentication) {
+        String userId = authentication.getName();
+        purchaseService.logicallyDeletePurchase(userId, purchaseId);
+        return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PurchaseSummaryDTO>> getPurchaseHistoryByUserId(@PathVariable String userId){
-        return new ResponseEntity<>(purchaseService.getPurchaseHistoryByUserId(userId), HttpStatus.OK);
-    }
+
+
+
+
+
 }
