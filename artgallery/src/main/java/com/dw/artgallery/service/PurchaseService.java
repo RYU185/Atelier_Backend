@@ -1,19 +1,14 @@
 package com.dw.artgallery.service;
 
-import com.dw.artgallery.DTO.GoodsCartDTO;
+
 import com.dw.artgallery.DTO.PurchaseResponseDTO;
 import com.dw.artgallery.DTO.PurchaseSummaryDTO;
-import com.dw.artgallery.model.Goods;
-import com.dw.artgallery.model.Purchase;
-import com.dw.artgallery.model.PurchaseGoods;
-import com.dw.artgallery.model.User;
-import com.dw.artgallery.repository.GoodsRepository;
-import com.dw.artgallery.repository.PurchaseGoodsRepository;
-import com.dw.artgallery.repository.PurchaseRepository;
-import com.dw.artgallery.repository.UserRepository;
-import com.dw.artgallery.exception.PermissionDeniedException;
-import com.dw.artgallery.exception.ResourceNotFoundException;
+import com.dw.artgallery.model.*;
+import com.dw.artgallery.repository.*;
+
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,69 +23,99 @@ public class PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final UserRepository userRepository;
     private final GoodsRepository goodsRepository;
-    private final GoodsCartService goodsCartService;
+    private final GoodsCartRepository goodsCartRepository;
     private final PurchaseGoodsRepository purchaseGoodsRepository;
 
 
     @Transactional
-    public PurchaseResponseDTO createPurchase(String userId, List<GoodsCartDTO> cartItems){
-        User currentUser = userRepository.findByUserId(userId)
-                .orElseThrow(()-> new PermissionDeniedException("존재하지 않는 사용자입니다."));
+    public PurchaseResponseDTO purchaseSelectedCarts(String userId, List<Long> cartIdList) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId));
 
-        Purchase purchase = new Purchase();
 
-        purchase.setUser(currentUser);
-        purchase.setPurchaseDate(LocalDate.now());
+        List<GoodsCart> carts = goodsCartRepository.findAllById(cartIdList);
+
+        if (carts.isEmpty()) {
+            throw new IllegalArgumentException("선택된 장바구니 항목이 존재하지 않습니다.");
+        }
+
+
+        for (GoodsCart cart : carts) {
+            if (!cart.getUser().getUserId().equals(user.getUserId())) {
+                throw new SecurityException("다른 사용자의 장바구니 항목을 구매할 수 없습니다.");
+            }
+        }
 
         List<PurchaseGoods> purchaseGoodsList = new ArrayList<>();
         int totalPrice = 0;
 
-        for (GoodsCartDTO cartItem : cartItems){
-            Goods goods = goodsRepository.findById(cartItem.getGoodsId())
-                    .orElseThrow(()->new ResourceNotFoundException("존재하지 않는 상품입니다."));
+        for (GoodsCart cart : carts) {
+            Goods goods = cart.getGoods();
+            int quantity = cart.getAmount();
 
-            int quantity = cartItem.getAmount();
-            int price = goods.getPrice();
+            if (goods.getStock() < quantity) {
+                throw new IllegalArgumentException("재고 부족: " + goods.getName());
+            }
+
+
+            goods.setStock(goods.getStock() - quantity);
 
             PurchaseGoods purchaseGoods = new PurchaseGoods();
-            purchaseGoods.setPurchase(purchase);
             purchaseGoods.setGoods(goods);
             purchaseGoods.setQuantity(quantity);
-            purchaseGoods.setPrice(price);
+            purchaseGoods.setPrice(goods.getPrice());
+            purchaseGoods.setIsDelete(false);
 
             purchaseGoodsList.add(purchaseGoods);
-            totalPrice += price*quantity;
+            totalPrice += goods.getPrice() * quantity;
         }
 
+
+        Purchase purchase = new Purchase();
+        purchase.setUser(user);
         purchase.setTotalPrice(totalPrice);
+        purchase.setPurchaseDate(LocalDate.now());
+        purchase.setIsDelete(false);
         purchase.setPurchaseGoodsList(purchaseGoodsList);
 
-        Purchase savedPurchase = purchaseRepository.save(purchase);
+        for (PurchaseGoods pg : purchaseGoodsList) {
+            pg.setPurchase(purchase);
+        }
 
-        List<Long> cartIds = cartItems.stream().map(GoodsCartDTO::getId).toList();
-        goodsCartService.deleteGoodsCartByIds(cartIds, userId);
+        purchaseRepository.save(purchase);
 
-        return PurchaseResponseDTO.fromEntity(savedPurchase);
+        goodsCartRepository.deleteAllByIdIn(cartIdList);
+
+        return PurchaseResponseDTO.fromEntity(purchase);
     }
 
-    public List<PurchaseSummaryDTO> getMyPurchaseHistory(String userId){
-        List<PurchaseGoods> purchaseGoodsList = purchaseGoodsRepository.findByPurchase_User_UserId(userId);
-        return purchaseGoodsList.stream().map(PurchaseSummaryDTO::fromEntity).toList();
-    }
+    public List<PurchaseSummaryDTO> getMyPurchaseHistory(String userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자 없음"));
 
-    public List<PurchaseSummaryDTO> getAllPurchaseHistory(){
-        List<PurchaseGoods> allPurchaseHistory = purchaseGoodsRepository.findAll();
-        return allPurchaseHistory.stream()
-                .map(PurchaseSummaryDTO::fromEntity)
+        List<Purchase> purchases = purchaseRepository.findByUserAndIsDeleteFalse(user);
+
+        return purchases.stream()
+                .flatMap(purchase -> purchase.getPurchaseGoodsList().stream()
+                        .filter(pg -> !Boolean.TRUE.equals(pg.getIsDelete())) // 삭제 안 된 것만
+                        .map(PurchaseSummaryDTO::fromEntity))
                 .toList();
-
     }
 
-    public List<PurchaseSummaryDTO> getPurchaseHistoryByUserId(String userId) {
-        List<PurchaseGoods> goodsList = purchaseGoodsRepository.findByPurchase_User_UserId(userId);
-        return goodsList.stream()
-                .map(PurchaseSummaryDTO::fromEntity)
-                .toList();
+    @Transactional
+    public void logicallyDeletePurchase(String userId, Long purchaseId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자 없음"));
+
+        Purchase purchase = purchaseRepository.findById(purchaseId)
+                .orElseThrow(() -> new EntityNotFoundException("구매내역 없음"));
+
+        if (!purchase.getUser().getUserId().equals(user.getUserId())) {
+            throw new SecurityException("본인의 구매내역만 삭제할 수 있습니다.");
+        }
+
+        purchase.setIsDelete(true);
+        purchase.getPurchaseGoodsList().forEach(pg -> pg.setIsDelete(true));
     }
 
 

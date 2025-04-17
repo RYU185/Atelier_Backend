@@ -29,6 +29,9 @@ public class PurchaseGoods {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
+    @Column(name="is_delete")
+    private Boolean isDelete;
+
     @Column(name = "price", nullable = false)
     private int price;
 }
