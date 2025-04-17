@@ -162,6 +162,13 @@ public class ReservationService {
         }
     }
 
+    public List<ReserveDateDTO> getReserveDatesByGalleryId(Long galleryId) {
+        List<ReserveDate> reserveDates = reserveDateRepository.findByArtistGallery_Id(galleryId);
+        return reserveDates.stream()
+                .map(ReserveDateDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
 
     @Transactional
     public List<ReservationSummaryDTO> getMyReservations(String userId){

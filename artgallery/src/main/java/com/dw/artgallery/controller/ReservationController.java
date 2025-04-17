@@ -65,6 +65,17 @@ public class ReservationController {
         );
     }
 
+    @GetMapping("/reserve-date")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<List<ReserveDateDTO>> getReserveDatesByGallery(
+            @RequestParam Long galleryId
+    ) {
+        return new ResponseEntity<>(
+                reservationService.getReserveDatesByGalleryId(galleryId),
+                HttpStatus.OK
+        );
+    }
+
     // 마이페이지 예약 목록 확인
     @GetMapping("/my")
     @PreAuthorize("hasRole('USER')")

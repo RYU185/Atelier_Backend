@@ -86,7 +86,10 @@ public class ArtistGalleryService {
 
         ArtistGallery savedGallery = artistGalleryRepository.save(gallery);
 
-        for (LocalDate date = gallery.getStartDate(); !date.isAfter(gallery.getEndDate()); date = date.plusDays(1)) {
+        LocalDate today = LocalDate.now().plusDays(1);
+        LocalDate start = gallery.getStartDate().isAfter(today) ? gallery.getStartDate(): today;
+
+        for (LocalDate date = start; !date.isAfter(gallery.getEndDate()); date = date.plusDays(1)) {
             ReserveDate reserveDate = new ReserveDate();
             reserveDate.setArtistGallery(savedGallery);
             reserveDate.setDate(date);

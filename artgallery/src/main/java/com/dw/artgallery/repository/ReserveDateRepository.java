@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface ReserveDateRepository extends JpaRepository<ReserveDate, Long> {
@@ -17,6 +18,8 @@ public interface ReserveDateRepository extends JpaRepository<ReserveDate, Long> 
     WHERE r.id = :id
 """)
     Optional<ReserveDate> findByIdWithGalleryLock(@Param("id") Long id);
+
+    List<ReserveDate> findByArtistGallery_Id(Long galleryId);
 
     // @Lock(LockModeType.PESSIMISTIC_WRITE)
     // 비관적 락
