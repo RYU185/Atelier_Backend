@@ -19,6 +19,7 @@ public class PurchaseSummaryDTO {
     private int quantity;
     private int price;
     private LocalDate purchaseDate;
+    private Long goodsId;
 
     public static PurchaseSummaryDTO fromEntity(PurchaseGoods purchaseGoods) {
         PurchaseSummaryDTO purchaseSummaryDTO = new PurchaseSummaryDTO();
@@ -28,6 +29,7 @@ public class PurchaseSummaryDTO {
         purchaseSummaryDTO.setQuantity(purchaseGoods.getQuantity());
         purchaseSummaryDTO.setPrice(purchaseGoods.getPrice());
         purchaseSummaryDTO.setPurchaseDate(purchaseGoods.getPurchase().getPurchaseDate());
+        purchaseSummaryDTO.setGoodsId(purchaseGoods.getGoods().getId());
         return purchaseSummaryDTO;
     }
 }
