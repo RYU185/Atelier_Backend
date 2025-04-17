@@ -15,11 +15,13 @@ import java.time.LocalDate;
 public class ReserveDateDTO {
     private Long id;
     private LocalDate date;
+    private Integer remaining;
 
     public static ReserveDateDTO fromEntity(ReserveDate reserveDate){
         return new ReserveDateDTO(
                 reserveDate.getId(),
-                reserveDate.getDate()
+                reserveDate.getDate(),
+                reserveDate.getRemaining()
         );
     }
 }
