@@ -71,7 +71,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/goods/admin").hasRole("ADMIN")
 
                         // 업로드 경로는 접근 금지
-                        .requestMatchers("/uploads/**").denyAll()
+                        .requestMatchers("/uploads/**").permitAll()
 
                         // 기타 요청은 인증 필수
                         .anyRequest().authenticated()  // 인증이 필요한 요청
