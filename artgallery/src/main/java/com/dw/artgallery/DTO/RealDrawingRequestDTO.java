@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 
 public class RealDrawingRequestDTO {
+    private Long id;
     private String imageData;
     private Boolean isTemporary;
     private String title;
