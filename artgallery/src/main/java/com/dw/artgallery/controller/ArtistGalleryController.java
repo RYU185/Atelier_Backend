@@ -75,7 +75,7 @@ public class ArtistGalleryController {
 
     // 마감일 수정 (관리자만)
     @PutMapping("/deadline/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateDeadline(
             @PathVariable Long id,
             @RequestBody DeadlineDTO dto

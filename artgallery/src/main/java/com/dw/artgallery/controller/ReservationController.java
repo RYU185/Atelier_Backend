@@ -122,7 +122,7 @@ public class ReservationController {
 
     // 전시회별 예약자 명단 조회
     @GetMapping("/admin/users/by-gallery/{galleryId}")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ReservationUserSummaryDTO>> getReservationsByGallery(@PathVariable Long galleryId) {
         return new ResponseEntity<>(reservationService.getReservationsByGallery(galleryId), HttpStatus.OK);
     }

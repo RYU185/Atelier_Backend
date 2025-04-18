@@ -18,4 +18,5 @@ public class ArtistGalleryDTO {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
+    private LocalDate deadline;
 }

@@ -68,6 +68,7 @@ public class ArtistGallery {
         artistGalleryDTO.setDescription(this.description);
         artistGalleryDTO.setStartDate(this.startDate);
         artistGalleryDTO.setEndDate(this.endDate);
+        artistGalleryDTO.setDeadline(this.deadline);
         return artistGalleryDTO;
     }
 
