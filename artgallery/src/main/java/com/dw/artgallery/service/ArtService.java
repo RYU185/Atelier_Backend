@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -24,11 +25,11 @@ public class ArtService {
 
     // 전체 작품 조회
     public List<ArtDTO> getAllArt() {
-        return artRepository.findByDeletedFalse()
-                .stream()
-                .map(this::convertToDTO)
-                .toList();
+        return artRepository.findAll().stream()
+                .map(ArtDTO::fromEntity)
+                .collect(Collectors.toList());
     }
+
 
     // ID로 작품 조회
     public ArtDTO findByIdArtId(Long id) {
@@ -36,6 +37,14 @@ public class ArtService {
                 .orElseThrow(() -> new ResourceNotFoundException("Art not found with id: " + id));
         return convertToDTO(art);
     }
+
+    public List<ArtDTO> getArtByArtistId(Long artistId) {
+        return artRepository.findActiveArtByArtistId(artistId).stream()
+                .map(ArtDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+
 
     // 작품 수정
     public ArtDTO updateArt(Long id, ArtUpdateDTO artUpdateDTO) {

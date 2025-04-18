@@ -1,5 +1,6 @@
 package com.dw.artgallery.DTO;
 
+import com.dw.artgallery.model.Art;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -29,5 +30,19 @@ public class ArtDTO {
         this.isDeleted = isDeleted;
 
     }
+
+    public static ArtDTO fromEntity(Art art) {
+        return new ArtDTO(
+                art.getId(),
+                art.getTitle(),
+                art.getImgUrl(),
+                art.getDescription(),
+                art.getCompletionDate(),
+                art.getUploadDate(),
+                art.getArtist() != null ? art.getArtist().getName() : null,
+                art.getDeleted()
+        );
+    }
+
 
 }

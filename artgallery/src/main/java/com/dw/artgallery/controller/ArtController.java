@@ -40,6 +40,13 @@ public class ArtController {
         return ResponseEntity.ok(artService.findByIdArtId(id));
     }
 
+    // 특정 작가의 참여 작품 조회
+    @GetMapping("/artist/{artistId}")
+    public ResponseEntity<List<ArtDTO>> getArtByArtistId(@PathVariable Long artistId) {
+        return ResponseEntity.ok(artService.getArtByArtistId(artistId));
+    }
+
+
     // 작품 수정
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
