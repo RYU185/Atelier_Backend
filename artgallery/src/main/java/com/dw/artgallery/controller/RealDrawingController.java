@@ -7,6 +7,7 @@ import com.dw.artgallery.service.RealDrawingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +47,12 @@ public class RealDrawingController {
         return realDrawingService.getTemporaryDrawingById(id, userId);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteTemporaryDrawing(@PathVariable Long id, Authentication authentication) {
+        String userId = authentication.getName();
+        realDrawingService.deleteTemporaryDrawing(id, userId);
+        return ResponseEntity.ok("Deleted successfully");
+    }
 
 }
 

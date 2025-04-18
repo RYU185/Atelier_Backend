@@ -1,5 +1,6 @@
 package com.dw.artgallery.controller;
 
+import com.dw.artgallery.DTO.GoodsCreateDTO;
 import com.dw.artgallery.DTO.GoodsDTO;
 import com.dw.artgallery.DTO.GoodsTotalDTO;
 import com.dw.artgallery.enums.SortOrder;
@@ -7,19 +8,26 @@ import com.dw.artgallery.repository.GoodsRepository;
 import com.dw.artgallery.service.GoodsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/goods")
 public class GoodsController {
     private final GoodsService goodsService;
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     @GetMapping
     public ResponseEntity<List<GoodsDTO>> getAllGoods(){
@@ -46,11 +54,43 @@ public class GoodsController {
         return new ResponseEntity<>(goodsService.getGoodsStockById(id), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
-    public ResponseEntity<GoodsDTO> addGoods(@RequestBody GoodsDTO goodsDTO){
-        return new ResponseEntity<>(goodsService.addGoods(goodsDTO), HttpStatus.CREATED);
+
+    @PostMapping("/add")
+    public ResponseEntity<GoodsDTO> addGoods(@ModelAttribute GoodsCreateDTO dto) {
+        List<MultipartFile> files = dto.getImages();
+
+        if (files == null || files.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        File dir = new File(uploadDir);
+        if (!dir.exists()) dir.mkdirs();
+
+        List<String> imageUrls = files.stream().map(file -> {
+            String originalFilename = file.getOriginalFilename();
+            String ext = originalFilename != null && originalFilename.contains(".")
+                    ? originalFilename.substring(originalFilename.lastIndexOf("."))
+                    : "";
+
+            String newFileName = UUID.randomUUID().toString() + ext;
+            File savedFile = new File(uploadDir, newFileName);
+
+            try {
+                file.transferTo(savedFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("파일 업로드 실패");
+            }
+
+            return "/uploads/" + newFileName;
+        }).toList();
+
+        GoodsDTO newGoods = goodsService.addGoodsByImage(dto, imageUrls);
+        return new ResponseEntity<>(newGoods, HttpStatus.CREATED);
     }
+
+
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
@@ -65,7 +105,7 @@ public class GoodsController {
     }
 
     //  관리자 전용 굿즈 조회 (누적 판매량 포함)
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
     public ResponseEntity<List<GoodsTotalDTO>> getAllGoodsForAdmin() {
         return new ResponseEntity<>(goodsService.getAllGoodsForAdmin(), HttpStatus.OK);
