@@ -67,6 +67,9 @@ public class User implements UserDetails {
     private Artist artistProfile;
 
     @OneToMany(mappedBy = "user")
+    private List<Purchase> purchases;
+
+    @OneToMany(mappedBy = "user")
     private List<RealDrawing> drawings;
 
     @PrePersist
