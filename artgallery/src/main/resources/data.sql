@@ -25,16 +25,16 @@ VALUES
 
 INSERT INTO artist (id, name, profile_img, description, is_deleted ,user_id )
 VALUES
-(1, '김하늘', 'PROFILE_IMG', '자연을 주제로 한 서정적인 화풍을 가진 작가입니다.', false ,'artist01'),
-(2, '이준서', 'PROFILE_IMG', '디지털 아트와 전통 회화를 결합한 실험적 작업을 합니다.', false,'artist02'),
-(3, '박서연', 'PROFILE_IMG', '인물화를 중심으로 감정을 섬세하게 표현합니다.',false,'artist03'),
-(4, '최민준', 'PROFILE_IMG', '미니멀한 구성과 강렬한 색감이 특징입니다.',false,'artist04'),
-(5, '정예린', 'PROFILE_IMG', '동양화 기법을 현대적으로 재해석한 작품으로 주목받습니다.',false,'artist05'),
-(6, '한도윤', 'PROFILE_IMG', '추상화 작업을 통해 내면 세계를 표현합니다.', false,'artist06'),
-(7, '윤지후', 'PROFILE_IMG', '몽환적인 풍경화를 그리는 아티스트입니다.', false,'artist07'),
-(8, '서하람', 'PROFILE_IMG', '현대 사회를 비판적으로 다룬 설치미술로 활동합니다.',false,'artist08'),
-(9, '장하늘', 'PROFILE_IMG', '빛과 그림자를 활용한 독특한 분위기의 작품을 만듭니다.', false,'artist09'),
-(10,'배유진', 'PROFILE_IMG', '사운드와 영상 아트를 융합한 미디어 아티스트입니다.', false,'artist10');
+(1, '김하늘', 'artist1.png', '자연을 주제로 한 서정적인 화풍을 가진 작가입니다.', false ,'artist01'),
+(2, '이준서', 'artist2.png', '디지털 아트와 전통 회화를 결합한 실험적 작업을 합니다.', false,'artist02'),
+(3, '박서연', 'artist3.png', '인물화를 중심으로 감정을 섬세하게 표현합니다.',false,'artist03'),
+(4, '최민준', 'artist4.png', '미니멀한 구성과 강렬한 색감이 특징입니다.',false,'artist04'),
+(5, '정예린', 'artist5.png', '동양화 기법을 현대적으로 재해석한 작품으로 주목받습니다.',false,'artist05'),
+(6, '한도윤', 'artist6.png', '추상화 작업을 통해 내면 세계를 표현합니다.', false,'artist06'),
+(7, '윤지후', 'artist7.png', '몽환적인 풍경화를 그리는 아티스트입니다.', false,'artist07'),
+(8, '서하람', 'artist8.png', '현대 사회를 비판적으로 다룬 설치미술로 활동합니다.',false,'artist08'),
+(9, '장하늘', 'artist9.png', '빛과 그림자를 활용한 독특한 분위기의 작품을 만듭니다.', false,'artist09'),
+(10,'배유진', 'artist10.png', '사운드와 영상 아트를 융합한 미디어 아티스트입니다.', false,'artist10');
 
 
 
