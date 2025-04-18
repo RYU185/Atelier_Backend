@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -109,10 +110,27 @@ public class UserController {
 
     @PutMapping("/me")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<String> updateMyInfo(@RequestBody UserDTO userDTO, Authentication authentication) {
+    public ResponseEntity<?> updateMyInfo(@RequestBody UserUpdateDTO userUpdateDTO, Authentication authentication) {
         String userId = authentication.getName();
-        userService.updateUser(userId, userDTO);
-        return ResponseEntity.ok("회원 정보 수정 완료");
+
+        // 비밀번호 변경을 시도하는 경우에만 현재 비밀번호 확인
+        if (userUpdateDTO.getPassword() != null && !userUpdateDTO.getPassword().isEmpty()) {
+            if (userUpdateDTO.getCurrentPassword() == null || userUpdateDTO.getCurrentPassword().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("새 비밀번호를 설정하려면 현재 비밀번호를 입력해야 합니다.");
+            }
+            if (!userService.verifyCurrentPassword(userId, userUpdateDTO.getCurrentPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("현재 비밀번호가 일치하지 않습니다.");
+            }
+        }
+
+        try {
+            userService.updateUser(userId, userUpdateDTO);
+            return ResponseEntity.ok("회원 정보 수정 완료");
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 정보 수정 실패");
+        }
     }
 
     //  모든 회원 조회 (관리자만 가능)

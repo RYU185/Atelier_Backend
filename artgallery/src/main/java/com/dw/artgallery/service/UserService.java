@@ -99,21 +99,41 @@ public class UserService {
     }
 
     // 회원정보수정
-    public void updateUser(String userId, UserDTO dto) {
+    public void updateUser(String userId, UserUpdateDTO dto) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다."));
 
         if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
-        user.setRealName(dto.getRealName());
-        user.setPhone(dto.getPhone());
-        user.setAddress(dto.getAddress());
-        user.setEmail(dto.getEmail());
-        user.setGender(dto.getGender());
+        if (dto.getRealName() != null) {
+            user.setRealName(dto.getRealName());
+        }
+        if (dto.getPhone() != null) {
+            user.setPhone(dto.getPhone());
+        }
+        if (dto.getEmail() != null) {
+            user.setEmail(dto.getEmail());
+        }
+        if (dto.getAddress() != null) {
+            user.setAddress(dto.getAddress());
+        }
+        if (dto.getGender() != null) {
+            user.setGender(dto.getGender());
+        }
+        if (dto.getNickName() != null) {
+            user.setNickName(dto.getNickName());
+        }
 
         userRepository.save(user);
     }
+
+    public boolean verifyCurrentPassword(String userId, String currentPassword) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다."));
+        return passwordEncoder.matches(currentPassword, user.getPassword());
+    }
+
 
     public FindIdDTO.ResponseDTO findIdByEmail(FindIdDTO.RequestDTO request) {
         // 이메일로 사용자 조회
