@@ -67,6 +67,7 @@ public class ReservationService {
             reservation.setReserveTime(time);
             reservation.setReservationStatus(ReservationStatus.RESERVED);
             reservation.setCreatedAt(LocalDateTime.now());
+            reservation.setHeadcount(reservationRequestDTO.getHeadcount());
 
             return ReservationResponseDTO.fromEntity(reservationRepository.save(reservation));
         }catch (ObjectOptimisticLockingFailureException e){
