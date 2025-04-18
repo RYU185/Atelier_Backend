@@ -22,6 +22,7 @@ public class ChatMessageController {
     @MessageMapping("/chat.send") // 클라이언트 → /app/chat.send 로 전송
     public void sendMessage(@Payload ChatMessageDTO chatMessageDTO) {
 
+
         // 1. 채팅방 조회 or 생성
         ChatRoom chatRoom = chatRoomService.getOrCreateRoom(
                 chatMessageDTO.getSender(),   // Long
