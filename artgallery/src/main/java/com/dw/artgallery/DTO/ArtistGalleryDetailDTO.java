@@ -23,6 +23,8 @@ public class ArtistGalleryDetailDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private double price;
+    private LocalDate deadline;
+
     private List<String> artistList = new ArrayList<>();
 
     private List<String> artPoster = new ArrayList<>();

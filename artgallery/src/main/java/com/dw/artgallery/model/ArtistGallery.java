@@ -79,7 +79,9 @@ public class ArtistGallery {
         artistGalleryDetailDTO.setDescription(this.description);
         artistGalleryDetailDTO.setStartDate(this.startDate);
         artistGalleryDetailDTO.setEndDate(this.endDate);
+        artistGalleryDetailDTO.setDeadline(this.deadline); // ✅ 추가됨
         artistGalleryDetailDTO.setPrice(this.price);
+
         List<String> artistList1 = new ArrayList<>();
         for (Artist data : artistList) {
             artistList1.add(data.getName());
@@ -96,10 +98,12 @@ public class ArtistGallery {
             artistName1.add(data.getArtist().getName());
             completionDate1.add(data.getCompletionDate());
         }
+
         artistGalleryDetailDTO.setArtPoster(artPoster1);
         artistGalleryDetailDTO.setArtTitle(artTitle1);
         artistGalleryDetailDTO.setArtistName(artistName1);
         artistGalleryDetailDTO.setCompletionDate(completionDate1);
+
         return artistGalleryDetailDTO;
     }
 
