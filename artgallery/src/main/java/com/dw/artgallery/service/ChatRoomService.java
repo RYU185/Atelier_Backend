@@ -50,4 +50,16 @@ public class ChatRoomService {
                     return chatRoomRepository.save(room);
                 });
     }
+
+    public List<ChatRoom> getMyChatRooms(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("유저를 찾을 수 없습니다."));
+
+        if (user.isArtist()) {
+            return chatRoomRepository.findByArtist(user);
+        } else {
+            return chatRoomRepository.findByUser(user);
+        }
+    }
+
 }

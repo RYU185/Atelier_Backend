@@ -23,7 +23,10 @@ public class ChatMessageController {
     public void sendMessage(@Payload ChatMessageDTO chatMessageDTO) {
 
         // 1. 채팅방 조회 or 생성
-        ChatRoom chatRoom = chatRoomService.getOrCreateRoom(chatMessageDTO.getSender(), chatMessageDTO.getReceiver());
+        ChatRoom chatRoom = chatRoomService.getOrCreateRoom(
+                chatMessageDTO.getSender(),   // Long
+                chatMessageDTO.getReceiver()  // Long
+        );
 
         // 2. 메시지 저장
         ChatMessage saved = chatMessageService.saveMessage(chatMessageDTO, chatRoom);
