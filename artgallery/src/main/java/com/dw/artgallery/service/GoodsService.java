@@ -1,5 +1,6 @@
 package com.dw.artgallery.service;
 
+import com.dw.artgallery.DTO.GoodsCreateDTO;
 import com.dw.artgallery.DTO.GoodsDTO;
 import com.dw.artgallery.DTO.GoodsTotalDTO;
 import com.dw.artgallery.enums.SortOrder;
@@ -11,6 +12,7 @@ import com.dw.artgallery.repository.PurchaseGoodsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,18 +62,18 @@ public class GoodsService {
         return goods.getStock();
     }
 
-    public GoodsDTO addGoods(GoodsDTO goodsDTO){
-
+    public GoodsDTO addGoodsByImage(GoodsCreateDTO dto, List<String> imageUrls) {
         Goods goods = new Goods();
-        goods.setName(goodsDTO.getName());
-        goods.setImgUrlList(goodsDTO.getImgUrlList());
-        goods.setDescription(goodsDTO.getDescription());
-        goods.setPrice(goodsDTO.getPrice());
-        goods.setStock(goodsDTO.getStock());
+        goods.setName(dto.getName());
+        goods.setDescription(dto.getDescription());
+        goods.setPrice(dto.getPrice());
+        goods.setStock(dto.getStock());
+        goods.setImgUrlList(imageUrls); // 여러 장 URL 저장
 
-        Goods saveGoods = goodsRepository.save(goods);
-        return GoodsDTO.fromEntity(saveGoods);
+        Goods saved = goodsRepository.save(goods);
+        return GoodsDTO.fromEntity(saved);
     }
+
 
     public GoodsDTO updateGoods(Long id, GoodsDTO goodsDTO){
 
