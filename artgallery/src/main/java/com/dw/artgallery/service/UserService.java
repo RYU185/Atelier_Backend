@@ -280,5 +280,11 @@ public class UserService {
                 user.getGender()
         );
     }
+
+    public User getUserEntityById(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 사용자를 찾을 수 없습니다: " + userId));
+    }
+
 }
 

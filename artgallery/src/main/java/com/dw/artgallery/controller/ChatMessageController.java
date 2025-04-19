@@ -3,8 +3,10 @@ package com.dw.artgallery.controller;
 import com.dw.artgallery.DTO.ChatMessageDTO;
 import com.dw.artgallery.model.ChatRoom;
 import com.dw.artgallery.model.ChatMessage;
+import com.dw.artgallery.model.User;
 import com.dw.artgallery.service.ChatRoomService;
 import com.dw.artgallery.service.ChatMessageService;
+import com.dw.artgallery.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Controller;
 public class ChatMessageController {
 
     private final ChatRoomService chatRoomService;
+    private final UserService userService;
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -33,10 +36,12 @@ public class ChatMessageController {
         ChatMessage saved = chatMessageService.saveMessage(chatMessageDTO, chatRoom);
 
         // 3. 상대 유저에게 메시지 전송 (WebSocket 전용 queue)
+        User receiver = userService.getUserEntityById(chatMessageDTO.getReceiver());
         messagingTemplate.convertAndSendToUser(
-                chatMessageDTO.getReceiver(), // 대상 ID
-                "/queue/messages",        // 목적지
-                chatMessageDTO                // payload 그대로
+                receiver.getUserId(),
+                "/queue/messages",
+                chatMessageDTO
         );
+
     }
 }

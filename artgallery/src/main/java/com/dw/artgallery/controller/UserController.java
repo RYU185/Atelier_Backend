@@ -2,6 +2,8 @@ package com.dw.artgallery.controller;
 
 import com.dw.artgallery.DTO.*;
 import com.dw.artgallery.jwt.TokenProvider;
+import com.dw.artgallery.model.User;
+import com.dw.artgallery.repository.UserRepository;
 import com.dw.artgallery.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -14,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +31,14 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserController(UserService userService, AuthenticationManager authenticationManager, TokenProvider tokenProvider) {
+    public UserController(UserService userService, AuthenticationManager authenticationManager, TokenProvider tokenProvider, UserRepository userRepository) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
+        this.userRepository = userRepository;
     }
 
     //  회원가입
@@ -53,19 +58,25 @@ public class UserController {
 
         String jwt = tokenProvider.createToken(authentication);
 
-        // "ROLE_ADMIN" → "ADMIN"
         String role = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst()
                 .orElse("ROLE_USER")
                 .replace("ROLE_", "");
 
-        Map<String, String> response = new HashMap<>();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUsername();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
         response.put("role", role);
+        response.put("isArtist", user.isArtist());
 
         return ResponseEntity.ok(response);
     }
+
 
 
     // 로그아웃 (세션 기반, JWT 사용 시 서버에서 처리 필요 없음)
