@@ -194,6 +194,14 @@ public class UserService {
         return new FindPwDTO.ResponseDTO("success", "비밀번호가 성공적으로 변경되었습니다.");
     }
 
+    public boolean isEmailExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
+    public boolean isUserIdExists(String userId) {
+        return userRepository.findByUserId(userId).isPresent();
+    }
+
     // 모든 유저 조회
     public List<UserGetDTO> getAllUsers() {
         return userRepository.findAll()

@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/login", "/api/user/register", "/api/user/logout").permitAll()  // 로그인, 회원가입, 로그아웃은 인증 없이 허용
                         .requestMatchers("/api/notices", "/api/notices/*", "/api/notices/search").permitAll()  // 공지사항 조회는 인증 없이 허용
                         .requestMatchers("/api/user/send-authcode", "/api/user/verify-authcode", "/api/user/reset-password").permitAll()
+                        .requestMatchers("/api/user/check-id", "/api/user/check-email" ).permitAll()
                         // 아이디 찾기 API는 누구나 접근 가능 (인증 없이 접근)
                         .requestMatchers("/api/user/findid").permitAll()  // 수정된 경로: /api/users/find-id
 
