@@ -74,6 +74,7 @@ public class UserController {
         response.put("token", jwt);
         response.put("role", role);
         response.put("isArtist", user.isArtist());
+        response.put("nickname", user.getNickName());
 
         return ResponseEntity.ok(response);
     }
