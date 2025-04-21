@@ -24,7 +24,7 @@ public class ExhibitionReservationSummaryDTO {
     private int todayRemaining;
     private int todayReserved;
     private LocalDate deadline;
-
+    private int capacity;
 
     public static ExhibitionReservationSummaryDTO fromEntity(ArtistGallery artistGallery){
         LocalDate today = LocalDate.now();
@@ -51,7 +51,10 @@ public class ExhibitionReservationSummaryDTO {
                 totalReserved,
                 todayRemaining,
                 todayReserved,
-                artistGallery.getDeadline()
+                artistGallery.getDeadline(),
+                artistGallery.getReserveDates().stream()
+                        .mapToInt(ReserveDate::getCapacity)
+                        .sum()
         );
     }
 }

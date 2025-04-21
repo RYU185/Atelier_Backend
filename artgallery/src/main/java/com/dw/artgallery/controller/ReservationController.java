@@ -129,7 +129,7 @@ public class ReservationController {
 
     //
     @GetMapping("/admin/summary/gallery/all")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ExhibitionReservationSummaryDTO>> getGalleryReservationSummary() {
         return new ResponseEntity<>(reservationService.getAllGalleryReservationSummaries(), HttpStatus.OK);
     }

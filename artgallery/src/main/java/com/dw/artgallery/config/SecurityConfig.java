@@ -70,7 +70,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/purchase/all", "/api/purchase/user/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasRole("ADMIN")
                         .requestMatchers("/api/goods/admin").hasRole("ADMIN")
-
+                        .requestMatchers("/api/reservation/admin/**").permitAll()
                         // 업로드 경로는 접근 금지
                         .requestMatchers("/uploads/**").permitAll()
 
