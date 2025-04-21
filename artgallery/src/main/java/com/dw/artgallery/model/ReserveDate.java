@@ -46,13 +46,15 @@ public class ReserveDate {
     private int remaining;
 
     public void reserve(int headcount) {
-        if (this.remaining < headcount) {
-            throw new InvalidRequestException("정원이 부족합니다.");
+        if (this.reservedCount + headcount > this.capacity) {
+            throw new InvalidRequestException("정원이 초과되었습니다.");
         }
-        this.remaining -= headcount;
+        this.reservedCount += headcount;
+        this.remaining -=headcount;
     }
 
     public void cancel(int headcount) {
+        this.reservedCount -= headcount;
         this.remaining += headcount;
     }
     // 동시성 : 여러개의 작업이 동시에 일어나는 것처럼 보이는 상태

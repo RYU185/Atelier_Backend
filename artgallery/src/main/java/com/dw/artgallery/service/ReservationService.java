@@ -39,12 +39,13 @@ public class ReservationService {
 
         ReserveDate reserveDate = time.getReserveDate();
         ArtistGallery gallery = reserveDate.getArtistGallery();
+        LocalDate date = reserveDate.getDate();
 
-        if (reserveDate.getDate().isBefore(gallery.getStartDate()) || reserveDate.getDate().isAfter(gallery.getEndDate())) {
+        if (date.isBefore(gallery.getStartDate()) || date.isAfter(gallery.getEndDate())) {
             throw new InvalidRequestException("전시 기간 외의 날짜는 예약할 수 없습니다.");
         }
 
-        if (!reserveDate.getDate().isAfter(LocalDate.now())) {
+        if (!date.isAfter(LocalDate.now())) {
             throw new InvalidRequestException("관람일 하루 전까지 예약 가능합니다.");
         }
 
@@ -52,7 +53,7 @@ public class ReservationService {
             throw new InvalidRequestException("이미 해당 시간에 예약이 완료되었습니다.");
         }
 
-        if (reservationRepository.existsDuplicateReservation(user, reserveDate.getDate(), ReservationStatus.RESERVED)) {
+        if (reservationRepository.existsDuplicateReservation(user, date, ReservationStatus.RESERVED)) {
             throw new InvalidRequestException("해당 날짜에 이미 예약이 완료되어 있습니다.");
         }
 
@@ -67,10 +68,10 @@ public class ReservationService {
             reservation.setReserveTime(time);
             reservation.setReservationStatus(ReservationStatus.RESERVED);
             reservation.setCreatedAt(LocalDateTime.now());
-            reservation.setHeadcount(reservationRequestDTO.getHeadcount());
+            reservation.setHeadcount(headCount);
 
             return ReservationResponseDTO.fromEntity(reservationRepository.save(reservation));
-        }catch (ObjectOptimisticLockingFailureException e){
+        }   catch (ObjectOptimisticLockingFailureException e){
             throw new InvalidRequestException("정원이 초과되었습니다. 다시 시도해주세요.");
         }
     }
@@ -124,6 +125,7 @@ public class ReservationService {
             reserveDateRepository.saveAll(List.of(oldDate, newDate));
 
             reservation.setReserveTime(newReserveTime);
+
 
             return ReservationResponseDTO.fromEntity(reservation);
         } catch (ObjectOptimisticLockingFailureException e) {
@@ -202,7 +204,7 @@ public class ReservationService {
         ReserveDate reserveDate = reserveDateRepository.findById(reserveDateId)
                 .orElseThrow(()-> new ResourceNotFoundException("예약 날짜를 찾을 수 없습니다."));
 
-        int reserved = reserveDate.getCapacity() - reserveDate.getRemaining();
+        int reserved = reserveDate.getReservedCount();
         if (dto.getNewCapacity() < reserved ){
             throw new InvalidRequestException("현재 예약된 인원("+reserved+"명)보다 적은 인원으로 설정할 수 없습니다.");
 

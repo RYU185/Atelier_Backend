@@ -17,7 +17,7 @@ public class ChatMessageDTO {
     private String sender;
     private String receiver;
     private String timestamp;
-    private String senderNickname; // ✅ 닉네임 필드 추가
+    private String senderNickname;
 
     public static ChatMessageDTO fromEntity(ChatMessage message) {
         return ChatMessageDTO.builder()
