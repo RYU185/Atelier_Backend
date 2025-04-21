@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // 세션을 상태 비유지로 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/ws/**").permitAll()  // WebSocket 경로는 인증 없이 허용
+                        .requestMatchers("/ws/**", "/topic/**", "/queue/**").permitAll()  // WebSocket 경로는 인증 없이 허용
                         // Swagger 및 정적 리소스 경로는 인증 없이 허용
                         .requestMatchers("/*.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/user/login", "/api/user/register", "/api/user/logout").permitAll()  // 로그인, 회원가입, 로그아웃은 인증 없이 허용

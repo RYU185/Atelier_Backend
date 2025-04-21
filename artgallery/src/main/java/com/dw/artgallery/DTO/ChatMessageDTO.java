@@ -4,6 +4,8 @@ import com.dw.artgallery.enums.MessageType;
 import com.dw.artgallery.model.ChatMessage;
 import lombok.*;
 
+import java.time.format.DateTimeFormatter;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,6 +16,8 @@ public class ChatMessageDTO {
     private String content;
     private String sender;
     private String receiver;
+    private String timestamp;
+    private String senderNickname; // ✅ 닉네임 필드 추가
 
     public static ChatMessageDTO fromEntity(ChatMessage message) {
         return ChatMessageDTO.builder()
@@ -25,6 +29,8 @@ public class ChatMessageDTO {
                 )
                 .content(message.getText())
                 .type(MessageType.CHAT)
+                .senderNickname(message.getSender().getNickName())
+                .timestamp(message.getTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))) // ✅ 여기!
                 .build();
     }
 }

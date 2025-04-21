@@ -22,7 +22,7 @@ public class ChatMessage {
     @JoinColumn(name = "chat_room_id", nullable = false)
     private ChatRoom chatRoom;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER) // ✅ 즉시 로딩
     @JoinColumn(name="user_id")
     private User sender;
 

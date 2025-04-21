@@ -38,7 +38,12 @@ public class ChatRoomController {
     public ResponseEntity<List<ChatRoomDTO>> getMyChatRooms(Authentication authentication) {
         String userId = authentication.getName();
         List<ChatRoom> rooms = chatRoomService.getMyChatRooms(userId);
-        List<ChatRoomDTO> result = rooms.stream().map(ChatRoomDTO::fromEntity).collect(Collectors.toList());
+
+        List<ChatRoomDTO> result = rooms.stream().map(room -> {
+            var last = chatMessageService.getLastMessage(room.getId()); // 🔥 여기서 마지막 메시지 가져옴
+            return ChatRoomDTO.fromEntity(room, last);
+        }).collect(Collectors.toList());
+
         return ResponseEntity.ok(result);
     }
 
