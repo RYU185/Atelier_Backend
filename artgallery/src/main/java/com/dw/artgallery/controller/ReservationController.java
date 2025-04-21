@@ -147,13 +147,13 @@ public class ReservationController {
     }
 
     @GetMapping("/admin/statistics/count/by-date")
-    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<List<ReservationStatDTO>> getStatByDate() {
         return new ResponseEntity<>(reservationService.getStatByDate(), HttpStatus.OK);
     }
 
     @GetMapping("/admin/statistics/trend/by-date")
-    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<List<ReservationTrendDTO>> getReservationTrendByDate() {
         return new ResponseEntity<>(
                 reservationService.getReservationTrendByDate(),
@@ -162,7 +162,7 @@ public class ReservationController {
     }
 
     @GetMapping("/admin/statistics/trend/by-month")
-    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<List<ReservationTrendDTO>> getTrendByMonth() {
         return new ResponseEntity<>(
                 reservationService.getReservationTrendByMonth(),
@@ -171,7 +171,7 @@ public class ReservationController {
     }
 
     @GetMapping("/admin/statistics/count/by-weekday")
-    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<List<ReservationStatDTO>> getStatByWeekday() {
         return new ResponseEntity<>(
                 reservationService.getReservationStatsByWeekday(),
