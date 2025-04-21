@@ -26,4 +26,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // 클라이언트가 보내는 메시지는 /app 으로 시작해야 함.
         registry.setApplicationDestinationPrefixes("/app");
     }
+
+    
 }

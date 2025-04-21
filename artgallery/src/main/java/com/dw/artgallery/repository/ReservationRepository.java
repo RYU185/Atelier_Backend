@@ -56,6 +56,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     WHERE r.reservationStatus = 'RESERVED'
     """)
     List<Reservation> findAllReserved();
+
+    @Query("""
+    SELECT r FROM Reservation r
+    WHERE r.reserveTime.reserveDate.date = :targetDate
+    AND r.reservationStatus = 'RESERVED'
+    """)
+    List<Reservation> findReservedByReserveDate(@Param("targetDate") LocalDate targetDate);
+
 }
 
 
