@@ -4,6 +4,7 @@ import com.dw.artgallery.service.UserDetailService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
-
+@Slf4j
 @Component
 public class TokenProvider implements InitializingBean {
 
@@ -80,10 +81,11 @@ public class TokenProvider implements InitializingBean {
 
     public boolean validateToken(String token) {
         try {
+            log.info("validateToken 호출: {}", token);
             Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            logger.info("잘못된 JWT 서명입니다.");
+            logger.info("잘못된 JWT 서명입니다. {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             logger.info("만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException e) {
@@ -93,6 +95,7 @@ public class TokenProvider implements InitializingBean {
         }
         return false;
     }
+
 
     public String getUserIdFromToken(String token) {
         return Jwts.parser()

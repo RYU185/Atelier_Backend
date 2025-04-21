@@ -29,6 +29,8 @@ public class ReservationService {
     private final ReserveDateRepository reserveDateRepository;
     private final UserRepository userRepository;
     private final ArtistGalleryRepository artistGalleryRepository;
+    private final NotificationService notificationService;
+
 
     // 예약
     @Transactional
@@ -47,7 +49,7 @@ public class ReservationService {
             throw new InvalidRequestException("전시 기간 외의 날짜는 예약할 수 없습니다.");
         }
 
-        log.info("📅 예약 검증용 로그 - today: {}, 관람일: {}", LocalDate.now(), date);
+        log.info("예약 검증용 로그 - today: {}, 관람일: {}", LocalDate.now(), date);
         if (!LocalDate.now().isBefore(date)) {
             throw new InvalidRequestException("관람일 하루 전까지 예약 가능합니다.");
         }
@@ -62,7 +64,7 @@ public class ReservationService {
 
         int headCount = reservationRequestDTO.getHeadcount();
 
-        try{
+        try {
             reserveDate.reserve(headCount);
             reserveDateRepository.save(reserveDate);
 
@@ -73,8 +75,13 @@ public class ReservationService {
             reservation.setCreatedAt(LocalDateTime.now());
             reservation.setHeadcount(headCount);
 
-            return ReservationResponseDTO.fromEntity(reservationRepository.save(reservation));
-        }   catch (ObjectOptimisticLockingFailureException e){
+            Reservation saved = reservationRepository.save(reservation);
+
+            notificationService.sendReservationReminder(userId, gallery.getTitle());
+
+            return ReservationResponseDTO.fromEntity(saved);
+
+        } catch (ObjectOptimisticLockingFailureException e) {
             throw new InvalidRequestException("정원이 초과되었습니다. 다시 시도해주세요.");
         }
     }
@@ -166,6 +173,7 @@ public class ReservationService {
         } catch (ObjectOptimisticLockingFailureException e) {
             throw new InvalidRequestException("정원 정보 갱신에 실패했습니다. 다시 시도해주세요.");
         }
+
     }
 
     public List<ReserveDateDTO> getReserveDatesByGalleryId(Long galleryId) {
