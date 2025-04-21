@@ -2,6 +2,7 @@ package com.dw.artgallery.service;
 
 import com.dw.artgallery.model.Reservation;
 import com.dw.artgallery.repository.ReservationRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,7 +21,6 @@ public class ScheduledNotificationService {
 
     // 매일 오전 9시 실행!!!
     @Scheduled(cron = "0 0 9 * * *")
-//  @Scheduled(fixedDelay = 10000)
     @Transactional
     public void sendReservationReminder(){
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -38,15 +38,10 @@ public class ScheduledNotificationService {
         log.info("[D-1 예약 알림] 총 {}건 전송 완료", reservations.size());
     }
 
-    @Scheduled(cron = "*/10 * * * * *") // 10초마다 실행
-    @Transactional
-    public void sendDummyReminderForTesting() {
-        String testUserId = "steve12";
-        String galleryTitle = "테스트 전시";
-
-        notificationService.sendReservationReminder(testUserId, galleryTitle); // testUserId가 Principal.getName()과 동일해야 정상 전송됨
-        log.info("[테스트 알림] userId={} → galleryTitle={}", testUserId, galleryTitle);
+    @PostConstruct
+    public void testManualTrigger() {
+        log.info("🔧 테스트용 예약 알림 수동 실행 시작");
+        sendReservationReminder();
     }
-
 
 }

@@ -9,6 +9,7 @@ import com.dw.artgallery.exception.ResourceNotFoundException;
 import com.dw.artgallery.model.*;
 import com.dw.artgallery.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ReservationService {
@@ -45,7 +47,8 @@ public class ReservationService {
             throw new InvalidRequestException("전시 기간 외의 날짜는 예약할 수 없습니다.");
         }
 
-        if (!date.isAfter(LocalDate.now())) {
+        log.info("📅 예약 검증용 로그 - today: {}, 관람일: {}", LocalDate.now(), date);
+        if (!LocalDate.now().isBefore(date)) {
             throw new InvalidRequestException("관람일 하루 전까지 예약 가능합니다.");
         }
 
