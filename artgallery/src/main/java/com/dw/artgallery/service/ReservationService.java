@@ -332,6 +332,50 @@ public class ReservationService {
         return result;
     }
 
+
+    @Transactional(readOnly = true)
+    public List<ReservationStatDTO> getReservationStatsByMonth() {
+        List<Reservation> reservations = reservationRepository.findAllReserved();
+
+        if (reservations.isEmpty()) return Collections.emptyList();
+
+        // ✅ 연도는 현재 연도 기준으로 가져옴
+        LocalDate now = LocalDate.now();
+        int targetYear = now.getYear();
+
+        // 🔍 해당 연도의 예약만 필터링
+        List<Reservation> filtered = reservations.stream()
+                .filter(r -> {
+                    LocalDate date = r.getReserveDate().getDate();
+                    return date.getYear() == targetYear;
+                })
+                .toList();
+
+        // 월별 합계 초기화 (1~12월)
+        Map<Integer, Long> monthlyMap = new LinkedHashMap<>();
+        for (int month = 1; month <= 12; month++) {
+            monthlyMap.put(month, 0L); // 처음엔 0으로 초기화
+        }
+
+        // 실제 데이터 합산
+        for (Reservation res : filtered) {
+            LocalDate date = res.getReserveDate().getDate();
+            int month = date.getMonthValue();
+            monthlyMap.put(month, monthlyMap.get(month) + res.getHeadcount());
+        }
+
+        // 결과 DTO 변환
+        List<ReservationStatDTO> result = new ArrayList<>();
+        for (int month = 1; month <= 12; month++) {
+            String label = month + "월";
+            long total = monthlyMap.get(month);
+            result.add(new ReservationStatDTO(label, total));
+        }
+
+        return result;
+    }
+
+
     public List<ReservationTrendDTO> getReservationTrendByMonth() {
         List<Reservation> reservations = reservationRepository.findAllReserved();
 
@@ -393,6 +437,8 @@ public class ReservationService {
                 .map(d -> new ReservationStatDTO(d.name(), weekdayMap.get(d)))
                 .toList();
     }
+
+
     public List<ReservationStatDTO> getReservationStatsByWeek() {
         List<Reservation> reservations = reservationRepository.findAllReserved();
 
@@ -437,4 +483,43 @@ public class ReservationService {
                 .map(e -> new ReservationStatDTO(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
     }
+    @Transactional(readOnly = true)
+    public List<ReservationTrendDTO> getReservationTrendByWeek() {
+        List<Reservation> reservations = reservationRepository.findAllReserved();
+
+        if (reservations.isEmpty()) return Collections.emptyList();
+
+        // 🔍 주차 단위로 집계 (label 형식을 프론트와 동일하게 맞춤)
+        Map<String, Integer> weeklyMap = reservations.stream()
+                .collect(Collectors.groupingBy(
+                        r -> {
+                            LocalDate date = r.getReserveDate().getDate();
+                            int weekOfMonth = ((date.getDayOfMonth() - 1) / 7) + 1;
+                            return date.getMonthValue() + "월/" + weekOfMonth + "주차";
+                        },
+                        TreeMap::new,
+                        Collectors.summingInt(Reservation::getHeadcount)
+                ));
+
+        List<ReservationTrendDTO> result = new ArrayList<>();
+        int cumulative = 0;
+        Integer prev = null;
+
+        for (Map.Entry<String, Integer> entry : weeklyMap.entrySet()) {
+            int thisWeek = entry.getValue();
+            cumulative += thisWeek;
+            int diff = (prev != null) ? thisWeek - prev : 0;
+
+            result.add(new ReservationTrendDTO(
+                    entry.getKey(),      // ex) "4월/4주차"
+                    cumulative,
+                    diff
+            ));
+
+            prev = thisWeek;
+        }
+
+        return result;
+    }
+
 }

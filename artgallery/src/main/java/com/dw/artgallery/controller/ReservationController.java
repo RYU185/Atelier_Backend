@@ -161,6 +161,11 @@ public class ReservationController {
         );
     }
 
+    @GetMapping("/admin/statistics/count/by-month")
+    public ResponseEntity<List<ReservationStatDTO>> getMonthlyReservationStats() {
+        return ResponseEntity.ok(reservationService.getReservationStatsByMonth());
+    }
+
     @GetMapping("/admin/statistics/trend/by-month")
 
     public ResponseEntity<List<ReservationTrendDTO>> getTrendByMonth() {
@@ -183,7 +188,14 @@ public class ReservationController {
 
         return ResponseEntity.ok(reservationService.getReservationStatsByWeek());
     }
+    @GetMapping("/admin/statistics/trend/by-week")
 
+    public ResponseEntity<List<ReservationTrendDTO>> getTrendByWeek() {
+        return new ResponseEntity<>(
+                reservationService.getReservationTrendByWeek(),
+                HttpStatus.OK
+        );
+    }
 
 
 }
