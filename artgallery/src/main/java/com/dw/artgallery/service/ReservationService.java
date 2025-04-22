@@ -76,9 +76,6 @@ public class ReservationService {
             reservation.setHeadcount(headCount);
 
             Reservation saved = reservationRepository.save(reservation);
-
-            notificationService.sendReminderViaProxy(user.getUserId(), gallery.getTitle());
-
             return ReservationResponseDTO.fromEntity(saved);
 
         } catch (ObjectOptimisticLockingFailureException e) {

@@ -26,8 +26,6 @@ import java.util.TimerTask;
 public class NotificationService {
 
     private final SimpMessagingTemplate messagingTemplate;
-    private final SimpUserRegistry simpUserRegistry;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Lazy
     @Autowired
@@ -41,22 +39,6 @@ public class NotificationService {
         messagingTemplate.convertAndSend("/topic/inquiry", notification); // 관리자용 채널
     }
 
-    @Async
-    public void sendReservationReminderAsync(String userId, String galleryTitle) {
-        log.info("[RAM] 예약 알림 @Async 트리거 실행됨!");
-        sendReservationReminder(userId, galleryTitle);
-    }
-
-    public void sendReminderViaProxy(String userId, String title) {
-        log.info("프록시 통해 async 진입 시도");
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                self.sendReservationReminderAsync(userId, title);
-            }
-        }, 3000);
-    }
-
     public void sendReservationReminder(String userId, String galleryTitle) {
         log.info("알림 전송 시작 → userId={}, gallery={}", userId, galleryTitle);
 
@@ -68,15 +50,5 @@ public class NotificationService {
                 "/queue/notifications",
                 new ReservationNotificationDTO("예약 알림", "내일 '" + galleryTitle + "' 전시가 예약되어 있습니다.")
         );
-    }
-
-
-    public void printActiveUsers() {
-        simpUserRegistry.getUsers().forEach(user -> {
-            log.info("📡 현재 연결된 사용자: {}", user.getName());
-            user.getSessions().forEach(session -> {
-                log.info("  └ 세션 ID: {}", session.getId());
-            });
-        });
     }
 }
