@@ -21,9 +21,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
+    private final SockJsTokenFilter sockJsTokenFilter;
 
-    public SecurityConfig(TokenProvider tokenProvider) {
+
+    public SecurityConfig(TokenProvider tokenProvider,SockJsTokenFilter sockJsTokenFilter ) {
         this.tokenProvider = tokenProvider;
+        this.sockJsTokenFilter= sockJsTokenFilter;
     }
 
     @Bean
@@ -77,7 +80,8 @@ public class SecurityConfig {
                         // 기타 요청은 인증 필수
                         .anyRequest().authenticated()  // 인증이 필요한 요청
                 )
-                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)  // JWT 필터를 UsernamePasswordAuthenticationFilter 이전에 추가
+                .addFilterBefore(sockJsTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

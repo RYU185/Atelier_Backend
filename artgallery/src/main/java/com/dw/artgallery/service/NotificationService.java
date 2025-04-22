@@ -2,6 +2,8 @@ package com.dw.artgallery.service;
 
 import com.dw.artgallery.DTO.InquiryNotification;
 import com.dw.artgallery.DTO.ReservationNotificationDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
-import org.springframework.messaging.support.MessageBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ public class NotificationService {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final SimpUserRegistry simpUserRegistry;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Lazy
     @Autowired
@@ -55,23 +58,16 @@ public class NotificationService {
     }
 
     public void sendReservationReminder(String userId, String galleryTitle) {
-        log.info("메시지 전송 대상 userId: {}", userId);
+        log.info("알림 전송 시작 → userId={}, gallery={}", userId, galleryTitle);
 
-        boolean hasUser = simpUserRegistry.getUsers().stream()
-                .anyMatch(user -> user.getName().equals(userId));
+        String title = "예약 알림";
+        String message = String.format("내일 '%s' 전시가 예약되어 있습니다.", galleryTitle);
 
-        if (!hasUser) {
-            log.warn("대상 유저 [{}]가 현재 연결되어 있지 않음", userId);
-        } else {
-            log.info("대상 유저 [{}]가 연결되어 있음", userId);
-        }
-
-        // Map 형태의 메시지 그대로 전송
-        Map<String, String> payload = Map.of(
-                "title", "예약알림",
-                "message", String.format("내일 '%s' 전시가 예약되어 있습니다.", galleryTitle)
+        messagingTemplate.convertAndSendToUser(
+                userId,
+                "/queue/notifications",
+                new ReservationNotificationDTO("예약 알림", "내일 '" + galleryTitle + "' 전시가 예약되어 있습니다.")
         );
-        messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", payload);
     }
 
 
