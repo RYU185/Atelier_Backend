@@ -77,7 +77,7 @@ public class ReservationService {
 
             Reservation saved = reservationRepository.save(reservation);
 
-            notificationService.sendReservationReminder(userId, gallery.getTitle());
+            notificationService.sendReminderViaProxy(user.getUserId(), gallery.getTitle());
 
             return ReservationResponseDTO.fromEntity(saved);
 

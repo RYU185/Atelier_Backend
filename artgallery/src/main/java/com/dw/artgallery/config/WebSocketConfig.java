@@ -1,5 +1,6 @@
 package com.dw.artgallery.config;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -13,6 +14,7 @@ import java.security.Principal;
 import java.util.Map;
 
 
+@Slf4j
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
@@ -46,8 +48,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     ServerHttpRequest request,
                     WebSocketHandler wsHandler,
                     Map<String, Object> attributes){
-                return (Principal) attributes.get("user");
+                Principal principal = (Principal) attributes.get("user");
+
+                if (principal != null) {
+                    log.info("WebSocket 연결된 Principal.getName() = {}", principal.getName());
+                } else {
+                    log.warn("Principal이 null입니다!");
+                }
+
+                return principal;
             }
         };
     }
+
 }

@@ -1,6 +1,9 @@
 package com.dw.artgallery.DTO;
 
 import lombok.*;
+import org.springframework.messaging.MessageHeaders;
+
+import java.util.Map;
 
 @Data
 @ToString

@@ -19,34 +19,26 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
     private final TokenProvider jwtTokenProvider;
 
+    private String getTokenFromUri(ServerHttpRequest request) {
+        if (request instanceof ServletServerHttpRequest servletRequest) {
+            String token = servletRequest.getServletRequest().getParameter("token");
+            return (token != null && !token.isBlank()) ? token : null;
+        }
+        return null;
+    }
+
+
     @Override
-    public boolean beforeHandshake(
-            ServerHttpRequest request,
-            ServerHttpResponse response,
-            WebSocketHandler wsHandler,
-            Map<String, Object> attributes
-    ) {
-        if (!(request instanceof ServletServerHttpRequest servletRequest)) {
-            return true;
+    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
+                                   WebSocketHandler wsHandler, Map<String, Object> attributes) {
+
+        // token 파싱 (ex: ws?token=JWT)
+        String token = getTokenFromUri(request); // 구현 필요
+        if (jwtTokenProvider.validateToken(token)) {
+            String username = jwtTokenProvider.getAuthentication(token).getName();
+            attributes.put("user", new UsernamePrincipal(username)); // Principal 구현체
         }
 
-        HttpServletRequest httpServletRequest = servletRequest.getServletRequest();
-
-        String token = httpServletRequest.getParameter("token");
-
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            String userId = jwtTokenProvider.getUserIdFromToken(token);
-            System.out.println("🧩 WebSocket 연결: Principal.getName() → " + userId);
-
-            attributes.put("user", new Principal() {
-                @Override
-                public String getName() {
-                    return userId;
-                }
-            });
-        }else {
-            System.out.println("🚫 JWT 누락 또는 검증 실패");
-        }
         return true;
     }
 
@@ -66,5 +58,18 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    public static class UsernamePrincipal implements Principal {
+        private final String name;
+
+        public UsernamePrincipal(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
     }
 }

@@ -38,9 +38,9 @@ public class ScheduledNotificationService {
         log.info("[D-1 예약 알림] 총 {}건 전송 완료", reservations.size());
     }
 
-    @PostConstruct
+    @Scheduled(initialDelay = 3000, fixedDelay = Long.MAX_VALUE)
     public void testManualTrigger() {
-        log.info("🔧 테스트용 예약 알림 수동 실행 시작");
+        log.info("🕒 [초기 테스트 알림] WebSocket 연결 대기 후 실행");
         sendReservationReminder();
     }
 
