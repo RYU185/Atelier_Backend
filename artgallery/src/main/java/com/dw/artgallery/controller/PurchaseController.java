@@ -1,8 +1,10 @@
 package com.dw.artgallery.controller;
 
 import com.dw.artgallery.DTO.GoodsCartDTO;
+import com.dw.artgallery.DTO.GoodsStatDTO;
 import com.dw.artgallery.DTO.PurchaseResponseDTO;
 import com.dw.artgallery.DTO.PurchaseSummaryDTO;
+import com.dw.artgallery.service.GoodsService;
 import com.dw.artgallery.service.PurchaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,7 @@ import java.util.List;
 @RequestMapping("/api/purchase")
 public class PurchaseController {
     private final PurchaseService purchaseService;
-
+    private final GoodsService goodsService;
     @PreAuthorize("hasRole('USER')")
     @PostMapping
     public ResponseEntity<PurchaseResponseDTO> purchaseSelectedCarts(
@@ -46,7 +48,11 @@ public class PurchaseController {
         return ResponseEntity.noContent().build();
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/goods/admin/statistics/monthly")
+    public ResponseEntity<List<GoodsStatDTO>> getMonthlyGoodsStats() {
+        return ResponseEntity.ok(purchaseService.getMonthlyGoodsSalesStats());
+    }
 
 
 

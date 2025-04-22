@@ -1,6 +1,7 @@
 package com.dw.artgallery.service;
 
 
+import com.dw.artgallery.DTO.GoodsStatDTO;
 import com.dw.artgallery.DTO.PurchaseResponseDTO;
 import com.dw.artgallery.DTO.PurchaseSummaryDTO;
 import com.dw.artgallery.model.*;
@@ -14,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -118,5 +121,37 @@ public class PurchaseService {
         purchase.getPurchaseGoodsList().forEach(pg -> pg.setIsDelete(true));
     }
 
+    @Transactional(readOnly = true)
+    public List<GoodsStatDTO> getMonthlyGoodsSalesStats() {
+        List<PurchaseGoods> goodsList = purchaseGoodsRepository.findAll();
 
+        // 필터링: 삭제되지 않은 구매 && 올해 구매한 건만
+        int year = LocalDate.now().getYear();
+        List<PurchaseGoods> filtered = goodsList.stream()
+                .filter(pg -> pg.getIsDelete() == null || !pg.getIsDelete())
+                .filter(pg -> {
+                    LocalDate date = pg.getPurchase().getPurchaseDate();
+                    return date != null && date.getYear() == year;
+                })
+                .toList();
+
+        // 1~12월 미리 0으로 초기화
+        Map<Integer, Long> monthlyMap = new LinkedHashMap<>();
+        for (int i = 1; i <= 12; i++) monthlyMap.put(i, 0L);
+
+        // 월별 수량 합산
+        for (PurchaseGoods pg : filtered) {
+            int month = pg.getPurchase().getPurchaseDate().getMonthValue();
+            monthlyMap.put(month, monthlyMap.get(month) + pg.getQuantity());
+        }
+
+        // DTO로 변환
+        List<GoodsStatDTO> result = new ArrayList<>();
+        for (int i = 1; i <= 12; i++) {
+            String label = i + "월";
+            result.add(new GoodsStatDTO(label, monthlyMap.get(i)));
+        }
+
+        return result;
+    }
 }
