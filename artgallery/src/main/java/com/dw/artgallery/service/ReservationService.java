@@ -393,5 +393,48 @@ public class ReservationService {
                 .map(d -> new ReservationStatDTO(d.name(), weekdayMap.get(d)))
                 .toList();
     }
+    public List<ReservationStatDTO> getReservationStatsByWeek() {
+        List<Reservation> reservations = reservationRepository.findAllReserved();
 
+        if (reservations.isEmpty()) return Collections.emptyList();
+
+        // ✅ 현재 달을 자동으로 가져오기
+        LocalDate now = LocalDate.now();
+        int targetMonth = now.getMonthValue();
+        int targetYear = now.getYear();
+
+        // 🔍 해당 월의 예약만 필터링
+        List<Reservation> filtered = reservations.stream()
+                .filter(r -> {
+                    LocalDate date = r.getReserveDate().getDate();
+                    return date.getYear() == targetYear && date.getMonthValue() == targetMonth;
+                })
+                .toList();
+
+        System.out.println("▶ [" + targetYear + "년 " + targetMonth + "월] 예약 수: " + filtered.size());
+
+        Map<String, Long> weekMap = new LinkedHashMap<>();
+
+        // ✅ 기준 날짜를 해당 월의 1일로 세팅
+        LocalDate base = LocalDate.of(targetYear, targetMonth, 1);
+        for (int i = 0; i < 4; i++) {
+            LocalDate weekStart = base.plusWeeks(i);
+            LocalDate weekEnd = weekStart.plusDays(6);
+            String label = targetMonth + "월/" + (i + 1) + "주차";
+
+            long total = filtered.stream()
+                    .filter(res -> {
+                        LocalDate date = res.getReserveDate().getDate();
+                        return !date.isBefore(weekStart) && !date.isAfter(weekEnd);
+                    })
+                    .mapToLong(Reservation::getHeadcount)
+                    .sum();
+
+            weekMap.put(label, total);
+        }
+
+        return weekMap.entrySet().stream()
+                .map(e -> new ReservationStatDTO(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
+    }
 }

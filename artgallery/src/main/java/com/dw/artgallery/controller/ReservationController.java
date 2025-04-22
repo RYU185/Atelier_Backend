@@ -178,6 +178,11 @@ public class ReservationController {
                 HttpStatus.OK
         );
     }
+    @GetMapping("/admin/statistics/count/by-week")
+    public ResponseEntity<List<ReservationStatDTO>> getStatByWeek() {
+
+        return ResponseEntity.ok(reservationService.getReservationStatsByWeek());
+    }
 
 
 

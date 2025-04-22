@@ -1,5 +1,6 @@
 package com.dw.artgallery.repository;
 
+import com.dw.artgallery.DTO.ReservationStatDTO;
 import com.dw.artgallery.model.ReserveDate;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
