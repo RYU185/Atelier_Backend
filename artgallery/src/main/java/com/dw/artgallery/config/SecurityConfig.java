@@ -66,14 +66,17 @@ public class SecurityConfig {
                         // 유저 전용 API
                         .requestMatchers("/api/chat-room/**").hasRole("USER")
                         .requestMatchers("/api/cart/**").hasRole("USER")
-                        .requestMatchers("/api/purchase/**").hasRole("USER")
+                        .requestMatchers("/api/purchase/add").hasRole("USER")
+                        .requestMatchers("/api/purchase/view").hasRole("USER")
+                        .requestMatchers("/api/purchase/buy-now").hasRole("USER")
 
                         // 관리자 전용 API
                         .requestMatchers("/api/cart").hasRole("ADMIN")
-                        .requestMatchers("/api/purchase/all", "/api/purchase/user/**").hasRole("ADMIN")
+                        .requestMatchers("/api/purchase/all", "/api/purchase/user/**").permitAll()
                         .requestMatchers("/api/user/**").hasRole("ADMIN")
                         .requestMatchers("/api/goods/admin").hasRole("ADMIN")
                         .requestMatchers("/api/reservation/admin/**").permitAll()
+                        .requestMatchers("/api/purchase/admin/**").permitAll()
                         // 업로드 경로는 접근 금지
                         .requestMatchers("/uploads/**").permitAll()
 

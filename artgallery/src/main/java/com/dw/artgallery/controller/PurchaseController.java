@@ -1,9 +1,6 @@
 package com.dw.artgallery.controller;
 
-import com.dw.artgallery.DTO.GoodsCartDTO;
-import com.dw.artgallery.DTO.GoodsStatDTO;
-import com.dw.artgallery.DTO.PurchaseResponseDTO;
-import com.dw.artgallery.DTO.PurchaseSummaryDTO;
+import com.dw.artgallery.DTO.*;
 import com.dw.artgallery.service.GoodsService;
 import com.dw.artgallery.service.PurchaseService;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +19,20 @@ import java.util.List;
 public class PurchaseController {
     private final PurchaseService purchaseService;
     private final GoodsService goodsService;
+
     @PreAuthorize("hasRole('USER')")
-    @PostMapping
+    @PostMapping("/buy-now")
+    public ResponseEntity<PurchaseResponseDTO> buyNow(
+            @RequestBody BuyNowRequestDTO request,
+            Authentication authentication
+    ) {
+        String userId = authentication.getName();
+        PurchaseResponseDTO response = purchaseService.buyNow(userId, request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/add")
     public ResponseEntity<PurchaseResponseDTO> purchaseSelectedCarts(
             @RequestBody List<Long> cartIdList,
             Authentication authentication
@@ -34,7 +43,7 @@ public class PurchaseController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @GetMapping
+    @GetMapping("/view")
     public ResponseEntity<List<PurchaseSummaryDTO>> getMyPurchaseHistory(Authentication authentication){
         String userId = authentication.getName();
         return new ResponseEntity<>(purchaseService.getMyPurchaseHistory(userId), HttpStatus.OK);
@@ -48,10 +57,9 @@ public class PurchaseController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/goods/admin/statistics/monthly")
+    @GetMapping("/admin/statistics/goods-count/by-month")
     public ResponseEntity<List<GoodsStatDTO>> getMonthlyGoodsStats() {
-        return ResponseEntity.ok(purchaseService.getMonthlyGoodsSalesStats());
+        return ResponseEntity.ok(purchaseService.getGoodsStatsByMonth());
     }
 
 

@@ -1,9 +1,7 @@
 package com.dw.artgallery.service;
 
 
-import com.dw.artgallery.DTO.GoodsStatDTO;
-import com.dw.artgallery.DTO.PurchaseResponseDTO;
-import com.dw.artgallery.DTO.PurchaseSummaryDTO;
+import com.dw.artgallery.DTO.*;
 import com.dw.artgallery.model.*;
 import com.dw.artgallery.repository.*;
 
@@ -14,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -28,6 +23,46 @@ public class PurchaseService {
     private final GoodsRepository goodsRepository;
     private final GoodsCartRepository goodsCartRepository;
     private final PurchaseGoodsRepository purchaseGoodsRepository;
+
+
+    @Transactional
+    public PurchaseResponseDTO buyNow(String userId, BuyNowRequestDTO request) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+
+        Goods goods = goodsRepository.findById(request.getGoodsId())
+                .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
+
+        if (goods.getStock() < request.getQuantity()) {
+            throw new IllegalArgumentException("재고가 부족합니다: " + goods.getName());
+        }
+
+        // 재고 감소
+        goods.setStock(goods.getStock() - request.getQuantity());
+
+        // PurchaseGoods 생성
+        PurchaseGoods purchaseGoods = new PurchaseGoods();
+        purchaseGoods.setGoods(goods);
+        purchaseGoods.setQuantity(request.getQuantity());
+        purchaseGoods.setPrice(goods.getPrice());
+        purchaseGoods.setIsDelete(false);
+
+        // Purchase 생성
+        Purchase purchase = new Purchase();
+        purchase.setUser(user);
+        purchase.setPurchaseDate(LocalDate.now());
+        purchase.setIsDelete(false);
+        purchase.setTotalPrice(goods.getPrice() * request.getQuantity());
+        purchase.setPurchaseGoodsList(List.of(purchaseGoods));
+
+        // 관계 설정
+        purchaseGoods.setPurchase(purchase);
+
+        // 저장
+        purchaseRepository.save(purchase);
+
+        return PurchaseResponseDTO.fromEntity(purchase);
+    }
 
 
     @Transactional
@@ -120,38 +155,38 @@ public class PurchaseService {
         purchase.setIsDelete(true);
         purchase.getPurchaseGoodsList().forEach(pg -> pg.setIsDelete(true));
     }
-
     @Transactional(readOnly = true)
-    public List<GoodsStatDTO> getMonthlyGoodsSalesStats() {
-        List<PurchaseGoods> goodsList = purchaseGoodsRepository.findAll();
+    public List<GoodsStatDTO> getGoodsStatsByMonth() {
+        List<PurchaseGoods> items = purchaseGoodsRepository.findAll(); // 필요한 경우 `findAllByIsDeleteFalse()`로 대체
 
-        // 필터링: 삭제되지 않은 구매 && 올해 구매한 건만
-        int year = LocalDate.now().getYear();
-        List<PurchaseGoods> filtered = goodsList.stream()
-                .filter(pg -> pg.getIsDelete() == null || !pg.getIsDelete())
-                .filter(pg -> {
-                    LocalDate date = pg.getPurchase().getPurchaseDate();
-                    return date != null && date.getYear() == year;
-                })
+        if (items.isEmpty()) return Collections.emptyList();
+
+        int currentYear = LocalDate.now().getYear();
+
+        List<PurchaseGoods> filtered = items.stream()
+                .filter(pg -> pg.getPurchase() != null &&
+                        pg.getPurchase().getPurchaseDate() != null &&
+                        pg.getPurchase().getPurchaseDate().getYear() == currentYear &&
+                        (pg.getIsDelete() == null || !pg.getIsDelete()))
                 .toList();
 
-        // 1~12월 미리 0으로 초기화
         Map<Integer, Long> monthlyMap = new LinkedHashMap<>();
-        for (int i = 1; i <= 12; i++) monthlyMap.put(i, 0L);
+        for (int month = 1; month <= 12; month++) {
+            monthlyMap.put(month, 0L);
+        }
 
-        // 월별 수량 합산
         for (PurchaseGoods pg : filtered) {
             int month = pg.getPurchase().getPurchaseDate().getMonthValue();
             monthlyMap.put(month, monthlyMap.get(month) + pg.getQuantity());
         }
 
-        // DTO로 변환
         List<GoodsStatDTO> result = new ArrayList<>();
-        for (int i = 1; i <= 12; i++) {
-            String label = i + "월";
-            result.add(new GoodsStatDTO(label, monthlyMap.get(i)));
+        for (int month = 1; month <= 12; month++) {
+            result.add(new GoodsStatDTO(month + "월", monthlyMap.get(month)));
         }
 
         return result;
     }
+
+
 }
