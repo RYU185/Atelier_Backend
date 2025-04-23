@@ -53,6 +53,7 @@ public class Community {
 
     public CommunityDTO toDto(CommunityLikeRepository communityLikeRepository){
         CommunityDTO communityDTO =  new CommunityDTO();
+        communityDTO.setId(this.id);
         communityDTO.setText(this.text);
         communityDTO.setUploadDate(this.uploadDate);
         communityDTO.setModifyDate(this.modifyDate);
@@ -73,6 +74,7 @@ public class Community {
 
     public CommunityDetailDTO ToDto(CommunityLikeRepository communityLikeRepository) {
         CommunityDetailDTO communityDetailDTO = new CommunityDetailDTO();
+        communityDetailDTO.setId(this.id);
         communityDetailDTO.setText(this.text);
         communityDetailDTO.setUploadDate(this.uploadDate);
         communityDetailDTO.setModifyDate(this.modifyDate);

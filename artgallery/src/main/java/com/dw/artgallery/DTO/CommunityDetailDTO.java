@@ -14,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 public class CommunityDetailDTO {
+    private Long id;
     private String text;
     private Long likes;
     private LocalDateTime uploadDate;
