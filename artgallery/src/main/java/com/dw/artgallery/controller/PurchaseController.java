@@ -23,12 +23,14 @@ public class PurchaseController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/buy-now")
     public ResponseEntity<PurchaseResponseDTO> buyNow(
+
             @RequestBody BuyNowRequestDTO request,
             Authentication authentication
     ) {
         String userId = authentication.getName();
         PurchaseResponseDTO response = purchaseService.buyNow(userId, request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+
     }
 
     @PreAuthorize("hasRole('USER')")
