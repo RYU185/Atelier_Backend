@@ -19,7 +19,7 @@ public class CommunityDetailDTO {
     private LocalDateTime uploadDate;
     private LocalDateTime modifyDate;
     private String user;
-    private List<String> drawingList = new ArrayList<>();
+    private List<String> img = new ArrayList<>();
     private List<String> commentUser= new ArrayList<>();
     private List<String> commentText = new ArrayList<>();
     private List<LocalDateTime> creationDateList = new ArrayList<>();

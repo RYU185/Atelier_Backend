@@ -102,21 +102,23 @@ public class CommunityController {
     }
 
 
-    // Community 추가 기능
     @PostMapping("/add")
     public ResponseEntity<CommunityDTO> addCommunity(@RequestBody CommunityAddDTO dto,
                                                      @AuthenticationPrincipal User user) {
-        CommunityDTO created = communityService.addCommunity(dto, user);  // ✅ 수정
+        CommunityDTO created = communityService.addCommunity(dto, user);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-
-    // Community id로 수정
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateCommunity(@PathVariable Long id,
-                                                  @RequestBody CommunityUpdateDTO updateDTO,
-                                                  @AuthenticationPrincipal  User user) {
-        return new ResponseEntity<>(communityService.updateCommunity(id, user, updateDTO), HttpStatus.OK);
+    public ResponseEntity<CommunityDTO> updateCommunity(@PathVariable Long id,
+                                                        @RequestBody CommunityAddDTO dto,
+                                                        @AuthenticationPrincipal User user) {
+        CommunityDTO updated = communityService.updateCommunity(id, dto, user);
+        if (updated != null) {
+            return new ResponseEntity<>(updated, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 수정할 게시글이 없거나 권한이 없는 경우
+        }
     }
 
     // Community id로 논리적 삭제

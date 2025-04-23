@@ -175,6 +175,28 @@ INSERT INTO community (text, upload_date, modify_date, user_id, is_deleted) VALU
 ('요즘 감성 사진 찍고 계신 분 계신가요?',  '2025-01-25', '2025-01-25', 'galleryqueen', false);
 
 
+-- COMMUNITY_IMG
+INSERT INTO uploadimg (id, img_url) VALUES
+(1, 'https://example.com/img1.jpg'),
+(2, 'https://example.com/img2.jpg'),
+(3, 'https://example.com/img3.jpg'),
+(4, 'https://example.com/img4.jpg'),
+(5, 'https://example.com/img5.jpg'),
+(6, 'https://example.com/img6.jpg'),
+(7, 'https://example.com/img7.jpg'),
+(8, 'https://example.com/img8.jpg');
+
+-- COMMUNITY ↔ IMG JOIN
+INSERT INTO community_uploadimg (community_id, uploadimg_id) VALUES
+(1, 1),
+(1, 2),
+(2, 3),
+(3, 4),
+(4, 5),
+(5, 6),
+(6, 7),
+(7, 8);
+
 INSERT INTO comment ( text, creation_date, user_id, community_id, is_deleted)
 VALUES
 ('그 전시 저도 봤어요!', '2024-10-06 13:42:00', 'artlover01', 1,false),
@@ -441,13 +463,7 @@ VALUES
 (3, 'catncanvas'), (3, 'galleryqueen'), (3, 'yoonverse'),
 (4, 'artlover01'), (4, 'drawmaster'), (4, 'dreamybrush');
 
-INSERT INTO community_drawing (community_id,drawing_id)
-VALUES
-(1, 1), (1, 2), (1, 4),
-(2, 5), (2, 6), (2, 8),
-(3, 9), (3, 10), (3, 11),
-(4, 12), (4, 13), (4, 14), (4, 15),
-(5, 3), (5, 7), (5, 8);
+
 
 -- ReserveDate 5개
 INSERT INTO reserve_date (id, artist_gallery_id, date, capacity, reserved_count, remaining, version)

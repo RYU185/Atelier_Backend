@@ -7,15 +7,8 @@ import com.dw.artgallery.DTO.CommunityAddDTO;
 import com.dw.artgallery.DTO.CommunityDTO;
 import com.dw.artgallery.DTO.CommunityDetailDTO;
 
-import com.dw.artgallery.DTO.CommunityUpdateDTO;
-import com.dw.artgallery.model.Community;
-import com.dw.artgallery.model.CommunityLike;
-import com.dw.artgallery.model.Drawing;
-import com.dw.artgallery.model.User;
-import com.dw.artgallery.repository.CommunityLikeRepository;
-import com.dw.artgallery.repository.CommunityRepository;
-import com.dw.artgallery.repository.DrawingRepository;
-import com.dw.artgallery.repository.UserRepository;
+import com.dw.artgallery.model.*;
+import com.dw.artgallery.repository.*;
 import com.dw.artgallery.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +32,8 @@ public class CommunityService {
     CommunityLikeRepository communityLikeRepository;
     @Autowired
     DrawingRepository drawingRepository;
+    @Autowired
+    UploadIMGRepository uploadIMGRepository;
 
 
     public List<CommunityDTO> getAllCommunity() {
@@ -125,45 +120,56 @@ public class CommunityService {
         }
     }
 
-
     public CommunityDTO addCommunity(CommunityAddDTO dto, User user) {
-        List<Drawing> userDrawings = drawingRepository.findAllById(dto.getDrawingIds());
-        for (Drawing d : userDrawings) {
-            if (!d.getUser().getUserId().equals(user.getUserId())) {
-                throw new IllegalArgumentException("본인이 소유한 드로잉만 첨부할 수 있습니다.");
-            }
-        }
-
         Community community = new Community();
         community.setText(dto.getText());
-        community.setDrawingList(userDrawings);
-        community.setUser(user);
+        community.setUploadDate(LocalDateTime.now());
         community.setModifyDate(LocalDateTime.now());
-        community.setIsDeleted(false);
+        community.setUser(user); // 작성자 연관관계 설정
+
+        // 이미지 리스트 생성 및 UploadIMG 엔티티 저장
+        List<UploadIMG> imgs = dto.getImg().stream()
+                .map(url -> {
+                    UploadIMG img = new UploadIMG();
+                    img.setImgUrl(url);
+                    return uploadIMGRepository.save(img); // UploadIMG 저장
+                }).collect(Collectors.toList());
+
+        community.setCommunityIMGS(imgs);
 
         Community saved = communityRepository.save(community);
         return saved.toDto(communityLikeRepository);
     }
 
-
-    public String updateCommunity(Long id, User user, CommunityUpdateDTO dto) {
+    public CommunityDTO updateCommunity(Long id, CommunityAddDTO dto, User user) {
         Community community = communityRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 커뮤니티 글이 존재하지 않습니다."));
+                .orElse(null);
 
-        if (!community.getUser().getUserId().equals(user.getUserId())) {
-            throw new SecurityException("본인의 글만 수정할 수 있습니다.");
+        if (community == null || !community.getUser().getUserId().equals(user.getUserId())) {
+            return null; // 수정할 게시글이 없거나 수정 권한이 없는 경우
         }
 
         community.setText(dto.getText());
-        if (dto.getDrawingIds() != null) {
-            List<Drawing> drawings = drawingRepository.findAllById(dto.getDrawingIds());
-            community.setDrawingList(drawings);
-        }
         community.setModifyDate(LocalDateTime.now());
 
-        communityRepository.save(community);
-        return "커뮤니티 글이 수정되었습니다.";
+        if (dto.getImg() != null && !dto.getImg().isEmpty()) {
+            List<UploadIMG> newImgs = dto.getImg().stream()
+                    .map(url -> {
+                        UploadIMG img = new UploadIMG();
+                        img.setImgUrl(url);
+                        return uploadIMGRepository.save(img);
+                    }).collect(Collectors.toList());
+            community.getCommunityIMGS().addAll(newImgs);
+        }
+
+        Community updated = communityRepository.save(community);
+        return updated.toDto(communityLikeRepository);
     }
+
+
+
+
+
 
 
     public String deleteCommunity(Long id, User user) {

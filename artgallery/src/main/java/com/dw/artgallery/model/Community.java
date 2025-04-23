@@ -43,11 +43,12 @@ public class Community {
     @OneToMany(mappedBy = "community")
     private List<Comment> commentList = new ArrayList<>();
 
+
     @ManyToMany
-    @JoinTable(name = "community_drawing",
+    @JoinTable(name = "community_uploadimg",
             joinColumns = @JoinColumn(name = "community_id"),
-            inverseJoinColumns = @JoinColumn(name = "drawing_id"))
-    private List<Drawing> drawingList = new ArrayList<>();
+            inverseJoinColumns = @JoinColumn(name = "uploadimg_id"))
+    private List<UploadIMG> communityIMGS = new ArrayList<>();
 
 
     public CommunityDTO toDto(CommunityLikeRepository communityLikeRepository){
@@ -57,11 +58,11 @@ public class Community {
         communityDTO.setModifyDate(this.modifyDate);
         communityDTO.setUser(this.user.getNickName());
 
-        List<String> drawingList1 = new ArrayList<>();
-        for(Drawing data : drawingList){
-            drawingList1.add(data.getImgUrl());
+        List<String> imgs = new ArrayList<>();
+        for(UploadIMG data : communityIMGS){
+            imgs.add(data.getImgUrl());
         }
-        communityDTO.setDrawingList(drawingList1);
+        communityDTO.setImg(imgs);
 
         long likesCount = communityLikeRepository.countByCommunity(this);
         communityDTO.setLikes(likesCount);
@@ -80,11 +81,11 @@ public class Community {
         long likesCount = communityLikeRepository.countByCommunity(this);
         communityDetailDTO.setLikes(likesCount);
 
-        List<String> drawingList1 = new ArrayList<>();
-        for (Drawing data : drawingList) {
-            drawingList1.add(data.getImgUrl());
+        List<String> imgs = new ArrayList<>();
+        for(UploadIMG data : communityIMGS){
+            imgs.add(data.getImgUrl());
         }
-        communityDetailDTO.setDrawingList(drawingList1);
+        communityDetailDTO.setImg(imgs);
 
         List<String> commentUser1 = new ArrayList<>();
         List<String> commentText1 = new ArrayList<>();

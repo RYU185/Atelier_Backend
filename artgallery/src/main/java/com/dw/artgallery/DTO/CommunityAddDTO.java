@@ -14,5 +14,5 @@ import java.util.List;
 @AllArgsConstructor
 public class CommunityAddDTO {
     private String text;
-    private List<Long> drawingIds;
+    private List<String> img;
 }
