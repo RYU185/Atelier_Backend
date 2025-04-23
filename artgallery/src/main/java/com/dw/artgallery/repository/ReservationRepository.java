@@ -40,7 +40,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findByUserOrderByCreatedAtDesc(User user);
 
-    boolean existsByUserAndReserveTime(User user, ReserveTime time);
+    @Query("""
+    SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
+    FROM Reservation r
+    WHERE r.user = :user AND r.reserveTime = :time AND r.reservationStatus = 'RESERVED'
+    """)
+    boolean existsReservedByUserAndTime(@Param("user") User user, @Param("time") ReserveTime time);
+
 
     @Query
     ("""

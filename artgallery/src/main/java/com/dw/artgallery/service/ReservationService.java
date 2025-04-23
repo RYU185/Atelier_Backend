@@ -54,7 +54,7 @@ public class ReservationService {
             throw new InvalidRequestException("관람일 하루 전까지 예약 가능합니다.");
         }
 
-        if (reservationRepository.existsByUserAndReserveTime(user, time)) {
+        if (reservationRepository.existsReservedByUserAndTime(user, time)) {
             throw new InvalidRequestException("이미 해당 시간에 예약이 완료되었습니다.");
         }
 
@@ -113,7 +113,7 @@ public class ReservationService {
             throw new InvalidRequestException("전시 기간 외의 날짜는 예약할 수 없습니다.");
         }
 
-        if (reservationRepository.existsByUserAndReserveTime(user, newReserveTime)) {
+        if (reservationRepository.existsReservedByUserAndTime(user, newReserveTime)) {
             throw new InvalidRequestException("이미 해당 시간에 예약이 되어있습니다.");
         }
 
