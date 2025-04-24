@@ -57,7 +57,7 @@ public class Community {
         communityDTO.setText(this.text);
         communityDTO.setUploadDate(this.uploadDate);
         communityDTO.setModifyDate(this.modifyDate);
-        communityDTO.setUser(this.user.getNickName());
+        communityDTO.setUserNickname(this.user.getNickName());
 
         List<String> imgs = new ArrayList<>();
         for(UploadIMG data : communityIMGS){
