@@ -152,16 +152,6 @@ VALUES
 ('대한민국 감성예술상', '2020-08-23', 8),
 ('글로벌 아트비전 작가상', '2024-01-01', 6);
 
---INSERT INTO 채팅 ( user_id, text, date)
---VALUES
---(),
---(),
---(),
---(),
---(),
---(),
---(),
---();
 
 
 INSERT INTO community (text, upload_date, modify_date, user_id, is_deleted) VALUES
@@ -175,18 +165,18 @@ INSERT INTO community (text, upload_date, modify_date, user_id, is_deleted) VALU
 ('요즘 감성 사진 찍고 계신 분 계신가요?',  '2025-01-25', '2025-01-25', 'galleryqueen', false);
 
 
--- COMMUNITY_IMG
-INSERT INTO uploadimg (id, img_url) VALUES
-(1, 'https://example.com/img1.jpg'),
-(2, 'https://example.com/img2.jpg'),
-(3, 'https://example.com/img3.jpg'),
-(4, 'https://example.com/img4.jpg'),
-(5, 'https://example.com/img5.jpg'),
-(6, 'https://example.com/img6.jpg'),
-(7, 'https://example.com/img7.jpg'),
-(8, 'https://example.com/img8.jpg');
 
--- COMMUNITY ↔ IMG JOIN
+INSERT INTO uploadimg (id, img_url) VALUES
+(1, 'drawing01.avif'),
+(2, 'drawing02.avif'),
+(3, 'drawing03.avif'),
+(4, 'drawing04.avif'),
+(5, 'drawing04.avif'),
+(6, 'drawing05.avif'),
+(7, 'drawing06.avif'),
+(8, 'drawing07.avif');
+
+
 INSERT INTO community_uploadimg (community_id, uploadimg_id) VALUES
 (1, 1),
 (1, 2),
