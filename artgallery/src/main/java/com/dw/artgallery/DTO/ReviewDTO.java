@@ -1,6 +1,7 @@
 package com.dw.artgallery.DTO;
 
 
+import com.dw.artgallery.model.Review;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +16,11 @@ import java.time.LocalDate;
 @Setter
 public class ReviewDTO {
     private String text;
-    private String user;
+    private String nickname;
     private LocalDate createdAt;
 
-
+    public ReviewDTO convertToDTO(Review review) {
+        return new ReviewDTO(review.getText(), review.getUser().getNickName(), review.getCreatedAt());
+    }
 
 }
