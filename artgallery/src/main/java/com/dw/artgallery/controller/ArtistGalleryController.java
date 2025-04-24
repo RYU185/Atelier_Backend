@@ -83,6 +83,11 @@ public class ArtistGalleryController {
         String result = artistGalleryService.updateDeadline(id, dto);
         return ResponseEntity.ok(result);
     }
+    @GetMapping("/poster-match")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Long>> getArtistIdsByPoster(@RequestParam String filename) {
+        return ResponseEntity.ok(artistGalleryService.getArtistIdsByPoster(filename));
+    }
 
 }
 
