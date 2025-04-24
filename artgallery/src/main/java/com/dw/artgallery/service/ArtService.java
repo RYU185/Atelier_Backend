@@ -23,9 +23,8 @@ public class ArtService {
     private final ArtRepository artRepository;
     private final ArtistRepository artistRepository;
 
-    // 전체 작품 조회
     public List<ArtDTO> getAllArt() {
-        return artRepository.findAll().stream()
+        return artRepository.findByDeletedFalse().stream()
                 .map(ArtDTO::fromEntity)
                 .collect(Collectors.toList());
     }
