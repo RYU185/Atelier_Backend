@@ -67,14 +67,26 @@ public class ArtistGalleryService {
 
         ArtistGallery gallery = ArtistGallery.fromAddDto(dto);
 
-        List<Artist> artists = artistRepository.findAllById(dto.getArtistIdList());
+        List<Long> artistIds = dto.getArtistIdList();
+        if (artistIds == null || artistIds.isEmpty()) {
+            throw new IllegalArgumentException("❗ 작가 ID 리스트가 null이거나 비어 있습니다.");
+        }
+
+        List<Artist> artists = artistRepository.findAllById(artistIds);
         gallery.setArtistList(artists);
 
+// 🔍 실제 저장된 Artist ID만 추출
         List<Long> validArtistIds = artists.stream()
                 .map(Artist::getId)
                 .toList();
 
-        List<Art> validArts = artRepository.findAllById(dto.getArtIdList()).stream()
+// ✅ 아트 ID 리스트 null 방지
+        List<Long> artIds = dto.getArtIdList();
+        if (artIds == null) {
+            artIds = List.of(); // 빈 리스트로 초기화
+        }
+
+        List<Art> validArts = artRepository.findAllById(artIds).stream()
                 .filter(art -> art.getArtist() != null &&
                         validArtistIds.contains(art.getArtist().getId()))
                 .toList();
@@ -129,5 +141,17 @@ public class ArtistGalleryService {
 
         return "마감일이 " + dto.getDeadline() + "로 성공적으로 수정되었습니다.";
     }
+    public List<Long> getArtistIdsByPoster(String filename) {
+        return artistGalleryRepository.findAll().stream()
+                .filter(gallery -> gallery.getPosterUrl() != null && gallery.getPosterUrl().contains(filename))
+                .findFirst()
+                .map(gallery -> gallery.getArtistList().stream()
+                        .map(Artist::getId)
+                        .collect(Collectors.toList()))
+                .orElseThrow(() -> new ResourceNotFoundException("해당 포스터 이름으로 작가를 찾을 수 없습니다."));
+
+    }
+
+
 
 }

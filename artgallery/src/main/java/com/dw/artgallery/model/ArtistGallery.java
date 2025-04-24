@@ -79,7 +79,7 @@ public class ArtistGallery {
         artistGalleryDetailDTO.setDescription(this.description);
         artistGalleryDetailDTO.setStartDate(this.startDate);
         artistGalleryDetailDTO.setEndDate(this.endDate);
-        artistGalleryDetailDTO.setDeadline(this.deadline); // ✅ 추가됨
+        artistGalleryDetailDTO.setDeadline(this.deadline);
         artistGalleryDetailDTO.setPrice(this.price);
 
         List<String> artistList1 = new ArrayList<>();
@@ -119,6 +119,4 @@ public class ArtistGallery {
         gallery.setPrice(dto.getPrice());
         return gallery;
     }
-
-
 }

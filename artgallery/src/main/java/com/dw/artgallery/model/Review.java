@@ -38,7 +38,7 @@ public class Review {
     public  ReviewDTO toDto() {
         ReviewDTO reviewDTO = new ReviewDTO();
         reviewDTO.setText(this.text);
-        reviewDTO.setUser(this.user.getNickName());
+        reviewDTO.setNickname(this.user.getNickName());
         reviewDTO.setCreatedAt(this.getCreatedAt());
         return reviewDTO;
     }
