@@ -20,6 +20,7 @@ public class ArtistDTO {
     private String description;
     private boolean isDeleted;
     private List<BiographyDTO> biographyList;
+    private List<ArtDTO> worksList;
 
 
     public static ArtistDTO fromEntity(Artist artist) {
@@ -32,7 +33,10 @@ public class ArtistDTO {
                 artist.isDeleted(),
                 artist.getBiographyList().stream()
                 .map(BiographyDTO::fromEntity)
-                .toList()
+                .toList(),
+                artist.getArtList().stream()
+                        .map(ArtDTO::fromEntity)
+                        .toList()
         );
     }
 
