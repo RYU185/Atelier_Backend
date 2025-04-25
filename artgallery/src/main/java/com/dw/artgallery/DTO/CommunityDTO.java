@@ -18,6 +18,7 @@ public class CommunityDTO {
     private Long id;
     private String text;
     private Long likes;
+    private int commentCount;
     private LocalDateTime uploadDate;
     private LocalDateTime modifyDate;
     private String userNickname;

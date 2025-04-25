@@ -176,8 +176,9 @@ public class CommunityService {
         Community community = communityRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 커뮤니티 글이 존재하지 않습니다."));
 
-        if (!community.getUser().getUserId().equals(user.getUserId())&& !user.isAdmin()) {
-            throw new SecurityException("본인 글만 삭제할 수 있습니다.");
+        if (!community.getUser().getUserId().equals(user.getUserId()) && !user.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new SecurityException("본인 글이거나 관리자만 삭제할 수 있습니다.");
         }
 
         community.setIsDeleted(true);

@@ -68,6 +68,12 @@ public class Community {
         long likesCount = communityLikeRepository.countByCommunity(this);
         communityDTO.setLikes(likesCount);
 
+
+        int commentCount = (int) this.commentList.stream()
+                .filter(comment -> !Boolean.TRUE.equals(comment.getIsDeleted()))
+                .count();
+        communityDTO.setCommentCount(commentCount);
+
         return communityDTO;
     }
 
