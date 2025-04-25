@@ -6,8 +6,12 @@ import com.dw.artgallery.DTO.CommunityDTO;
 import com.dw.artgallery.DTO.CommunityDetailDTO;
 
 import com.dw.artgallery.DTO.CommunityUpdateDTO;
+import com.dw.artgallery.exception.ResourceNotFoundException;
 import com.dw.artgallery.model.Community;
+import com.dw.artgallery.model.CommunityLike;
 import com.dw.artgallery.model.User;
+import com.dw.artgallery.repository.CommunityLikeRepository;
+import com.dw.artgallery.repository.CommunityRepository;
 import com.dw.artgallery.service.CommunityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +24,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/community")
@@ -28,6 +35,11 @@ public class CommunityController {
 
     @Autowired
     CommunityService communityService;
+    @Autowired
+    CommunityRepository communityRepository;
+    @Autowired
+    CommunityLikeRepository communityLikeRepository;
+;
 
     // Community 전체 조회
     @GetMapping
@@ -90,17 +102,34 @@ public class CommunityController {
         return new ResponseEntity<>(communities, HttpStatus.OK);
     }
 
+    // 좋아요 확인
+    @GetMapping("/like/check/{communityId}")
+    public ResponseEntity<Boolean> checkLikeStatus(@PathVariable Long communityId,
+                                                   @AuthenticationPrincipal User user) {
+        if (user == null) {
+            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+        }
+        Optional<Community> communityOptional = communityRepository.findById(communityId);
+        if (communityOptional.isEmpty()) {
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND); // 해당 커뮤니티가 없으면 false 반환
+        }
+        Community community = communityOptional.get();
+        boolean isLiked = communityLikeRepository.findByUserAndCommunity(user, community).isPresent();
+        return new ResponseEntity<>(isLiked, HttpStatus.OK);
+    }
+
 
 
     // Community 좋아요
     @PostMapping("/like/{id}")
-    public ResponseEntity<String> toggleLike(@PathVariable Long id,
-                                             @AuthenticationPrincipal User user) {
-        boolean liked = communityService.toggleLike(id, user);
-        String message = liked ? "👍 좋아요를 눌렀습니다!" : "👎 좋아요를 취소했습니다!";
-        return new ResponseEntity<>(message, HttpStatus.OK);
+    public ResponseEntity<Map<String, Object>> toggleLike(@PathVariable Long id,
+                                                          @AuthenticationPrincipal User user) {
+        int likeCount = communityService.toggleLike(id, user);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "좋아요 상태가 변경되었습니다."); // 일반적인 메시지
+        response.put("likeCount", likeCount);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 
     @PostMapping("/add")
     public ResponseEntity<CommunityDTO> addCommunity(@RequestBody CommunityAddDTO dto,

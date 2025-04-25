@@ -97,7 +97,7 @@ public class CommunityService {
 
 
     @Transactional
-    public boolean toggleLike(Long communityId, User user) {
+    public int toggleLike(Long communityId, User user) {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티 글이 없습니다."));
 
@@ -105,7 +105,6 @@ public class CommunityService {
 
         if (likeOptional.isPresent()) {
             communityLikeRepository.delete(likeOptional.get());
-            return false; // 좋아요 취소
         } else {
             try {
                 CommunityLike like = CommunityLike.builder()
@@ -113,11 +112,12 @@ public class CommunityService {
                         .community(community)
                         .build();
                 communityLikeRepository.save(like);
-                return true; // 좋아요 추가
             } catch (DataIntegrityViolationException e) {
                 throw new RuntimeException("이미 좋아요를 눌렀습니다.");
             }
         }
+        // 업데이트된 좋아요 개수를 조회하여 반환
+        return communityLikeRepository.countByCommunity(community);
     }
 
     public CommunityDTO addCommunity(CommunityAddDTO dto, User user) {
