@@ -16,5 +16,6 @@ public class CommentAddDTO {
     private String text;
     private Long commentId;
     private String userNickname;
+    private String userId;
     private LocalDateTime creationDate;
 }

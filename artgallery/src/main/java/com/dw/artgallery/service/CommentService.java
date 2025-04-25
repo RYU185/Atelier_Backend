@@ -40,29 +40,42 @@ public class CommentService {
     }
 
     public CommentAddDTO updateComment(Long commentId, CommentAddDTO dto, User user) {
+
+        // 댓글 조회
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+        System.out.println("🔍 댓글 ID: " + commentId);
+        System.out.println("💬 댓글 작성자 ID: " + comment.getUser().getUserId());
+        System.out.println("🙋 현재 로그인한 유저 ID: " + user.getUserId());
 
+        // 작성자 확인
         if (!comment.getUser().getUserId().equals(user.getUserId())) {
             throw new SecurityException("본인의 댓글만 수정할 수 있습니다.");
         }
+
+        // 커뮤니티 조회
         Community community = communityRepository.findById(dto.getCommunityId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티 글이 존재하지 않습니다."));
+
+        // 댓글 수정
         comment.setText(dto.getText());
-        comment.setCommunity(community);
+
         comment.setCreationDate(LocalDateTime.now());
 
         Comment updated = commentRepository.save(comment);
 
+        // 응답 DTO 설정
         CommentAddDTO responseDTO = new CommentAddDTO();
         responseDTO.setCommentId(updated.getId());
         responseDTO.setCommunityId(updated.getCommunity().getId());
         responseDTO.setText(updated.getText());
         responseDTO.setUserNickname(user.getNickName());
+        responseDTO.setUserId(user.getUserId());
         responseDTO.setCreationDate(updated.getCreationDate());
 
         return responseDTO;
     }
+
 
 
     public void deleteComment(Long commentId, User user) {
