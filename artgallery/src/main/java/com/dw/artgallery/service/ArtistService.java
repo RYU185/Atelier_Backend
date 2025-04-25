@@ -64,7 +64,7 @@ public class ArtistService {
             User user = userRepository.findById(artistDTO.getUserId())
                     .orElseThrow(() -> new ResourceNotFoundException("해당 유저를 찾을 수 없습니다."));
 
-            // 새로운 작가라면 수정
+            // 새로운 작가라면 추가
             artist = new Artist();
             artist.setName(artistDTO.getName());
             artist.setProfile_img(artistDTO.getProfile_img());

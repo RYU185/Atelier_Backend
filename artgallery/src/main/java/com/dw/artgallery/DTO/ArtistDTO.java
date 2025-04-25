@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
@@ -21,6 +22,7 @@ public class ArtistDTO {
     private boolean isDeleted;
     private List<BiographyDTO> biographyList;
     private List<ArtDTO> worksList;
+    private LocalDate enrolmentDate;
 
 
     public static ArtistDTO fromEntity(Artist artist) {
@@ -36,7 +38,8 @@ public class ArtistDTO {
                 .toList(),
                 artist.getArtList().stream()
                         .map(ArtDTO::fromEntity)
-                        .toList()
+                        .toList(),
+                artist.getUser().getEnrolmentDate()
         );
     }
 
