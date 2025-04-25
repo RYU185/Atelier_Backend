@@ -36,6 +36,7 @@ public class ChatMessageController {
         ChatMessage saved = chatMessageService.saveMessage(chatMessageDTO, chatRoom);
 
         ChatMessageDTO dtoToSend = ChatMessageDTO.fromEntity(saved);
+        dtoToSend.setTempId(chatMessageDTO.getTempId());
 
         // 3. 상대 유저에게 메시지 전송 (WebSocket 전용 queue)
         User receiver = userService.getUserEntityById(chatMessageDTO.getReceiver());

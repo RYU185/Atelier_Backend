@@ -18,6 +18,7 @@ public class ChatMessageDTO {
     private String receiver;
     private String timestamp;
     private String senderNickname;
+    private String tempId;
 
     public static ChatMessageDTO fromEntity(ChatMessage message) {
         return ChatMessageDTO.builder()
@@ -30,7 +31,7 @@ public class ChatMessageDTO {
                 .content(message.getText())
                 .type(MessageType.CHAT)
                 .senderNickname(message.getSender().getNickName())
-                .timestamp(message.getTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))) // ✅ 여기!
+                .timestamp(message.getTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))
                 .build();
     }
 }
