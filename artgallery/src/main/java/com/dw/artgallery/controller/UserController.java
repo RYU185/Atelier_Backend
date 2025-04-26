@@ -213,5 +213,11 @@ public class UserController {
     public ResponseEntity<List<UserGetDTO>> getUsersByAddress(@PathVariable String address) {
         return ResponseEntity.ok(userService.getUsersByAddress(address));
     }
+
+    @GetMapping("/no-artist")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserDTO>> getUsersWithoutArtist() {
+        return ResponseEntity.ok(userService.getUsersWithoutArtist());
+    }
 }
 

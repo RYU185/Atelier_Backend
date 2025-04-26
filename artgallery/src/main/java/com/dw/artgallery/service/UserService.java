@@ -294,5 +294,12 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 사용자를 찾을 수 없습니다: " + userId));
     }
 
+    public List<UserDTO> getUsersWithoutArtist() {
+        List<User> users = userRepository.findByIsArtistFalse();
+        return users.stream()
+                .map(User::toDTO)
+                .collect(Collectors.toList());
+    }
+
 }
 

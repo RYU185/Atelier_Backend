@@ -3,6 +3,9 @@ package com.dw.artgallery.controller;
 
 import com.dw.artgallery.DTO.ArtistDTO;
 import com.dw.artgallery.DTO.BiographyDTO;
+import com.dw.artgallery.DTO.UserDTO;
+import com.dw.artgallery.model.User;
+import com.dw.artgallery.repository.UserRepository;
 import com.dw.artgallery.service.ArtistService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -109,4 +112,5 @@ public class ArtistController {
     public ResponseEntity<String> deleteArtist(@PathVariable Long id) {
         return new ResponseEntity<>(artistService.deleteArtist(id), HttpStatus.OK);
     }
+
 }
