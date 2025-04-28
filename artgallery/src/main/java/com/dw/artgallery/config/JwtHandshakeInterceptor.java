@@ -35,14 +35,16 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
         // token 파싱 (ex: ws?token=JWT)
         String token = getTokenFromUri(request); // 구현 필요
-        if (jwtTokenProvider.validateToken(token)) {
+        if (token != null && jwtTokenProvider.validateToken(token)) {
             String username = jwtTokenProvider.getAuthentication(token).getName();
-            attributes.put("user", new UsernamePrincipal(username)); // Principal 구현체
+            attributes.put("user", new UsernamePrincipal(username));
+            return true; 
+        } else {
+
+            response.setStatusCode(org.springframework.http.HttpStatus.FORBIDDEN);
+            return false;
         }
-
-        return true;
     }
-
     @Override
     public void afterHandshake(
             ServerHttpRequest request,
