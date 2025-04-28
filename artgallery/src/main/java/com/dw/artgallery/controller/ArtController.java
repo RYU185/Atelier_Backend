@@ -72,7 +72,7 @@ public class ArtController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(null);
         }
-        String uploadDir = "./";
+        String uploadDir = "C:/uploads";
         // 디렉토리 생성
         File dir = new File(uploadDir);
         if (!dir.exists()) {
