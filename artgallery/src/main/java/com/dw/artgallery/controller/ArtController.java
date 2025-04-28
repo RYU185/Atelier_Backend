@@ -72,7 +72,7 @@ public class ArtController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(null);
         }
-        String uploadDir = "C:/uploads";
+        String uploadDir = "./";
         // 디렉토리 생성
         File dir = new File(uploadDir);
         if (!dir.exists()) {
@@ -91,7 +91,7 @@ public class ArtController {
 
         try {
             file.transferTo(savedFile);
-            dto.setImgUrl("/uploads/" + newFileName); // 💡 웹에서 접근 가능한 경로로 설정
+            dto.setImgUrl( newFileName); // 💡 웹에서 접근 가능한 경로로 설정
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
