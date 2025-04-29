@@ -70,7 +70,7 @@ public class GoodsController {
         }
 
         String uploadDir = "artgallery/uploads";
-        
+
         Path uploadPath = Paths.get(System.getProperty("user.dir"), uploadDir);
         System.out.println("📁 실제 업로드 경로: " + uploadPath.toString());
 
