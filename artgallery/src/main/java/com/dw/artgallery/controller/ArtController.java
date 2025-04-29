@@ -29,8 +29,7 @@ public class ArtController {
     @Autowired
     private ArtService artService;
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+
 
     // 모든 작품 조회
     @GetMapping
@@ -68,6 +67,8 @@ public class ArtController {
 
     // 작품 등록
     // 작품 등록
+    @Value("${file.upload-dir}")
+    private String uploadDir;
     @PostMapping("/add")
     public ResponseEntity<ArtDTO> createArt(@ModelAttribute ArtCreateDTO dto) {
         MultipartFile file = dto.getImage();
