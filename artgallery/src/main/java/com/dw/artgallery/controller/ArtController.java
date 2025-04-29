@@ -72,7 +72,8 @@ public class ArtController {
     @PostMapping("/add")
     public ResponseEntity<ArtDTO> createArt(@ModelAttribute ArtCreateDTO dto) {
         MultipartFile file = dto.getImage();
-
+        System.out.println("📦 파일 이름: " + (file != null ? file.getOriginalFilename() : "null"));
+        System.out.println("📏 파일 크기: " + (file != null ? file.getSize() : "파일 없음"));
         Path uploadPath = Paths.get(System.getProperty("user.dir"), uploadDir);
         System.out.println("📁 실제 업로드 경로: " + uploadPath.toString());
 
@@ -96,7 +97,7 @@ public class ArtController {
             Path targetPath = uploadPath.resolve(newFileName).normalize();
 
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-
+            System.out.println("✅ 복사 완료 → 존재 여부: " + Files.exists(targetPath));
             dto.setImgUrl("/uploads/" + newFileName);
 
             ArtDTO created = artService.createArt(dto);
