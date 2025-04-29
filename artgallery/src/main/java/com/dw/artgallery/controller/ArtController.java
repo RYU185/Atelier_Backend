@@ -15,6 +15,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,42 +67,54 @@ public class ArtController {
     }
 
     // 작품 등록
+    // 작품 등록
     @PostMapping("/add")
-//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArtDTO> createArt(@ModelAttribute ArtCreateDTO dto) {
         MultipartFile file = dto.getImage();
-        System.out.println("📁 실제 업로드 경로: " + uploadDir);
+
+
+        String uploadDir = "artgallery/uploads";
+
+        Path uploadPath = Paths.get(System.getProperty("user.dir"), uploadDir);
+        System.out.println("📁 실제 업로드 경로: " + uploadPath.toString());
+
         if (file == null || file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(null);
+            System.out.println("❗ 업로드된 파일이 비어 있습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        String uploadDir = "./";
-        // 디렉토리 생성
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
-        String originalFilename = file.getOriginalFilename();
-        String ext = "";
-
-        if (originalFilename != null && originalFilename.contains(".")) {
-            ext = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
-
-        String newFileName = UUID.randomUUID().toString() + ext;
-        File savedFile = new File(uploadDir, newFileName);
 
         try {
-            file.transferTo(savedFile);
-            dto.setImgUrl( newFileName); // 💡 웹에서 접근 가능한 경로로 설정
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+                System.out.println("📂 uploads 폴더 생성 완료");
+            }
+
+            String originalFilename = file.getOriginalFilename();
+            String ext = "";
+
+            if (originalFilename != null && originalFilename.contains(".")) {
+                ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            String newFileName = UUID.randomUUID().toString() + ext;
+            Path targetPath = uploadPath.resolve(newFileName).normalize();
+
+            System.out.println("📂 파일 복사 시작: " + targetPath.toString());
+
+            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+            System.out.println("✅ 파일 복사 완료: " + targetPath.toString());
+
+            // 웹에서 접근 가능한 경로로 설정
+            dto.setImgUrl("/uploads/" + newFileName);
+
+            ArtDTO created = artService.createArt(dto);
+            return new ResponseEntity<>(created, HttpStatus.CREATED);
+
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+            System.out.println("❗ 파일 복사 중 오류 발생: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-
-        ArtDTO created = artService.createArt(dto);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 }

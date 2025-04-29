@@ -63,6 +63,7 @@ public class GoodsController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
+        String uploadDir = "./";
         File dir = new File(uploadDir);
         if (!dir.exists()) dir.mkdirs();
 
@@ -82,7 +83,7 @@ public class GoodsController {
                 throw new RuntimeException("파일 업로드 실패");
             }
 
-            return "/uploads/" + newFileName;
+            return  newFileName;
         }).toList();
 
         GoodsDTO newGoods = goodsService.addGoodsByImage(dto, imageUrls);
