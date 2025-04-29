@@ -39,7 +39,7 @@ public class CommunityController {
     CommunityRepository communityRepository;
     @Autowired
     CommunityLikeRepository communityLikeRepository;
-;
+    ;
 
     // Community 전체 조회
     @GetMapping
@@ -52,6 +52,7 @@ public class CommunityController {
     public ResponseEntity<List<CommunityDTO>> getDescCommunity() {
         return new ResponseEntity<>(communityService.getDescCommunity(), HttpStatus.OK);
     }
+
     // Community 업로드일 기준 오래된 Community 순 조회
     @GetMapping("/asc")
     public ResponseEntity<List<CommunityDTO>> getAscCommunity() {
@@ -66,8 +67,8 @@ public class CommunityController {
 
     // Community id로 조회
     @GetMapping("/id/{id}")
-    public ResponseEntity<CommunityDTO> getIdCommunity(@PathVariable Long id){
-        return new ResponseEntity<>(communityService.getIdCommunity(id),HttpStatus.OK);
+    public ResponseEntity<CommunityDTO> getIdCommunity(@PathVariable Long id) {
+        return new ResponseEntity<>(communityService.getIdCommunity(id), HttpStatus.OK);
     }
 
     // Community id로 디테일 조회
@@ -119,7 +120,6 @@ public class CommunityController {
     }
 
 
-
     // Community 좋아요
     @PostMapping("/like/{id}")
     public ResponseEntity<Map<String, Object>> toggleLike(@PathVariable Long id,
@@ -138,17 +138,18 @@ public class CommunityController {
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-        @PutMapping("/update/{id}")
-        public ResponseEntity<CommunityDTO> updateCommunity(@PathVariable Long id,
-                                                            @RequestBody CommunityAddDTO dto,
-                                                            @AuthenticationPrincipal User user) {
-            CommunityDTO updated = communityService.updateCommunity(id, dto, user);
-            if (updated != null) {
-                return new ResponseEntity<>(updated, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 수정할 게시글이 없거나 권한이 없는 경우
-            }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<CommunityDTO> updateCommunity(@PathVariable Long id,
+                                                        @RequestBody CommunityAddDTO dto,
+                                                        @AuthenticationPrincipal User user) {
+        CommunityDTO updated = communityService.updateCommunity(id, dto, user);
+        if (updated != null) {
+            return new ResponseEntity<>(updated, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 수정할 게시글이 없거나 권한이 없는 경우
         }
+    }
 
     // Community id로 논리적 삭제
     @PostMapping("/delete/{id}")

@@ -21,6 +21,7 @@ public class CommunityDetailDTO {
     private LocalDateTime modifyDate;
     private String user;
     private List<String> img = new ArrayList<>();
+    private List<Long> commentId= new ArrayList<>();
     private List<String> commentUser= new ArrayList<>();
     private List<String> commentText = new ArrayList<>();
     private List<LocalDateTime> creationDateList = new ArrayList<>();

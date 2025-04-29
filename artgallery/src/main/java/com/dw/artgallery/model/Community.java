@@ -95,16 +95,20 @@ public class Community {
         }
         communityDetailDTO.setImg(imgs);
 
+
+        List<Long> commentId = new ArrayList<>();
         List<String> commentUser1 = new ArrayList<>();
         List<String> commentText1 = new ArrayList<>();
         List<LocalDateTime> creationDateList1 = new ArrayList<>();
         for (Comment data : commentList) {
             if (Boolean.TRUE.equals(data.getIsDeleted())) continue;
+            commentId.add(data.getId());
             commentUser1.add(data.getUser().getNickName());
             commentText1.add(data.getText());
             creationDateList1.add(data.getCreationDate());
         }
 
+        communityDetailDTO.setCommentId(commentId);
         communityDetailDTO.setCommentUser(commentUser1);
         communityDetailDTO.setCommentText(commentText1);
         communityDetailDTO.setCreationDateList(creationDateList1);
