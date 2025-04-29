@@ -18,6 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,34 +65,51 @@ public class GoodsController {
         List<MultipartFile> files = dto.getImages();
 
         if (files == null || files.isEmpty()) {
+            System.out.println("❗ 업로드된 파일이 없습니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        String uploadDir = "./";
-        File dir = new File(uploadDir);
-        if (!dir.exists()) dir.mkdirs();
+        String uploadDir = "artgallery/uploads";
+        
+        Path uploadPath = Paths.get(System.getProperty("user.dir"), uploadDir);
+        System.out.println("📁 실제 업로드 경로: " + uploadPath.toString());
 
-        List<String> imageUrls = files.stream().map(file -> {
-            String originalFilename = file.getOriginalFilename();
-            String ext = originalFilename != null && originalFilename.contains(".")
-                    ? originalFilename.substring(originalFilename.lastIndexOf("."))
-                    : "";
-
-            String newFileName = UUID.randomUUID().toString() + ext;
-            File savedFile = new File(uploadDir, newFileName);
-
-            try {
-                file.transferTo(savedFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException("파일 업로드 실패");
+        try {
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+                System.out.println("📂 uploads 폴더 생성 완료");
             }
 
-            return  newFileName;
-        }).toList();
+            List<String> imageUrls = new ArrayList<>();
 
-        GoodsDTO newGoods = goodsService.addGoodsByImage(dto, imageUrls);
-        return new ResponseEntity<>(newGoods, HttpStatus.CREATED);
+            for (MultipartFile file : files) {
+                String originalFilename = file.getOriginalFilename();
+                String ext = "";
+
+                if (originalFilename != null && originalFilename.contains(".")) {
+                    ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+                }
+
+                String newFileName = UUID.randomUUID().toString() + ext;
+                Path targetPath = uploadPath.resolve(newFileName).normalize();
+
+                System.out.println("📂 파일 복사 시작: " + targetPath.toString());
+
+                Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+                System.out.println("✅ 파일 복사 완료: " + targetPath.toString());
+
+                imageUrls.add("/uploads/" + newFileName);
+            }
+
+            GoodsDTO newGoods = goodsService.addGoodsByImage(dto, imageUrls);
+            return new ResponseEntity<>(newGoods, HttpStatus.CREATED);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("❗ 파일 업로드 중 오류 발생: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
 
