@@ -75,7 +75,6 @@ public class UserController {
         response.put("role", role);
         response.put("isArtist", user.isArtist());
         response.put("nickname", user.getNickName());
-        response.put("userId", user.getUserId());
 
         return ResponseEntity.ok(response);
     }
