@@ -10,6 +10,7 @@ import com.dw.artgallery.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +23,7 @@ public class ChatMessageService {
     private final UserRepository userRepository;
     private final SimpMessageSendingOperations messagingTemplate;
 
+    @Transactional
     public ChatMessage saveMessage(ChatMessageDTO dto, ChatRoom chatRoom) {
         User sender = userRepository.findById(dto.getSender())
                 .orElseThrow(() -> new IllegalArgumentException("보낸 사람 없음"));
