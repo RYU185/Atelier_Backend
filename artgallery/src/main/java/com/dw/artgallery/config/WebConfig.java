@@ -20,15 +20,18 @@ public class WebConfig implements WebMvcConfigurer {
                 .maxAge(3600);  // preflight 요청 캐시 시간 설정
     }
 
-    @Value("${file.upload-dir}")  // application.properties: artgallery/uploads
+    @Value("${file.upload-dir}")
     private String uploadDir;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String absolutePath = "file:///" + Paths.get(System.getProperty("user.dir"), uploadDir).toString().replace("\\", "/") + "/";
+        String fullPath = Paths.get(System.getProperty("user.dir"), uploadDir)
+                .toAbsolutePath().toString()
+                .replace("\\", "/");
 
-        System.out.println("✅ 정적 리소스 경로: " + absolutePath);
+        System.out.println("✅ 정적 리소스 경로 (정상 형식): file:" + fullPath + "/");
+
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations(absolutePath);
+                .addResourceLocations("file:" + fullPath + "/");
     }
 }
