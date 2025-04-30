@@ -75,14 +75,23 @@ public class ArtController {
     public ResponseEntity<ArtDTO> createArt(@ModelAttribute ArtCreateDTO dto) {
         MultipartFile file = dto.getImage();
 
+        System.out.println("🟡 [UPLOAD START] 업로드 요청 수신됨");
+        System.out.println("📄 받은 파일 이름: " + (file != null ? file.getOriginalFilename() : "null"));
+        System.out.println("📦 파일 크기: " + (file != null ? file.getSize() + " bytes" : "파일 없음"));
+
         if (file == null || file.isEmpty()) {
+            System.out.println("❌ 파일이 비어있습니다. 업로드 실패");
             return ResponseEntity.badRequest().build();
         }
 
         try {
             Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
+            System.out.println("📁 업로드 디렉토리 설정: " + uploadDir);
+            System.out.println("📂 절대 경로 변환: " + uploadPath);
+
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
+                System.out.println("✅ 디렉토리 생성 완료: " + uploadPath);
             }
 
             String originalFilename = file.getOriginalFilename();
@@ -93,14 +102,20 @@ public class ArtController {
             String newFileName = UUID.randomUUID() + ext;
             Path targetPath = uploadPath.resolve(newFileName);
 
-            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("📌 최종 저장 파일명: " + newFileName);
+            System.out.println("📥 복사 경로: " + targetPath);
 
-            dto.setImgUrl("/uploads/" + newFileName); // 💡 웹에서 접근 가능한 경로로 설정
+            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("✅ 파일 저장 완료 → 존재 여부 확인: " + Files.exists(targetPath));
+
+            dto.setImgUrl("/uploads/" + newFileName);
             ArtDTO created = artService.createArt(dto);
 
+            System.out.println("🎉 아트 정보 저장 완료 → ID: " + created.getId());
             return new ResponseEntity<>(created, HttpStatus.CREATED);
 
         } catch (IOException e) {
+            System.out.println("🔥 예외 발생: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
