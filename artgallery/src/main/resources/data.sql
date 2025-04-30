@@ -154,57 +154,57 @@ VALUES
 
 
 
-INSERT INTO community (text, upload_date, modify_date, user_id, is_deleted) VALUES
-('최근 전시회 다녀왔는데 정말 감명 깊었어요. 작품 하나하나가 살아있는 듯했습니다.', '2024-10-05', '2024-10-05', 'artlover01', false),
-('제가 한번 드로잉 해봤는데 다른분들 의견이 궁금합니다.',  '2025-01-12', '2025-01-14', 'catncanvas', false),
-('오늘 다녀왔는데 재미있었습니다.',  '2024-12-02', '2024-12-02', 'galleryqueen', false),
-('전시회 포스터 디자인이 너무 멋져서 저장했어요. 감성 제대로입니다.',  '2024-11-10', '2024-11-11', 'galleryqueen', false),
-('드로잉은 처음이라 어색하네요 어떤가요?',  '2025-02-05', '2025-02-06', 'artlover01', false),
-('이 플랫폼 통해 알게 된 전시 너무 많아요. 덕분에 예술이 일상이 된 느낌입니다.',  '2024-09-28', '2024-10-01', 'catncanvas', false),
-('미술관 관람 팁 있으신 분 계신가요?',  '2025-03-15', '2025-03-16', 'artlover01', false),
-('요즘 감성 사진 찍고 계신 분 계신가요?',  '2025-01-25', '2025-01-25', 'galleryqueen', false);
+--INSERT INTO community (text, upload_date, modify_date, user_id, is_deleted) VALUES
+--('최근 전시회 다녀왔는데 정말 감명 깊었어요. 작품 하나하나가 살아있는 듯했습니다.', '2024-10-05', '2024-10-05', 'artlover01', false),
+--('제가 한번 드로잉 해봤는데 다른분들 의견이 궁금합니다.',  '2025-01-12', '2025-01-14', 'catncanvas', false),
+--('오늘 다녀왔는데 재미있었습니다.',  '2024-12-02', '2024-12-02', 'galleryqueen', false),
+--('전시회 포스터 디자인이 너무 멋져서 저장했어요. 감성 제대로입니다.',  '2024-11-10', '2024-11-11', 'galleryqueen', false),
+--('드로잉은 처음이라 어색하네요 어떤가요?',  '2025-02-05', '2025-02-06', 'artlover01', false),
+--('이 플랫폼 통해 알게 된 전시 너무 많아요. 덕분에 예술이 일상이 된 느낌입니다.',  '2024-09-28', '2024-10-01', 'catncanvas', false),
+--('미술관 관람 팁 있으신 분 계신가요?',  '2025-03-15', '2025-03-16', 'artlover01', false),
+--('요즘 감성 사진 찍고 계신 분 계신가요?',  '2025-01-25', '2025-01-25', 'galleryqueen', false);
+--
+--
+--
+--INSERT INTO uploadimg (id, img_url) VALUES
+--(1, 'drawing01.avif'),
+--(2, 'drawing02.avif'),
+--(3, 'drawing03.avif'),
+--(4, 'drawing04.avif'),
+--(5, 'drawing04.avif'),
+--(6, 'drawing05.avif'),
+--(7, 'drawing06.avif'),
+--(8, 'drawing07.avif');
+--
+--
+--INSERT INTO community_uploadimg (community_id, uploadimg_id) VALUES
+--(1, 1),
+--(1, 2),
+--(2, 3),
+--(3, 4),
+--(4, 5),
+--(5, 6),
+--(6, 7),
+--(7, 8);
 
-
-
-INSERT INTO uploadimg (id, img_url) VALUES
-(1, 'drawing01.avif'),
-(2, 'drawing02.avif'),
-(3, 'drawing03.avif'),
-(4, 'drawing04.avif'),
-(5, 'drawing04.avif'),
-(6, 'drawing05.avif'),
-(7, 'drawing06.avif'),
-(8, 'drawing07.avif');
-
-
-INSERT INTO community_uploadimg (community_id, uploadimg_id) VALUES
-(1, 1),
-(1, 2),
-(2, 3),
-(3, 4),
-(4, 5),
-(5, 6),
-(6, 7),
-(7, 8);
-
-INSERT INTO comment ( text, creation_date, user_id, community_id, is_deleted)
-VALUES
-('그 전시 저도 봤어요!', '2024-10-06 13:42:00', 'artlover01', 1,false),
-('마지막 설치작품 보고 눈물 났습니다.', '2024-10-07 09:18:00', 'drawmaster', 1,false),
-('오호 낫벧', '2025-01-13 10:24:00', 'catncanvas', 2,false),
-('레전드 작품 발생', '2025-01-14 08:30:00', 'drawmaster', 2,false),
-('첫 드로잉이라니 믿기지 않네요!', '2025-01-14 14:45:00', 'catncanvas', 2,false),
-('저도 오늘 갔다 왔는데 너무 좋았어요.', '2024-12-02 19:20:00', 'modernline', 3,false),
-('음 좋네요!', '2025-02-06 12:33:00', 'artlover01', 5,false),
-('찾았다 내 ...!', '2025-02-06 16:48:00', 'modernline', 5,false),
-('이 플랫폼 알게 된 이후로 인생이 바뀌었어요!', '2024-10-01 10:10:00', 'catncanvas', 6,false),
-('감성 전시 추천해요! 선화동에 이번에 열린 전시 좋아요.', '2024-10-01 13:30:00', 'drawmaster', 6,false),
-('매주 가는 전시가 생겼습니다.', '2024-10-02 11:20:00', 'catncanvas', 6,false),
-('진짜 아트페어 뉴스 감사해요!', '2024-10-03 18:45:00', 'yoonverse', 6,false),
-('주말엔 사람이 많아서 피하는 게 좋아요.', '2025-03-16 09:10:00', 'drawmaster', 7,false),
-('화요일 오전이 제일 한가해요!', '2025-03-16 11:55:00', 'yoonverse', 7,false),
-('전 감성 필름카메라로 찍어요! 공유해요~', '2025-01-25 21:00:00', 'artlover01', 8,false),
-('찍은 결과물 올려주세요! 궁금해요 ', '2025-01-26 09:45:00', 'modernline', 8,false);
+--INSERT INTO comment ( text, creation_date, user_id, community_id, is_deleted)
+--VALUES
+--('그 전시 저도 봤어요!', '2024-10-06 13:42:00', 'artlover01', 1,false),
+--('마지막 설치작품 보고 눈물 났습니다.', '2024-10-07 09:18:00', 'drawmaster', 1,false),
+--('오호 낫벧', '2025-01-13 10:24:00', 'catncanvas', 2,false),
+--('레전드 작품 발생', '2025-01-14 08:30:00', 'drawmaster', 2,false),
+--('첫 드로잉이라니 믿기지 않네요!', '2025-01-14 14:45:00', 'catncanvas', 2,false),
+--('저도 오늘 갔다 왔는데 너무 좋았어요.', '2024-12-02 19:20:00', 'modernline', 3,false),
+--('음 좋네요!', '2025-02-06 12:33:00', 'artlover01', 5,false),
+--('찾았다 내 ...!', '2025-02-06 16:48:00', 'modernline', 5,false),
+--('이 플랫폼 알게 된 이후로 인생이 바뀌었어요!', '2024-10-01 10:10:00', 'catncanvas', 6,false),
+--('감성 전시 추천해요! 선화동에 이번에 열린 전시 좋아요.', '2024-10-01 13:30:00', 'drawmaster', 6,false),
+--('매주 가는 전시가 생겼습니다.', '2024-10-02 11:20:00', 'catncanvas', 6,false),
+--('진짜 아트페어 뉴스 감사해요!', '2024-10-03 18:45:00', 'yoonverse', 6,false),
+--('주말엔 사람이 많아서 피하는 게 좋아요.', '2025-03-16 09:10:00', 'drawmaster', 7,false),
+--('화요일 오전이 제일 한가해요!', '2025-03-16 11:55:00', 'yoonverse', 7,false),
+--('전 감성 필름카메라로 찍어요! 공유해요~', '2025-01-25 21:00:00', 'artlover01', 8,false),
+--('찍은 결과물 올려주세요! 궁금해요 ', '2025-01-26 09:45:00', 'modernline', 8,false);
 
 
 

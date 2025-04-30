@@ -184,7 +184,7 @@ public class CommunityController {
 
                     // UploadIMG 저장
                     UploadIMG uploadIMG = new UploadIMG();
-                    uploadIMG.setImgUrl("./uploads/Community/"+user.getUsername() + "/" + fileName); // URL 저장
+                    uploadIMG.setImgUrl("/uploads/Community/"+user.getUsername() + "/" + fileName); // URL 저장
                     uploadImgs.add(uploadIMGRepository.save(uploadIMG));
                 }
             }
