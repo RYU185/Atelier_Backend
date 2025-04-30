@@ -69,15 +69,17 @@ public class GoodsController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-
-
-        Path uploadPath = Paths.get(System.getProperty("user.dir"), uploadDir);
-
-
         try {
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-                System.out.println("📂 uploads 폴더 생성 완료");
+            // ✅ uploads/Goods 경로로 고정
+            Path goodsUploadPath = Paths.get("artgallery", uploadDir, "Goods")
+                    .toAbsolutePath()
+                    .normalize();
+
+            System.out.println("📂 굿즈 업로드 디렉토리: " + goodsUploadPath);
+
+            if (!Files.exists(goodsUploadPath)) {
+                Files.createDirectories(goodsUploadPath);
+                System.out.println("✅ 디렉토리 생성 완료: " + goodsUploadPath);
             }
 
             List<String> imageUrls = new ArrayList<>();
@@ -90,24 +92,27 @@ public class GoodsController {
                     ext = originalFilename.substring(originalFilename.lastIndexOf("."));
                 }
 
-                String newFileName = UUID.randomUUID().toString() + ext;
-                Path targetPath = uploadPath.resolve(newFileName).normalize();
+                String fileName = UUID.randomUUID().toString() + ext;
+                Path targetPath = goodsUploadPath.resolve(fileName).normalize();
 
-                System.out.println("📂 파일 복사 시작: " + targetPath.toString());
+                System.out.println("📥 굿즈 파일 복사 시작: " + targetPath);
 
                 Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-                System.out.println("✅ 파일 복사 완료: " + targetPath.toString());
+                System.out.println("✅ 굿즈 파일 복사 완료: " + targetPath);
 
-                imageUrls.add("/uploads/" + newFileName);
+                // 웹에서 접근 가능한 URL 구성
+                imageUrls.add("/uploads/Goods/" + fileName);
             }
 
             GoodsDTO newGoods = goodsService.addGoodsByImage(dto, imageUrls);
+            System.out.println("🎉 굿즈 등록 완료 → 이미지 수: " + imageUrls.size());
+
             return new ResponseEntity<>(newGoods, HttpStatus.CREATED);
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("❗ 파일 업로드 중 오류 발생: " + e.getMessage());
+            System.out.println("🔥 파일 업로드 중 예외 발생: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
