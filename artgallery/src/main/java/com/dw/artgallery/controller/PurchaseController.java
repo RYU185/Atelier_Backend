@@ -36,13 +36,14 @@ public class PurchaseController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/add")
     public ResponseEntity<PurchaseResponseDTO> purchaseSelectedCarts(
-            @RequestBody List<Long> cartIdList,
+            @RequestBody List<CartPurchaseRequestDTO> cartItems,
             Authentication authentication
     ) {
         String userId = authentication.getName();
-        PurchaseResponseDTO response = purchaseService.purchaseSelectedCarts(userId, cartIdList);
+        PurchaseResponseDTO response = purchaseService.purchaseSelectedCarts(userId, cartItems);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/view")

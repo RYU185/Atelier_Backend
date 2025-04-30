@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -66,35 +67,33 @@ public class PurchaseService {
 
 
     @Transactional
-    public PurchaseResponseDTO purchaseSelectedCarts(String userId, List<Long> cartIdList) {
+    public PurchaseResponseDTO purchaseSelectedCarts(String userId, List<CartPurchaseRequestDTO> cartItems) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId));
 
+        List<Long> cartIds = cartItems.stream()
+                .map(CartPurchaseRequestDTO::getCartId)
+                .toList();
 
-        List<GoodsCart> carts = goodsCartRepository.findAllById(cartIdList);
+        List<GoodsCart> carts = goodsCartRepository.findAllById(cartIds);
 
-        if (carts.isEmpty()) {
-            throw new IllegalArgumentException("선택된 장바구니 항목이 존재하지 않습니다.");
-        }
-
-
-        for (GoodsCart cart : carts) {
-            if (!cart.getUser().getUserId().equals(user.getUserId())) {
-                throw new SecurityException("다른 사용자의 장바구니 항목을 구매할 수 없습니다.");
-            }
-        }
+        Map<Long, Integer> quantityMap = cartItems.stream()
+                .collect(Collectors.toMap(CartPurchaseRequestDTO::getCartId, CartPurchaseRequestDTO::getQuantity));
 
         List<PurchaseGoods> purchaseGoodsList = new ArrayList<>();
         int totalPrice = 0;
 
         for (GoodsCart cart : carts) {
+            if (!cart.getUser().getUserId().equals(user.getUserId())) {
+                throw new SecurityException("다른 사용자의 장바구니 항목입니다.");
+            }
+
+            int quantity = quantityMap.get(cart.getId());
             Goods goods = cart.getGoods();
-            int quantity = cart.getAmount();
 
             if (goods.getStock() < quantity) {
                 throw new IllegalArgumentException("재고 부족: " + goods.getName());
             }
-
 
             goods.setStock(goods.getStock() - quantity);
 
@@ -108,7 +107,6 @@ public class PurchaseService {
             totalPrice += goods.getPrice() * quantity;
         }
 
-
         Purchase purchase = new Purchase();
         purchase.setUser(user);
         purchase.setTotalPrice(totalPrice);
@@ -121,11 +119,11 @@ public class PurchaseService {
         }
 
         purchaseRepository.save(purchase);
-
-        goodsCartRepository.deleteAllByIdIn(cartIdList);
+        goodsCartRepository.deleteAllById(cartIds);
 
         return PurchaseResponseDTO.fromEntity(purchase);
     }
+
 
     public List<PurchaseSummaryDTO> getMyPurchaseHistory(String userId) {
         User user = userRepository.findByUserId(userId)
