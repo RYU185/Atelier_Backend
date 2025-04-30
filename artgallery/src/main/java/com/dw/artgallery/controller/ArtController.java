@@ -69,13 +69,20 @@ public class ArtController {
     // 작품 등록
     @Value("${file.upload-dir}")
     private String uploadDir;
+
     @PostMapping("/add")
     public ResponseEntity<ArtDTO> createArt(@ModelAttribute ArtCreateDTO dto) {
         MultipartFile file = dto.getImage();
+
         System.out.println("📦 파일 이름: " + (file != null ? file.getOriginalFilename() : "null"));
         System.out.println("📏 파일 크기: " + (file != null ? file.getSize() : "파일 없음"));
-        Path uploadPath = Paths.get(System.getProperty("user.dir"), uploadDir);
-        System.out.println("📁 실제 업로드 경로: " + uploadPath.toString());
+
+        // 절대경로 사용 가능하게 설정
+        Path uploadPath = Paths.get(uploadDir);
+
+        System.out.println("📌 설정된 업로드 디렉토리: " + uploadDir);
+        System.out.println("📌 실제 경로: " + uploadPath.toAbsolutePath());
+        System.out.println("📌 쓰기 가능?: " + Files.isWritable(uploadPath));
 
         if (file == null || file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -108,4 +115,5 @@ public class ArtController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 }
