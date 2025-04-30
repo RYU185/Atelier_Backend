@@ -71,7 +71,7 @@ public class GoodsController {
 
         try {
             // ✅ uploads/Goods 경로로 고정
-            Path goodsUploadPath = Paths.get("artgallery", uploadDir, "Goods")
+            Path goodsUploadPath = Paths.get(uploadDir, "Goods")
                     .toAbsolutePath()
                     .normalize();
 
