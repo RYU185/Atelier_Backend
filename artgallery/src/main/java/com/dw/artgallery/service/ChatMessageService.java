@@ -43,6 +43,7 @@ public class ChatMessageService {
 
         // DTO 재생성 (닉네임, 타임스탬프 포함)
         ChatMessageDTO dtoToSend = ChatMessageDTO.fromEntity(savedMessage);
+        dtoToSend.setTempId(dto.getTempId());
 
         // 실시간 WebSocket 메시지 전송
         messagingTemplate.convertAndSendToUser(
