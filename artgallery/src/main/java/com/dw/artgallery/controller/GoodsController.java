@@ -68,8 +68,8 @@ public class GoodsController {
             System.out.println("❗ 업로드된 파일이 없습니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    
 
-        String uploadDir = "artgallery/uploads";
 
         Path uploadPath = Paths.get(System.getProperty("user.dir"), uploadDir);
 
