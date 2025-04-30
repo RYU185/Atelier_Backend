@@ -83,7 +83,7 @@ public class ArtController {
         }
 
         try {
-            Path artUploadPath = Paths.get("artgallery",uploadDir, "Art")
+            Path artUploadPath = Paths.get(uploadDir, "Art")
                     .toAbsolutePath()
                     .normalize();
 
