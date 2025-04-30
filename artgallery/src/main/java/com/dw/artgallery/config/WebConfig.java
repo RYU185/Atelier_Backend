@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Configuration
@@ -25,15 +26,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String fullPath = Paths.get(uploadDir)
-                .toAbsolutePath()
-                .toString()
-                .replace("\\", "/");
-
-        System.out.println("✅ 정적 리소스 경로 (정상 형식): file:" + fullPath + "/");
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
+        String resourcePath = uploadPath.toUri().toString(); // ex: file:/C:/Users/...
 
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + fullPath + "/");
+                .addResourceLocations(resourcePath);
     }
 
 }

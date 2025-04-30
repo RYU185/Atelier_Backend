@@ -70,49 +70,39 @@ public class ArtController {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+
     @PostMapping("/add")
     public ResponseEntity<ArtDTO> createArt(@ModelAttribute ArtCreateDTO dto) {
         MultipartFile file = dto.getImage();
 
-        System.out.println(" 파일 이름: " + (file != null ? file.getOriginalFilename() : "null"));
-        System.out.println(" 파일 크기: " + (file != null ? file.getSize() : "파일 없음"));
-
-        // 절대경로 사용 가능하게 설정
-        Path uploadPath = Paths.get(uploadDir);
-
-        System.out.println(" 설정된 업로드 디렉토리: " + uploadDir);
-        System.out.println(" 실제 경로: " + uploadPath.toAbsolutePath());
-        System.out.println(" 쓰기 가능?: " + Files.isWritable(uploadPath));
-
         if (file == null || file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.badRequest().build();
         }
 
         try {
+            Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
             String originalFilename = file.getOriginalFilename();
-            String ext = "";
+            String ext = originalFilename != null && originalFilename.contains(".")
+                    ? originalFilename.substring(originalFilename.lastIndexOf("."))
+                    : "";
 
-            if (originalFilename != null && originalFilename.contains(".")) {
-                ext = originalFilename.substring(originalFilename.lastIndexOf("."));
-            }
-
-            String newFileName = UUID.randomUUID().toString() + ext;
-            Path targetPath = uploadPath.resolve(newFileName).normalize();
+            String newFileName = UUID.randomUUID() + ext;
+            Path targetPath = uploadPath.resolve(newFileName);
 
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println(" 복사 완료 → 존재 여부: " + Files.exists(targetPath));
-            dto.setImgUrl("/uploads/" + newFileName);
 
+            dto.setImgUrl("/uploads/" + newFileName); // 💡 웹에서 접근 가능한 경로로 설정
             ArtDTO created = artService.createArt(dto);
+
             return new ResponseEntity<>(created, HttpStatus.CREATED);
 
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
