@@ -9,6 +9,7 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.security.Principal;
 import java.util.Map;
@@ -21,11 +22,8 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     private final TokenProvider jwtTokenProvider;
 
     private String getTokenFromUri(ServerHttpRequest request) {
-        if (request instanceof ServletServerHttpRequest servletRequest) {
-            String token = servletRequest.getServletRequest().getParameter("token");
-            return (token != null && !token.isBlank()) ? token : null;
-        }
-        return null;
+        String uri = request.getURI().toString();
+        return UriComponentsBuilder.fromUriString(uri).build().getQueryParams().getFirst("token");
     }
 
 
