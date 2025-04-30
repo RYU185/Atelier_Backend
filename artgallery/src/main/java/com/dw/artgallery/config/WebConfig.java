@@ -11,30 +11,27 @@ import java.nio.file.Paths;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:5173", "http://192.168.0.77:81")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")  // 모든 헤더 허용
+                .allowedHeaders("*")
                 .allowCredentials(true)
-                .maxAge(3600);  // preflight 요청 캐시 시간 설정
+                .maxAge(3600);
     }
 
-    @Configuration
-    public class WebMvcConfig implements WebMvcConfigurer {
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
+        String resourcePath = uploadPath.toUri().toString(); // file:///C:/...
 
-        @Value("${file.upload-dir}")
-        private String uploadDir;
-
-        @Override
-        public void addResourceHandlers(ResourceHandlerRegistry registry) {
-            Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
-            String resourcePath = uploadPath.toUri().toString(); // ex: file:/C:/Users/...
-
-            registry.addResourceHandler("/uploads/**")
-                    .addResourceLocations(resourcePath);
-        }
-
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations(resourcePath);
     }
 }
+
