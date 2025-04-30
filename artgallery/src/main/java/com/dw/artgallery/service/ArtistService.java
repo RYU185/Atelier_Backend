@@ -31,6 +31,12 @@ public class ArtistService {
                 .orElseThrow(()-> new ResourceNotFoundException("해당 작가/화가가 존재하지 않습니다."));
     }
 
+    public ArtistDTO getArtistByUserId(String userId) {
+        Artist artist = artistRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("작가를 찾을 수 없습니다."));
+        return ArtistDTO.fromEntity(artist);
+    }
+
     public List<ArtistDTO> getArtistByName(String name){
         return artistRepository
                 .findByNameLike("%"+name+"%")
