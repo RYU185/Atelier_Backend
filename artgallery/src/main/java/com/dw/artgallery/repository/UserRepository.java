@@ -15,5 +15,7 @@ public interface UserRepository extends JpaRepository<User,String > {
         List<User> findByAddress(String address);
         Optional<User> findByUserId(String userId);
         List<User> findByIsArtistFalse();
+        List<User> findAllByAuthority_AuthorityName(String roleName);
+
 
 }

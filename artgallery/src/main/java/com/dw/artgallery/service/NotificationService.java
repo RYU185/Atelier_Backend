@@ -2,6 +2,8 @@ package com.dw.artgallery.service;
 
 import com.dw.artgallery.DTO.InquiryNotification;
 import com.dw.artgallery.DTO.ReservationNotificationDTO;
+import com.dw.artgallery.model.User;
+import com.dw.artgallery.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -26,18 +25,29 @@ import java.util.TimerTask;
 public class NotificationService {
 
     private final SimpMessagingTemplate messagingTemplate;
+    private final UserRepository userRepository;
 
     @Lazy
     @Autowired
     private NotificationService self;
+
 
     public void sendContactNotification(String name, String title) {
         InquiryNotification notification = new InquiryNotification(
                 "새로운 문의가 도착했습니다: " + title,
                 name
         );
-        messagingTemplate.convertAndSend("/topic/inquiry", notification); // 관리자용 채널
+
+        List<User> admins = userRepository.findAllByAuthority_AuthorityName("ROLE_ADMIN");
+        for (User admin : admins) {
+            messagingTemplate.convertAndSendToUser(
+                    admin.getUserId(),          // 개별 사용자 식별자
+                    "/queue/inquiry",           // 개인 큐 채널
+                    notification
+            );
+        }
     }
+
 
     public void sendReservationReminder(String userId, String galleryTitle) {
         log.info("알림 전송 시작 → userId={}, gallery={}", userId, galleryTitle);
