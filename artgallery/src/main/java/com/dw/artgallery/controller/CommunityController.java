@@ -9,11 +9,14 @@ import com.dw.artgallery.DTO.CommunityUpdateDTO;
 import com.dw.artgallery.exception.ResourceNotFoundException;
 import com.dw.artgallery.model.Community;
 import com.dw.artgallery.model.CommunityLike;
+import com.dw.artgallery.model.UploadIMG;
 import com.dw.artgallery.model.User;
 import com.dw.artgallery.repository.CommunityLikeRepository;
 import com.dw.artgallery.repository.CommunityRepository;
+import com.dw.artgallery.repository.UploadIMGRepository;
 import com.dw.artgallery.service.CommunityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -23,11 +26,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/community")
@@ -39,7 +46,8 @@ public class CommunityController {
     CommunityRepository communityRepository;
     @Autowired
     CommunityLikeRepository communityLikeRepository;
-    ;
+    @Autowired
+    UploadIMGRepository uploadIMGRepository;
 
     // Community 전체 조회
     @GetMapping
@@ -131,25 +139,84 @@ public class CommunityController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Value("${file.upload-dir}")
+    private String uploadDir; // 파일 업로드 디렉토리 경로
+
     @PostMapping("/add")
-    public ResponseEntity<CommunityDTO> addCommunity(@RequestBody CommunityAddDTO dto,
-                                                     @AuthenticationPrincipal User user) {
-        CommunityDTO created = communityService.addCommunity(dto, user);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
-    }
+    public ResponseEntity<CommunityDTO> addCommunity(
+            @ModelAttribute CommunityAddDTO dto,
+            @RequestPart(value = "files", required = false) MultipartFile[] files,
+            @AuthenticationPrincipal User user) {
 
+        try {
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<CommunityDTO> updateCommunity(@PathVariable Long id,
-                                                        @RequestBody CommunityAddDTO dto,
-                                                        @AuthenticationPrincipal User user) {
-        CommunityDTO updated = communityService.updateCommunity(id, dto, user);
-        if (updated != null) {
-            return new ResponseEntity<>(updated, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 수정할 게시글이 없거나 권한이 없는 경우
+            Community community = new Community();
+            community.setText(dto.getText());
+            community.setUploadDate(LocalDateTime.now());
+            community.setModifyDate(LocalDateTime.now());
+            community.setUser(user);
+
+            List<UploadIMG> uploadImgs = new ArrayList<>();
+            if (files != null && files.length > 0) {
+                Path userUploadPath = Paths.get(uploadDir,"Community", user.getUsername());
+
+                if (!Files.exists(userUploadPath)) {
+                    Files.createDirectories(userUploadPath);
+                }
+
+                for (MultipartFile file : files) {
+                    String originalFileName = file.getOriginalFilename();
+                    String fileName = originalFileName;
+                    int counter = 1;
+
+                    // 중복 파일 이름 처리
+                    while (Files.exists(userUploadPath.resolve(fileName))) {
+                        int dotIndex = originalFileName.lastIndexOf(".");
+                        String name = dotIndex == -1 ? originalFileName : originalFileName.substring(0, dotIndex);
+                        String extension = dotIndex == -1 ? "" : originalFileName.substring(dotIndex);
+                        fileName = name + "_" + counter + extension;
+                        counter++;
+                    }
+
+                    // 파일 경로 설정
+                    Path filePath = userUploadPath.resolve(fileName).normalize();
+                    Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                    // UploadIMG 저장
+                    UploadIMG uploadIMG = new UploadIMG();
+                    uploadIMG.setImgUrl("./uploads/Community/"+user.getUsername() + "/" + fileName); // URL 저장
+                    uploadImgs.add(uploadIMGRepository.save(uploadIMG));
+                }
+            }
+
+            // 3. 커뮤니티에 이미지 연결
+            community.setCommunityIMGS(uploadImgs);
+
+            // 4. 커뮤니티 저장
+            Community savedCommunity = communityRepository.save(community);
+
+            // 5. DTO 변환 및 반환
+            CommunityDTO communityDTO = savedCommunity.toDto(communityLikeRepository);
+            return new ResponseEntity<>(communityDTO, HttpStatus.CREATED);
+
+        } catch (IOException e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+
+//    @PutMapping("/update/{id}")
+//    public ResponseEntity<CommunityDTO> updateCommunity(@PathVariable Long id,
+//                                                        @RequestBody CommunityAddDTO dto,
+//                                                        @AuthenticationPrincipal User user) {
+//        CommunityDTO updated = communityService.updateCommunity(id, dto, user);
+//        if (updated != null) {
+//            return new ResponseEntity<>(updated, HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 수정할 게시글이 없거나 권한이 없는 경우
+//        }
+//    }
 
     // Community id로 논리적 삭제
     @PostMapping("/delete/{id}")

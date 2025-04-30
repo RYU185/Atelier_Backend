@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 
 
 @Getter
@@ -14,5 +13,4 @@ import java.util.List;
 @AllArgsConstructor
 public class CommunityAddDTO {
     private String text;
-    private List<String> img;
 }

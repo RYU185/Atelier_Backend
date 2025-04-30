@@ -120,51 +120,6 @@ public class CommunityService {
         return communityLikeRepository.countByCommunity(community);
     }
 
-    public CommunityDTO addCommunity(CommunityAddDTO dto, User user) {
-        Community community = new Community();
-        community.setText(dto.getText());
-        community.setUploadDate(LocalDateTime.now());
-        community.setModifyDate(LocalDateTime.now());
-        community.setUser(user); // 작성자 연관관계 설정
-
-        // 이미지 리스트 생성 및 UploadIMG 엔티티 저장
-        List<UploadIMG> imgs = dto.getImg().stream()
-                .map(url -> {
-                    UploadIMG img = new UploadIMG();
-                    img.setImgUrl(url);
-                    return uploadIMGRepository.save(img); // UploadIMG 저장
-                }).collect(Collectors.toList());
-
-        community.setCommunityIMGS(imgs);
-
-        Community saved = communityRepository.save(community);
-        return saved.toDto(communityLikeRepository);
-    }
-
-    public CommunityDTO updateCommunity(Long id, CommunityAddDTO dto, User user) {
-        Community community = communityRepository.findById(id)
-                .orElse(null);
-
-        if (community == null || !community.getUser().getUserId().equals(user.getUserId())) {
-            return null; // 수정할 게시글이 없거나 수정 권한이 없는 경우
-        }
-
-        community.setText(dto.getText());
-        community.setModifyDate(LocalDateTime.now());
-
-        if (dto.getImg() != null && !dto.getImg().isEmpty()) {
-            List<UploadIMG> newImgs = dto.getImg().stream()
-                    .map(url -> {
-                        UploadIMG img = new UploadIMG();
-                        img.setImgUrl(url);
-                        return uploadIMGRepository.save(img);
-                    }).collect(Collectors.toList());
-            community.getCommunityIMGS().addAll(newImgs);
-        }
-
-        Community updated = communityRepository.save(community);
-        return updated.toDto(communityLikeRepository);
-    }
 
 
 
