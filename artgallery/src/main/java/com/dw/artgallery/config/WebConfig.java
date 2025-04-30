@@ -21,16 +21,20 @@ public class WebConfig implements WebMvcConfigurer {
                 .maxAge(3600);  // preflight 요청 캐시 시간 설정
     }
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    @Configuration
+    public class WebMvcConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
-        String resourcePath = uploadPath.toUri().toString(); // ex: file:/C:/Users/...
+        @Value("${file.upload-dir}")
+        private String uploadDir;
 
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations(resourcePath);
+        @Override
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+            Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
+            String resourcePath = uploadPath.toUri().toString(); // ex: file:/C:/Users/...
+
+            registry.addResourceHandler("/uploads/**")
+                    .addResourceLocations(resourcePath);
+        }
+
     }
-
 }
