@@ -77,7 +77,8 @@ public class ArtController {
 
         System.out.println("🎨 [UPLOAD START] 아트 업로드 요청 수신됨");
         System.out.println("📄 받은 파일 이름: " + (file != null ? file.getOriginalFilename() : "null"));
-        System.out.println("📦 파일 크기: " + (file != null ? file.getSize() + " bytes" : "파일 없음"));
+        System.out.println("📦 파일 null?: " + (file == null));
+        System.out.println("📦 파일 isEmpty?: " + (file != null && file.isEmpty()));
 
         if (file == null || file.isEmpty()) {
             System.out.println("❌ 파일이 비어있습니다. 업로드 실패");
@@ -85,7 +86,6 @@ public class ArtController {
         }
 
         try {
-            // ✅ uploads/Art 경로 지정
             Path artUploadPath = Paths.get(uploadDir, "Art").toAbsolutePath().normalize();
             System.out.println("📁 업로드 디렉토리 설정: " + artUploadPath);
 
@@ -98,7 +98,6 @@ public class ArtController {
             String fileName = originalFileName;
             int counter = 1;
 
-            // 🔁 중복 파일명 방지
             while (Files.exists(artUploadPath.resolve(fileName))) {
                 int dotIndex = originalFileName.lastIndexOf(".");
                 String name = dotIndex == -1 ? originalFileName : originalFileName.substring(0, dotIndex);
@@ -113,16 +112,14 @@ public class ArtController {
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
             System.out.println("✅ 파일 저장 완료 → 존재 여부: " + Files.exists(targetPath));
 
-            // 🌐 웹에서 접근 가능한 URL 설정
             dto.setImgUrl("/uploads/Art/" + fileName);
-
             ArtDTO created = artService.createArt(dto);
-            System.out.println("🎉 아트 정보 저장 완료 → ID: " + created.getId());
 
+            System.out.println("🎉 아트 정보 저장 완료 → ID: " + created.getId());
             return new ResponseEntity<>(created, HttpStatus.CREATED);
 
         } catch (IOException e) {
-            System.out.println("🔥 예외 발생: " + e.getMessage());
+            System.out.println("🔥 파일 저장 중 예외 발생");
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
