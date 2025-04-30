@@ -76,7 +76,7 @@ public class ArtistController {
 
         // UUID 기반 새 파일명 생성
         String newFileName = UUID.randomUUID().toString() + ext;
-        Path savePath = Paths.get(uploadDir,"Artist", newFileName);
+        Path savePath = Paths.get(uploadDir, newFileName);
 
         // 디렉토리 없으면 생성
         File dir = new File(uploadDir);

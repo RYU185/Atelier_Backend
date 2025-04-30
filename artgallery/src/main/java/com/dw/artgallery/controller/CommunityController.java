@@ -140,7 +140,7 @@ public class CommunityController {
     }
 
     @Value("${file.upload-dir}")
-    private String uploadDir; // 파일 업로드 디렉토리 경로
+    private String uploadDir;
 
     @PostMapping("/add")
     public ResponseEntity<CommunityDTO> addCommunity(
