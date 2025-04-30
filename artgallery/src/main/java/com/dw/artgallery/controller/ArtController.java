@@ -74,15 +74,15 @@ public class ArtController {
     public ResponseEntity<ArtDTO> createArt(@ModelAttribute ArtCreateDTO dto) {
         MultipartFile file = dto.getImage();
 
-        System.out.println("📦 파일 이름: " + (file != null ? file.getOriginalFilename() : "null"));
-        System.out.println("📏 파일 크기: " + (file != null ? file.getSize() : "파일 없음"));
+        System.out.println(" 파일 이름: " + (file != null ? file.getOriginalFilename() : "null"));
+        System.out.println(" 파일 크기: " + (file != null ? file.getSize() : "파일 없음"));
 
         // 절대경로 사용 가능하게 설정
         Path uploadPath = Paths.get(uploadDir);
 
-        System.out.println("📌 설정된 업로드 디렉토리: " + uploadDir);
-        System.out.println("📌 실제 경로: " + uploadPath.toAbsolutePath());
-        System.out.println("📌 쓰기 가능?: " + Files.isWritable(uploadPath));
+        System.out.println(" 설정된 업로드 디렉토리: " + uploadDir);
+        System.out.println(" 실제 경로: " + uploadPath.toAbsolutePath());
+        System.out.println(" 쓰기 가능?: " + Files.isWritable(uploadPath));
 
         if (file == null || file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -104,7 +104,7 @@ public class ArtController {
             Path targetPath = uploadPath.resolve(newFileName).normalize();
 
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("✅ 복사 완료 → 존재 여부: " + Files.exists(targetPath));
+            System.out.println(" 복사 완료 → 존재 여부: " + Files.exists(targetPath));
             dto.setImgUrl("/uploads/" + newFileName);
 
             ArtDTO created = artService.createArt(dto);

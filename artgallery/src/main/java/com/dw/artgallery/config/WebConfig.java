@@ -25,8 +25,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String fullPath = Paths.get(System.getProperty("user.dir"), uploadDir)
-                .toAbsolutePath().toString()
+        String fullPath = Paths.get(uploadDir)
+                .toAbsolutePath()
+                .toString()
                 .replace("\\", "/");
 
         System.out.println("✅ 정적 리소스 경로 (정상 형식): file:" + fullPath + "/");
@@ -34,4 +35,5 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + fullPath + "/");
     }
+
 }
