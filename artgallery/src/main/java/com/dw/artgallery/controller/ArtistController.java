@@ -72,45 +72,59 @@ public class ArtistController {
             @RequestPart("profile_img") MultipartFile profileImg
     ) throws JsonProcessingException, IOException {
 
-        // 확장자 추출
+        if (profileImg == null || profileImg.isEmpty()) {
+            System.out.println("❌ 프로필 이미지가 비어 있습니다.");
+            return ResponseEntity.badRequest().body("프로필 이미지를 업로드해주세요.");
+        }
+
+        // ✅ uploads/Artist 경로 조합
+        Path artistUploadPath = Paths.get( uploadDir, "Artist")
+                .toAbsolutePath()
+                .normalize();
+
+        System.out.println("📂 아티스트 업로드 디렉토리: " + artistUploadPath);
+
+        if (!Files.exists(artistUploadPath)) {
+            Files.createDirectories(artistUploadPath);
+            System.out.println("✅ Artist 디렉토리 생성 완료");
+        }
+
+        // 확장자 추출 및 새 파일명 생성
         String originalFilename = profileImg.getOriginalFilename();
         String ext = "";
+
         if (originalFilename != null && originalFilename.contains(".")) {
             ext = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
 
-        // UUID 기반 새 파일명 생성
         String newFileName = UUID.randomUUID().toString() + ext;
-        Path savePath = Paths.get(uploadDir, newFileName);
+        Path targetPath = artistUploadPath.resolve(newFileName);
 
-        // 디렉토리 없으면 생성
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
-        // 저장
-        Files.copy(profileImg.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
+        // 파일 저장
+        Files.copy(profileImg.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+        System.out.println("✅ 프로필 이미지 저장 완료 → " + targetPath);
 
         // JSON 파싱
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+
         List<BiographyDTO> biographyList = objectMapper.readValue(
                 biographyListJson,
                 new TypeReference<>() {}
         );
 
-        // DTO 생성 및 저장
+        // DTO 구성
         ArtistDTO artistDTO = new ArtistDTO();
         artistDTO.setName(name);
         artistDTO.setDescription(description);
         artistDTO.setUserId(userId);
-        artistDTO.setProfile_img(newFileName); // 저장된 새 이름
+        artistDTO.setProfile_img("/uploads/Artist/" + newFileName); // ✅ 정적 리소스 URL로 저장
         artistDTO.setBiographyList(biographyList);
 
+        // 저장 및 응답
         return new ResponseEntity<>(artistService.saveArtist(artistDTO), HttpStatus.CREATED);
-
     }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/delete")
