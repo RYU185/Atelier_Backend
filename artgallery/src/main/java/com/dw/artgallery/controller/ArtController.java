@@ -86,7 +86,7 @@ public class ArtController {
         }
 
         try {
-            Path artUploadPath = Paths.get(uploadDir, "Art").toAbsolutePath().normalize();
+            Path artUploadPath = Paths.get("artgallery", uploadDir, "Art");
             System.out.println("📁 업로드 디렉토리 설정: " + artUploadPath);
 
             if (!Files.exists(artUploadPath)) {
