@@ -182,6 +182,8 @@ public class CommunityController {
                     Path filePath = userUploadPath.resolve(fileName).normalize();
                     Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
+                    System.out.println("파일 업로드 완료: " + filePath.toString());
+                    
                     // UploadIMG 저장
                     UploadIMG uploadIMG = new UploadIMG();
                     uploadIMG.setImgUrl("/uploads/Community/"+user.getUsername() + "/" + fileName); // URL 저장
