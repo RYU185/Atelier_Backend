@@ -40,5 +40,7 @@ public interface ReserveTimeRepository extends JpaRepository<ReserveTime, Long> 
     """)
     ReserveAvailabilityDTO findAvailability(@Param("reserveTimeId") Long reserveTimeId);
 
+    List<ReserveTime> findByReserveDate_ArtistGallery_IdAndReserveDate_Date(Long galleryId, LocalDate date);
+
 }
 

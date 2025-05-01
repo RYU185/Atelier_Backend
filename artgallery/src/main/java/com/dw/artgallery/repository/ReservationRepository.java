@@ -70,6 +70,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     """)
     List<Reservation> findReservedByReserveDate(@Param("targetDate") LocalDate targetDate);
 
+
+
 }
 
 
