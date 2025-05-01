@@ -11,10 +11,16 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,6 +68,8 @@ public class ArtistGalleryService {
         return artistGalleryRepository.findExpectedGallery(today).stream().map(ArtistGallery::toDto).toList();
     }
 
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     @Transactional
     public ArtistGalleryDetailDTO createGallery(ArtistGalleryAddDTO dto) {
@@ -75,26 +83,43 @@ public class ArtistGalleryService {
         List<Artist> artists = artistRepository.findAllById(artistIds);
         gallery.setArtistList(artists);
 
-// 🔍 실제 저장된 Artist ID만 추출
+
+
+
         List<Long> validArtistIds = artists.stream()
                 .map(Artist::getId)
                 .toList();
-
-// ✅ 아트 ID 리스트 null 방지
         List<Long> artIds = dto.getArtIdList();
         if (artIds == null) {
-            artIds = List.of(); // 빈 리스트로 초기화
+            artIds = List.of();
         }
 
         List<Art> validArts = artRepository.findAllById(artIds).stream()
                 .filter(art -> art.getArtist() != null &&
                         validArtistIds.contains(art.getArtist().getId()))
                 .toList();
-
         gallery.setArtList(validArts);
 
-        gallery.setDeadline(gallery.getEndDate().minusDays(1));
+        try {
+            String base64 = dto.getPoster();
+            String base64Data = base64.contains(",") ? base64.split(",")[1] : base64;
+            byte[] imageBytes = Base64.getDecoder().decode(base64Data);
 
+            String fileName = System.currentTimeMillis() + "_poster.png";
+            Path uploadPath = Paths.get(uploadDir, "ArtistGallery");
+            Files.createDirectories(uploadPath);
+
+            Path filePath = uploadPath.resolve(fileName);
+            Files.write(filePath, imageBytes);
+
+            gallery.setPosterUrl("/uploads/ArtistGallery/" + fileName);
+        } catch (IOException e) {
+            throw new RuntimeException("포스터 저장 중 오류 발생", e);
+        }
+
+        gallery.setPosterUrl("/uploads/ArtistGallery/" + dto.getPoster());
+
+        gallery.setDeadline(gallery.getEndDate().minusDays(1));
 
         ArtistGallery savedGallery = artistGalleryRepository.save(gallery);
 
