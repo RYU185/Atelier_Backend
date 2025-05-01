@@ -30,7 +30,7 @@ public class ArtistGallery {
     @Column(name = "poster_url", nullable = false)
     private String posterUrl;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, length = 2000)
     private String description;
 
     @Column(name = "start_date", nullable = false)

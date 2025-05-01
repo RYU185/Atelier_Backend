@@ -6,21 +6,28 @@ import com.dw.artgallery.DTO.ArtistGalleryDetailDTO;
 import com.dw.artgallery.DTO.DeadlineDTO;
 import com.dw.artgallery.model.ArtistGallery;
 import com.dw.artgallery.model.User;
+import com.dw.artgallery.repository.UserRepository;
 import com.dw.artgallery.service.ArtistGalleryService;
+import com.dw.artgallery.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/artistgallery")
 public class ArtistGalleryController {
-    @Autowired
-    ArtistGalleryService artistGalleryService;
+
+    private final ArtistGalleryService artistGalleryService;
+    private final UserRepository userRepository;
+
 
     // ArtistGallery 전체 조회
     @GetMapping
@@ -63,14 +70,12 @@ public class ArtistGalleryController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArtistGalleryDetailDTO> createGallery(
-            @RequestBody ArtistGalleryAddDTO dto,
-            @AuthenticationPrincipal User user
+            @RequestBody ArtistGalleryAddDTO dto
     ) {
-        System.out.println(" 등록 요청 관리자 ID: " + user.getUserId());
-
-        ArtistGallery saved = artistGalleryService.createGallery(dto);
-
-        return ResponseEntity.ok(saved.TODTO());
+       return new ResponseEntity<>(
+               artistGalleryService.createGallery(dto),
+               HttpStatus.OK
+       );
     }
 
     // 마감일 수정 (관리자만)

@@ -27,6 +27,7 @@ public class ArtistGalleryService {
     private final ArtRepository artRepository;
     private final ReserveDateRepository reserveDateRepository;
     private final ReserveTimeRepository reserveTimeRepository;
+    private final UserRepository userRepository;
 
     public List<ArtistGalleryDTO> getAllArtistGallery () {
         return artistGalleryRepository.findAll().stream().map(ArtistGallery::toDto).toList();
@@ -63,13 +64,12 @@ public class ArtistGalleryService {
 
 
     @Transactional
-    public ArtistGallery createGallery(ArtistGalleryAddDTO dto) {
-
+    public ArtistGalleryDetailDTO createGallery(ArtistGalleryAddDTO dto) {
         ArtistGallery gallery = ArtistGallery.fromAddDto(dto);
 
         List<Long> artistIds = dto.getArtistIdList();
         if (artistIds == null || artistIds.isEmpty()) {
-            throw new IllegalArgumentException("❗ 작가 ID 리스트가 null이거나 비어 있습니다.");
+            throw new IllegalArgumentException("작가 ID 리스트가 null이거나 비어 있습니다.");
         }
 
         List<Artist> artists = artistRepository.findAllById(artistIds);
@@ -128,7 +128,7 @@ public class ArtistGalleryService {
             reserveTimeRepository.saveAll(reserveTimes);
         }
 
-        return savedGallery;
+        return ArtistGalleryDetailDTO.fromEntity(savedGallery);
     }
 
 
