@@ -25,16 +25,16 @@ VALUES
 
 INSERT INTO artist (id, name, profile_img, description, is_deleted ,user_id )
 VALUES
-(1, '김하늘', 'artist1.png', '자연을 주제로 한 서정적인 화풍을 가진 작가입니다.', false ,'artist01'),
-(2, '이준서', 'artist2.png', '디지털 아트와 전통 회화를 결합한 실험적 작업을 합니다.', false,'artist02'),
-(3, '박서연', 'artist3.png', '인물화를 중심으로 감정을 섬세하게 표현합니다.',false,'artist03'),
-(4, '최민준', 'artist4.png', '미니멀한 구성과 강렬한 색감이 특징입니다.',false,'artist04'),
-(5, '정예린', 'artist5.png', '동양화 기법을 현대적으로 재해석한 작품으로 주목받습니다.',false,'artist05'),
-(6, '한도윤', 'artist6.png', '추상화 작업을 통해 내면 세계를 표현합니다.', false,'artist06'),
-(7, '윤지후', 'artist7.png', '몽환적인 풍경화를 그리는 아티스트입니다.', false,'artist07'),
-(8, '서하람', 'artist8.png', '현대 사회를 비판적으로 다룬 설치미술로 활동합니다.',false,'artist08'),
-(9, '장하늘', 'artist9.png', '빛과 그림자를 활용한 독특한 분위기의 작품을 만듭니다.', false,'artist09'),
-(10,'배유진', 'artist10.png', '사운드와 영상 아트를 융합한 미디어 아티스트입니다.', false,'artist10');
+(1, '김하늘', '/uploads/Artist/artist1.png', '자연을 주제로 한 서정적인 화풍을 가진 작가입니다.', false ,'artist01'),
+(2, '이준서', '/uploads/Artist/artist2.png', '디지털 아트와 전통 회화를 결합한 실험적 작업을 합니다.', false,'artist02'),
+(3, '박서연', '/uploads/Artist/artist3.png', '인물화를 중심으로 감정을 섬세하게 표현합니다.',false,'artist03'),
+(4, '최민준', '/uploads/Artist/artist4.png', '미니멀한 구성과 강렬한 색감이 특징입니다.',false,'artist04'),
+(5, '정예린', '/uploads/Artist/artist5.png', '동양화 기법을 현대적으로 재해석한 작품으로 주목받습니다.',false,'artist05'),
+(6, '한도윤', '/uploads/Artist/artist6.png', '추상화 작업을 통해 내면 세계를 표현합니다.', false,'artist06'),
+(7, '윤지후', '/uploads/Artist/artist7.png', '몽환적인 풍경화를 그리는 아티스트입니다.', false,'artist07'),
+(8, '서하람', '/uploads/Artist/artist8.png', '현대 사회를 비판적으로 다룬 설치미술로 활동합니다.',false,'artist08'),
+(9, '장하늘', '/uploads/Artist/artist9.png', '빛과 그림자를 활용한 독특한 분위기의 작품을 만듭니다.', false,'artist09'),
+(10,'배유진', '/uploads/Artist/artist10.png', '사운드와 영상 아트를 융합한 미디어 아티스트입니다.', false,'artist10');
 
 
 INSERT INTO art (title, img_url, description, completion_date, upload_date, artist_id, is_deleted)
@@ -262,40 +262,40 @@ INSERT INTO goods (id, name, description, price, stock) VALUES
 (7, '감성 북마크 세트', '작품의 명대사와 이미지가 함께 있는 북마크 3종 세트입니다.', 4000, 60),
 (8, '미니 캔버스 액자', '고양이 테마 작품을 작은 캔버스로 제작한 인테리어 소품입니다.', 13000, 35);
 
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (1, 'goods1_1.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (1, 'goods1_2.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (1, '/uploads/Goods/goods1_1.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (1, '/uploads/Goods/goods1_2.png');
 
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, 'goods2_1.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, 'goods2_2.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, 'goods2_3.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, 'goods2_4.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, 'goods2_5.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, '/uploads/Goods/goods2_1.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, '/uploads/Goods/goods2_2.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, '/uploads/Goods/goods2_3.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, '/uploads/Goods/goods2_4.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (2, '/uploads/Goods/goods2_5.png');
 
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, 'goods3_1.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, 'goods3_2.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, 'goods3_3.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, 'goods3_4.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, 'goods3_5.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, '/uploads/Goods/goods3_1.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, '/uploads/Goods/goods3_2.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, '/uploads/Goods/goods3_3.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, '/uploads/Goods/goods3_4.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (3, '/uploads/Goods/goods3_5.png');
 
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (4, 'goods4_1.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (4, 'goods4_2.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (4, 'goods4_3.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (4, '/uploads/Goods/goods4_1.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (4, '/uploads/Goods/goods4_2.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (4, '/uploads/Goods/goods4_3.png');
 
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (5, 'goods5_1.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (5, 'goods5_2.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (5, '/uploads/Goods/goods5_1.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (5, '/uploads/Goods/goods5_2.png');
 
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (6, 'goods6_1.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (6, 'goods6_2.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (6, 'goods6_3.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (6, '/uploads/Goods/goods6_1.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (6, '/uploads/Goods/goods6_2.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (6, '/uploads/Goods/goods6_3.png');
 
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (7, 'goods7_1.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (7, 'goods7_2.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (7, 'goods7_3.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (7, 'goods7_4.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (7, '/uploads/Goods/goods7_1.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (7, '/uploads/Goods/goods7_2.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (7, '/uploads/Goods/goods7_3.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (7, '/uploads/Goods/goods7_4.png');
 
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (8, 'goods8_1.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (8, 'goods8_2.png');
-INSERT INTO goods_images (goods_id, img_url_list) VALUES (8, 'goods8_3.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (8, '/uploads/Goods/goods8_1.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (8, '/uploads/Goods/goods8_2.png');
+INSERT INTO goods_images (goods_id, img_url_list) VALUES (8, '/uploads/Goods/goods8_3.png');
 
 INSERT INTO goods_cart ( amount, sum, goods_id,user_id)
 VALUES
