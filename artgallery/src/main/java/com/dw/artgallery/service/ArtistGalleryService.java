@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -72,7 +74,7 @@ public class ArtistGalleryService {
     private String uploadDir;
 
     @Transactional
-    public ArtistGalleryDetailDTO createGallery(ArtistGalleryAddDTO dto) {
+    public ArtistGalleryDetailDTO createGallery(ArtistGalleryAddDTO dto, MultipartFile posterFile) {
         ArtistGallery gallery = ArtistGallery.fromAddDto(dto);
 
         List<Long> artistIds = dto.getArtistIdList();
@@ -82,9 +84,6 @@ public class ArtistGalleryService {
 
         List<Artist> artists = artistRepository.findAllById(artistIds);
         gallery.setArtistList(artists);
-
-
-
 
         List<Long> validArtistIds = artists.stream()
                 .map(Artist::getId)
@@ -100,24 +99,16 @@ public class ArtistGalleryService {
                 .toList();
         gallery.setArtList(validArts);
 
+        String fileName = UUID.randomUUID() + "_" + posterFile.getOriginalFilename();
+        Path posterDir = Paths.get(uploadDir, "ArtistGallery");
+
         try {
-            String base64 = dto.getPoster();
-            String base64Data = base64.contains(",") ? base64.split(",")[1] : base64;
-            byte[] imageBytes = Base64.getDecoder().decode(base64Data);
-
-            String fileName = System.currentTimeMillis() + "_poster.png";
-            Path uploadPath = Paths.get(uploadDir, "ArtistGallery");
-            Files.createDirectories(uploadPath);
-
-            Path filePath = uploadPath.resolve(fileName);
-            Files.write(filePath, imageBytes);
-
+            Files.createDirectories(posterDir);
+            Files.copy(posterFile.getInputStream(), posterDir.resolve(fileName));
             gallery.setPosterUrl("/uploads/ArtistGallery/" + fileName);
         } catch (IOException e) {
-            throw new RuntimeException("포스터 저장 중 오류 발생", e);
+            throw new RuntimeException("포스터 저장 실패", e);
         }
-
-        gallery.setPosterUrl("/uploads/ArtistGallery/" + dto.getPoster());
 
         gallery.setDeadline(gallery.getEndDate().minusDays(1));
 

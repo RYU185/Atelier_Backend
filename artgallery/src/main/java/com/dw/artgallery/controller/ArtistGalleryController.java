@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -70,10 +71,11 @@ public class ArtistGalleryController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArtistGalleryDetailDTO> createGallery(
-            @RequestBody ArtistGalleryAddDTO dto
+            @RequestPart("dto") ArtistGalleryAddDTO dto,
+            @RequestPart("poster") MultipartFile posterFile
     ) {
        return new ResponseEntity<>(
-               artistGalleryService.createGallery(dto),
+               artistGalleryService.createGallery(dto,posterFile),
                HttpStatus.OK
        );
     }
