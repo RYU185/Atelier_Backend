@@ -207,6 +207,14 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReserveTimeDTO> getAvailableTimesByGalleryAndDate(Long galleryId, LocalDate date) {
+        List<ReserveTime> times = reserveTimeRepository
+                .findByReserveDate_ArtistGallery_IdAndReserveDate_Date(galleryId, date);
+        return times.stream()
+                .map(ReserveTimeDTO::fromEntity)
+                .toList();
+    }
+
     @Transactional
     public void updateReserveDate(Long reserveDateId, ReserveDateUpdateDTO dto){
         ReserveDate reserveDate = reserveDateRepository.findById(reserveDateId)

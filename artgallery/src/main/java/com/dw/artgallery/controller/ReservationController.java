@@ -99,10 +99,15 @@ public class ReservationController {
     // 날짜 선택시 해당 예약 가능 시간 조회
     @GetMapping("/available-times")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<List<ReserveTimeDTO>> getAvailableTimes(@RequestParam LocalDate date) {
-        return new ResponseEntity<>(reservationService.getAvailableTimesByDate(date), HttpStatus.OK);
+    public ResponseEntity<List<ReserveTimeDTO>> getAvailableTimes(
+            @RequestParam Long galleryId,
+            @RequestParam LocalDate date
+    ) {
+        return new ResponseEntity<>(
+                reservationService.getAvailableTimesByGalleryAndDate(galleryId, date),
+                HttpStatus.OK
+        );
     }
-
     @PutMapping("/admin/reserve-date/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> updateReserveDate(
