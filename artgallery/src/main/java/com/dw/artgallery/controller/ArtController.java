@@ -49,6 +49,11 @@ public class ArtController {
         return ResponseEntity.ok(artService.getArtByArtistId(artistId));
     }
 
+    @GetMapping("/art-list")
+    public ResponseEntity<List<ArtDTO>> getArtByMultipleArtistIds(@RequestParam List<Long> artistIds) {
+        return ResponseEntity.ok(artService.getArtsByArtistIds(artistIds));
+    }
+
 
     // 작품 수정
     @PutMapping("/update/{id}")

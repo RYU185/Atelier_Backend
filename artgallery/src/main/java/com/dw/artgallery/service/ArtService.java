@@ -43,6 +43,12 @@ public class ArtService {
                 .collect(Collectors.toList());
     }
 
+    public List<ArtDTO> getArtsByArtistIds(List<Long> artistIds) {
+        return artRepository.findByArtistIdIn(artistIds).stream()
+                .map(ArtDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
     public List<ArtDTO> getArtByUserId(String userId){
 
         Artist artist = artistRepository.findByUser_UserId(userId)
