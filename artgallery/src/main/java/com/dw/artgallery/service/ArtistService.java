@@ -1,6 +1,8 @@
 package com.dw.artgallery.service;
 
+import com.dw.artgallery.DTO.ArtDTO;
 import com.dw.artgallery.DTO.ArtistDTO;
+import com.dw.artgallery.model.Art;
 import com.dw.artgallery.model.Artist;
 import com.dw.artgallery.model.Biography;
 import com.dw.artgallery.model.User;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -42,6 +45,8 @@ public class ArtistService {
                 .findByNameLike("%"+name+"%")
                 .stream().map(ArtistDTO::fromEntity).toList();
     }
+
+
 
     @Transactional
     public ArtistDTO saveArtist(ArtistDTO artistDTO) {

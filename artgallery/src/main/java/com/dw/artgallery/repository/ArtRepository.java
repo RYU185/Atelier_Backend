@@ -15,5 +15,6 @@ public interface ArtRepository extends JpaRepository<Art,Long> {
     @Query("SELECT a FROM Art a WHERE a.artist.id = :artistId AND a.deleted = false")
     List<Art> findActiveArtByArtistId(@Param("artistId") Long artistId);
 
+    List<Art> findByArtistId(Long artistId);
 
 }

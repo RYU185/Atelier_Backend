@@ -1,11 +1,13 @@
 package com.dw.artgallery.controller;
 
 
+import com.dw.artgallery.DTO.ArtDTO;
 import com.dw.artgallery.DTO.ArtistDTO;
 import com.dw.artgallery.DTO.BiographyDTO;
 import com.dw.artgallery.DTO.UserDTO;
 import com.dw.artgallery.model.User;
 import com.dw.artgallery.repository.UserRepository;
+import com.dw.artgallery.service.ArtService;
 import com.dw.artgallery.service.ArtistService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -37,6 +39,7 @@ import java.util.UUID;
 @RequestMapping("/api/artist")
 public class ArtistController {
     private final ArtistService artistService;
+    private final ArtService artService;
 
     @GetMapping
     public ResponseEntity<List<ArtistDTO>> getAllArtist(){
@@ -51,6 +54,11 @@ public class ArtistController {
     @GetMapping("/user-id/{userId}")
     public ResponseEntity<ArtistDTO> getArtistByUserId(@PathVariable String userId) {
         return new ResponseEntity<>(artistService.getArtistByUserId(userId), HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ArtDTO>> getArtByUserId(@PathVariable String userId) {
+        return ResponseEntity.ok(artService.getArtByUserId(userId));
     }
 
     @GetMapping("/name/{name}")

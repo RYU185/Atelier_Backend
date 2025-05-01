@@ -43,6 +43,19 @@ public class ArtService {
                 .collect(Collectors.toList());
     }
 
+    public List<ArtDTO> getArtByUserId(String userId){
+
+        Artist artist = artistRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 작가를 찾을 수 없습니다."));
+
+        List<Art> arts = artRepository.findByArtistId(artist.getId());
+
+        // 3. DTO 변환
+        return arts.stream()
+                .map(ArtDTO::fromEntity)
+                .collect(Collectors.toList());
+    };
+
 
 
     // 작품 수정
