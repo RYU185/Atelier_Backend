@@ -30,6 +30,7 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final ArtistGalleryRepository artistGalleryRepository;
     private final NotificationService notificationService;
+    private final ScheduledNotificationService scheduledNotificationService;
 
 
     // 예약
@@ -76,13 +77,14 @@ public class ReservationService {
             reservation.setHeadcount(headCount);
 
             Reservation saved = reservationRepository.save(reservation);
+            scheduledNotificationService.sendImmediateReminder(saved);
             return ReservationResponseDTO.fromEntity(saved);
 
         } catch (ObjectOptimisticLockingFailureException e) {
             throw new InvalidRequestException("정원이 초과되었습니다. 다시 시도해주세요.");
         }
     }
-
+    
     // 예약 변경
     @Transactional
     public ReservationResponseDTO changeReservation(Long reservationId,
