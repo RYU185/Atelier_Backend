@@ -80,37 +80,34 @@ public class ArtistController {
             @RequestPart(value = "profile_img", required = false) MultipartFile profileImg
     ) throws JsonProcessingException, IOException {
 
-        if (profileImg == null || profileImg.isEmpty()) {
-            System.out.println("❌ 프로필 이미지가 비어 있습니다.");
-            return ResponseEntity.badRequest().body("프로필 이미지를 업로드해주세요.");
-        }
+
+        String newFileName = null;
 
         // ✅ uploads/Artist 경로 조합
-        Path artistUploadPath = Paths.get( uploadDir, "Artist")
-                .toAbsolutePath()
-                .normalize();
+        if (profileImg != null && !profileImg.isEmpty()) {
+            Path artistUploadPath = Paths.get(uploadDir, "Artist")
+                    .toAbsolutePath()
+                    .normalize();
 
-        System.out.println("📂 아티스트 업로드 디렉토리: " + artistUploadPath);
+            System.out.println("📂 아티스트 업로드 디렉토리: " + artistUploadPath);
 
-        if (!Files.exists(artistUploadPath)) {
-            Files.createDirectories(artistUploadPath);
-            System.out.println("✅ Artist 디렉토리 생성 완료");
+            if (!Files.exists(artistUploadPath)) {
+                Files.createDirectories(artistUploadPath);
+                System.out.println("✅ Artist 디렉토리 생성 완료");
+            }
+
+            // 확장자 추출 및 새 파일명 생성
+            String originalFilename = profileImg.getOriginalFilename();
+            String ext = "";
+
+            if (originalFilename != null && originalFilename.contains(".")) {
+                ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            newFileName = UUID.randomUUID().toString() + ext;
+            Path targetPath = artistUploadPath.resolve(newFileName);
+            Files.copy(profileImg.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
         }
-
-        // 확장자 추출 및 새 파일명 생성
-        String originalFilename = profileImg.getOriginalFilename();
-        String ext = "";
-
-        if (originalFilename != null && originalFilename.contains(".")) {
-            ext = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
-
-        String newFileName = UUID.randomUUID().toString() + ext;
-        Path targetPath = artistUploadPath.resolve(newFileName);
-
-        // 파일 저장
-        Files.copy(profileImg.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("✅ 프로필 이미지 저장 완료 → " + targetPath);
 
         // JSON 파싱
         ObjectMapper objectMapper = new ObjectMapper();
@@ -126,7 +123,9 @@ public class ArtistController {
         artistDTO.setName(name);
         artistDTO.setDescription(description);
         artistDTO.setUserId(userId);
-        artistDTO.setProfile_img("/uploads/Artist/" + newFileName); // ✅ 정적 리소스 URL로 저장
+        if (newFileName != null) {
+            artistDTO.setProfile_img("/uploads/Artist/" + newFileName);
+        } // ✅ 정적 리소스 URL로 저장
         artistDTO.setBiographyList(biographyList);
 
         // 저장 및 응답

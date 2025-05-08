@@ -52,52 +52,39 @@ public class ArtistService {
     public ArtistDTO saveArtist(ArtistDTO artistDTO) {
         Artist artist;
 
-        // 기존작가라면 수정
         if (artistDTO.getId() != null && artistRepository.existsById(artistDTO.getId())) {
             artist = artistRepository.findById(artistDTO.getId())
                     .orElseThrow(() -> new ResourceNotFoundException("작가를 찾을 수 없습니다."));
-
-            artist.setName(artistDTO.getName());
-
-            if (artistDTO.getProfile_img() != null) {
-                artist.setProfile_img(artistDTO.getProfile_img());
-            }
-
-            artist.setDescription(artistDTO.getDescription());
-            artist.setDeleted(artistDTO.isDeleted());
-
-            artist.getBiographyList().clear();
-            if (artistDTO.getBiographyList() != null) {
-                List<Biography> bioList = artistDTO.getBiographyList().stream()
-                        .map(b -> b.toEntity(artist))
-                        .toList();
-                artist.getBiographyList().addAll(bioList);
-            }
-
-        } else {
-
+        }
+        else if (artistRepository.findByUser_UserId(artistDTO.getUserId()).isPresent()) {
+            artist = artistRepository.findByUser_UserId(artistDTO.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("작가를 찾을 수 없습니다."));
+        }
+        else {
             User user = userRepository.findById(artistDTO.getUserId())
                     .orElseThrow(() -> new ResourceNotFoundException("해당 유저를 찾을 수 없습니다."));
 
-            // 새로운 작가라면 추가
             artist = new Artist();
-            artist.setName(artistDTO.getName());
-            artist.setProfile_img(artistDTO.getProfile_img());
-            artist.setDescription(artistDTO.getDescription());
-            artist.setDeleted(false);
             artist.setUser(user);
+            artist.setDeleted(false);
             user.setArtist(true);
             userRepository.save(user);
-
-            if (artistDTO.getBiographyList() != null) {
-                List<Biography> bioList = artistDTO.getBiographyList().stream()
-                        .map(b -> b.toEntity(artist))
-                        .toList();
-                artist.setBiographyList(bioList);
-            }
         }
-        Artist saved = artistRepository.save(artist);
-        return ArtistDTO.fromEntity(saved);
+
+        artist.setName(artistDTO.getName());
+        artist.setDescription(artistDTO.getDescription());
+        if (artistDTO.getProfile_img() != null) {
+            artist.setProfile_img(artistDTO.getProfile_img());
+        }
+
+        artist.getBiographyList().clear();
+        if (artistDTO.getBiographyList() != null) {
+            List<Biography> bioList = artistDTO.getBiographyList().stream()
+                    .map(b -> b.toEntity(artist))
+                    .toList();
+            artist.getBiographyList().addAll(bioList);
+        }
+        return ArtistDTO.fromEntity(artistRepository.save(artist));
     }
 
     @Transactional
