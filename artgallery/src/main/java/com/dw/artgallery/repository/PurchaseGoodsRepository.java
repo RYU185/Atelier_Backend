@@ -1,5 +1,6 @@
 package com.dw.artgallery.repository;
 
+import com.dw.artgallery.model.Goods;
 import com.dw.artgallery.model.PurchaseGoods;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,7 +22,7 @@ public interface PurchaseGoodsRepository extends JpaRepository<PurchaseGoods, Lo
     @Query("SELECT COALESCE(SUM(pg.quantity), 0) FROM PurchaseGoods pg WHERE pg.goods.id = :goodsId")
     Integer getTotalSalesByGoodsId(Long goodsId);
 
-
+    void deleteByGoods(Goods goods);
         List<PurchaseGoods> findAll();
     }
 
