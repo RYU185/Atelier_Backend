@@ -77,7 +77,7 @@ public class ArtistController {
             @RequestPart("description") String description,
             @RequestPart("userId") String userId,
             @RequestPart("biographyList") String biographyListJson,
-            @RequestPart("profile_img") MultipartFile profileImg
+            @RequestPart(value = "profile_img", required = false) MultipartFile profileImg
     ) throws JsonProcessingException, IOException {
 
         if (profileImg == null || profileImg.isEmpty()) {
