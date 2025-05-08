@@ -9,7 +9,6 @@ import com.dw.artgallery.repository.GoodsCartRepository;
 import com.dw.artgallery.repository.GoodsRepository;
 import com.dw.artgallery.exception.ResourceNotFoundException;
 import com.dw.artgallery.repository.PurchaseGoodsRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +24,6 @@ public class GoodsService {
     UserService userService;
     @Autowired
     PurchaseGoodsRepository purchaseGoodsRepository;
-    @Autowired
-    GoodsCartRepository goodsCartRepository;
 
     public List<GoodsDTO> getAllGoods() {
         List<Goods> goodsList = goodsRepository.findAll();
@@ -92,29 +89,11 @@ public class GoodsService {
         return GoodsDTO.fromEntity(updatedGoods);
     }
 
-    @Transactional
-    public String deleteGoods(Long id) {
-        Goods goods = goodsRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 상품이 존재하지 않습니다"));
-
-        // ✅ PurchaseGoods에서 참조된 항목 삭제
-        purchaseGoodsRepository.deleteByGoods(goods);
-
-        // ✅ GoodsCart에서 참조된 항목 삭제
-        goodsCartRepository.deleteByGoods(goods);
-
-        // ✅ 이미지 리스트 클리어
-        goods.getImgUrlList().clear();
-        goodsRepository.save(goods);
-
-        // ✅ Goods 삭제
+    public String deleteGoods(Long id){
+        Goods goods = goodsRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("해당 상품이 존재하지 않습니다"));
         goodsRepository.delete(goods);
-
         return "해당 상품을 삭제하였습니다.";
     }
-
-
-
     // ✅ 관리자 전용 굿즈 전체 조회 (누적 판매량 포함)
     public List<GoodsTotalDTO> getAllGoodsForAdmin() {
         return goodsRepository.findAll().stream()
