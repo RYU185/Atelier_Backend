@@ -27,7 +27,7 @@ public class ArtistService {
     public List<ArtistDTO> getAllArtist(){
         return artistRepository.findAll().stream().map(ArtistDTO::fromEntity).toList();
     }
-
+ 
     public ArtistDTO getArtistById(Long id){
         return artistRepository.findById(id)
                 .map(ArtistDTO::fromEntity)
