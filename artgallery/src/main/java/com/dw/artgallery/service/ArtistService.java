@@ -58,7 +58,11 @@ public class ArtistService {
                     .orElseThrow(() -> new ResourceNotFoundException("작가를 찾을 수 없습니다."));
 
             artist.setName(artistDTO.getName());
-            artist.setProfile_img(artistDTO.getProfile_img());
+
+            if (artistDTO.getProfile_img() != null) {
+                artist.setProfile_img(artistDTO.getProfile_img());
+            }
+
             artist.setDescription(artistDTO.getDescription());
             artist.setDeleted(artistDTO.isDeleted());
 
