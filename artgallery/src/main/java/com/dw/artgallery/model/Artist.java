@@ -22,7 +22,8 @@ public class Artist {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "profile_img")
+    @Column(name = "profile_img",columnDefinition = "LONGTEXT")
+    @Lob
     private String profile_img;
 
     @Column(name = "description", columnDefinition = "TEXT")
