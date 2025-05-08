@@ -90,10 +90,19 @@ public class GoodsService {
     }
 
     public String deleteGoods(Long id){
-        Goods goods = goodsRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("해당 상품이 존재하지 않습니다"));
+        System.out.println("📌 삭제 요청 ID: " + id);
+        Goods goods = goodsRepository.findById(id)
+                .orElseThrow(() -> {
+                    System.out.println("❌ 굿즈를 찾을 수 없음: ID = " + id);
+                    return new ResourceNotFoundException("해당 상품이 존재하지 않습니다");
+                });
+
+        System.out.println("✅ 굿즈 존재함. 삭제 시작: " + goods.getName());
         goodsRepository.delete(goods);
         return "해당 상품을 삭제하였습니다.";
     }
+
+    
     // ✅ 관리자 전용 굿즈 전체 조회 (누적 판매량 포함)
     public List<GoodsTotalDTO> getAllGoodsForAdmin() {
         return goodsRepository.findAll().stream()

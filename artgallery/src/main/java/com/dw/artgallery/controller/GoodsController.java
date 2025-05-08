@@ -126,7 +126,7 @@ public class GoodsController {
         return new ResponseEntity<>(goodsService.updateGoods(id, goodsDTO), HttpStatus.CREATED);
     }
 
-    
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteGoods(@PathVariable Long id) {
         return new ResponseEntity<>(goodsService.deleteGoods(id), HttpStatus.OK);
